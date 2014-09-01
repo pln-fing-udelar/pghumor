@@ -1,3 +1,4 @@
+
 import MySQLdb
 import Tweet
 
@@ -20,17 +21,20 @@ def extraerHumor():
 	resultado = []
 	
 	for tweet in result:
-		tweet[1].decode('utf-8')
-		tweet[8].decode('utf-8')
-		tw = Tweet.Tweet()
-		tw.id = tweet[0]
-		tw.texto = tweet[1]
-		tw.favoritos = tweet[2]
-		tw.retweets = tweet[3]
-		tw.cuenta = tweet[8]
-		tw.seguidores = tweet[9]
+		try:
+			tweet[1].decode('utf-8')
+			tweet[8].decode('utf-8')
+			tw = Tweet.Tweet()
+			tw.id = tweet[0]
+			tw.texto = tweet[1]
+			tw.favoritos = tweet[2]
+			tw.retweets = tweet[3]
+			tw.cuenta = tweet[8]
+			tw.seguidores = tweet[9]
 
-		resultado.append(tw)
+			resultado.append(tw)
+		except:
+			pass
 
 	return resultado
 
@@ -49,20 +53,23 @@ def extraerNoHumor():
 
 	resultado = []
 	
-	for tweet in result:
-		tweet[1].decode('utf-8')
-		tweet[8].decode('utf-8')
-		tw = Tweet.Tweet()
-		tw.id = tweet[0]
-		tw.texto = tweet[1]
-		tw.favoritos = tweet[2]
-		tw.retweets = tweet[3]
-		tw.cuenta = tweet[8]
-		tw.seguidores = tweet[9]
+	try:
+		for tweet in result:
+			tweet[1].decode('utf-8')
+			tweet[8].decode('utf-8')
+			tw = Tweet.Tweet()
+			tw.id = tweet[0]
+			tw.texto = tweet[1]
+			tw.favoritos = tweet[2]
+			tw.retweets = tweet[3]
+			tw.cuenta = tweet[8]
+			tw.seguidores = tweet[9]
 
-		resultado.append(tw)
+			resultado.append(tw)
+	except:
+		pass
 
 	return resultado
 
 def extraer():
-	return extraerHumor(), extraerNoHumor()
+	return extraerHumor(), extraerNoHumor
