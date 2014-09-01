@@ -1,7 +1,8 @@
 import cargarDatos
 import tokenizacion
 
-tweets = cargarDatos.extraer()
-tweets_tokenizados = [tokenizacion.tokenizar(tweet) for tweet in tweets]
+humor, no_humor = cargarDatos.extraer()
+tweets = humor
+tweets_tokenizados = [tokenizacion.tokenizar(tweet.texto) for tweet in tweets]
 
 tweets_tokenizados[0]
