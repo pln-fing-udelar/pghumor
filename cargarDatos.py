@@ -1,11 +1,10 @@
-
 import MySQLdb
 import Tweet
 
 DB_HOST = 'localhost' 
 DB_USER = 'pghumor' 
-DB_PASS = 'ckP8t/2l' 
-DB_NAME = 'chistesdb' 
+DB_PASS = 'ckP8t/2l'
+DB_NAME = 'chistesdb'
 
 def extraerHumor():
 	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
