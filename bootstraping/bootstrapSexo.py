@@ -47,16 +47,17 @@ def bootstrap():
 				for tweet in tweets:
 					for oracion in tokenizar(tweet.text):
 						for palabra in oracion:		
-							incrementarKey(bootstrapping, palabra)
+							incrementarKey(bootstrapping, palabra, palabrasSexuales)
 
 
 	return bootstrapping
 
-def incrementarKey(dicc, key):
-	if key in dicc:
-		dicc[key] = dicc[key] + 1
-	else:
-		dicc[key] = 1
+def incrementarKey(dicc, key, exluidas):
+	if key.lower() not in exluidas:
+		if key in dicc:
+			dicc[key] = dicc[key] + 1
+		else:
+			dicc[key] = 1
 
 def guardarDiccionario(dicc):
 	w = csv.writer(open("diccSexo.csv", "w"))

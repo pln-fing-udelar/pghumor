@@ -72,4 +72,4 @@ def extraerNoHumor():
 	return resultado
 
 def extraer():
-	return extraerHumor(), extraerNoHumor
+	return extraerHumor(), extraerNoHumor()
