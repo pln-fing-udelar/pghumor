@@ -8,3 +8,5 @@ class Tweet:
 		self.cuenta = ""
 		self.seguidores = 0
 		self.es_humor = False
+
+		self.features = {}
