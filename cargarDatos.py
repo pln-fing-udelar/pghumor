@@ -5,6 +5,7 @@ DB_HOST = 'localhost'
 DB_USER = 'pghumor' 
 DB_PASS = 'ckP8t/2l'
 DB_NAME = 'chistesdb'
+DB_NAME_NO_CHISTES = 'nochistesdb'
 
 def extraerHumor():
 	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
@@ -40,7 +41,35 @@ def extraerHumor():
 
 ## Por ahora hace lo mismo que extraerHumor
 def extraerNoHumor():
-	return extraerHumor()
+	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME_NO_CHISTES]
+	conection = MySQLdb.connect(*datos)
+	cursor = conection.cursor()
+
+	query = "SELECT * FROM nochistesdb.tweets AS T JOIN nochistesdb.twitter_accounts AS A ON T.id_account = A.id_account"
+
+	cursor.execute(query)
+
+	result = cursor.fetchall();	
+
+	resultado = []
+	
+	for tweet in result:
+		try:
+			tweet[1].decode('utf-8')
+			tweet[6].decode('utf-8')
+			tw = Tweet.Tweet()
+			tw.id = tweet[0]
+			tw.texto = tweet[1]
+			tw.favoritos = tweet[2]
+			tw.retweets = tweet[3]
+			tw.cuenta = tweet[6]
+			tw.seguidores = tweet[7]#
+
+			resultado.append(tw)
+		except:
+			pass
+
+	return resultado
 
 def extraer():
 	return extraerHumor(), extraerNoHumor
