@@ -15,5 +15,8 @@ def obtenerFeaturePalabrasAnimales(tweets):
 def obtenerfeaturePalabrasPersonal(tweets):
 	pass
 
+def cargarDiccionario(path):
+	pass
+
 
 
