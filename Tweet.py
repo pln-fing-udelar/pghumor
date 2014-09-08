@@ -7,3 +7,4 @@ class Tweet:
 		self.favoritos = 0
 		self.cuenta = ""
 		self.seguidores = 0
+		self.es_humor = False
