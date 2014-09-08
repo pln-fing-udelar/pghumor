@@ -31,6 +31,7 @@ def extraerHumor():
 			tw.retweets = tweet[3]
 			tw.cuenta = tweet[8]
 			tw.seguidores = tweet[9]
+			tw.es_humor = True
 
 			resultado.append(tw)
 		except:
@@ -64,6 +65,7 @@ def extraerNoHumor():
 			tw.retweets = tweet[3]
 			tw.cuenta = tweet[6]
 			tw.seguidores = tweet[7]#
+			tw.es_humor = False
 
 			resultado.append(tw)
 		except:
