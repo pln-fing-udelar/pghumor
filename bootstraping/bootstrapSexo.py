@@ -96,5 +96,15 @@ def clasificar(dicc):
   		clasificacion = sys.stdin.readline()
   		if clasificacion != '\n':
   			retorno.append(w)
+  		if clasificacion == 'f\n':
+  			break
 
   	return retorno
+
+def guardarDiccParaFeature(palabrasSexuales):
+	file_object = open("../" +PATH_DICCIONARIO_SEXUAL, 'a')
+
+	for word in palabrasSexuales:
+		file_object.write(word + "\n")
+
+	file_object.close()
