@@ -3,6 +3,7 @@
 import tweepy
 import sys
 import csv
+import time
 
 sys.path.append("../")
 from utils import *
@@ -35,11 +36,12 @@ def bootstrap():
 				query = palabra1 + " " + palabra2
 				reintentos = 0
 				exito = False
-				while reintentos < 3 and not exito:
+				while not exito:
 					try:
 						tweets = api.search(q=query)
 						exito = True
 					except Exception:
+						time.sleep(60)
 						reintentos = reintentos + 1
 						print "Ocurrio un error ." + "Haciendo el intento numero " + `reintentos` + "."
 
