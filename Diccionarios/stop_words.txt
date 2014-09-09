@@ -1,0 +1,23 @@
+stop_words = [
+    u'ademas',
+    u'asi',
+    u'aunque',
+    u'con',
+    u'cual',
+    u'del',
+    u'desde',
+    u'despues',
+    u'detras',
+    u'donde',
+    u'hay',
+    u'las',
+    u'los',
+    u'muy',
+    u'para',
+    u'pero',
+    u'por',
+    u'que',
+    u'sin',
+    u'una',
+    u'vez'
+]

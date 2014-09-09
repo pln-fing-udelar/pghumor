@@ -1,0 +1,7 @@
+perro
+gato
+oso
+elefante
+jirafa
+pato
+ganso
