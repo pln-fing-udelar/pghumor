@@ -1,22 +1,20 @@
 #!/usr/bin/env python
-
-import tweepy
-import sys
 import csv
+import sys
 import time
+import tweepy
 
 sys.path.append("../")
-from utils import *
+
 from define import *
 from tokenizacion import *
-
+from utils import *
 
 def main():
 	dic = bootstrap()
 	guardarDiccionario(dic)
 
 def bootstrap():
-
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 	auth.set_access_token(access_key, access_secret)
 
@@ -50,7 +48,6 @@ def bootstrap():
 					for oracion in tokenizar(tweet.text):
 						for palabra in oracion:		
 							incrementarKey(bootstrapping, palabra, palabrasSexuales)
-
 
 	return bootstrapping
 

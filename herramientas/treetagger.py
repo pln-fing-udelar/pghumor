@@ -1,4 +1,3 @@
-
 import utils
 import re
 
@@ -18,7 +17,6 @@ class TreeTagger:
 
 				self.tokens.append(detalle)
 
-
 #Datatype
 class TokenTT:
 
@@ -26,5 +24,3 @@ class TokenTT:
 		self.token = ""
 		self.tag = ""
 		self.lemma = ""
-
-

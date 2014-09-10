@@ -9,5 +9,3 @@ def tokenizar(texto):
 	oraciones = detector_de_sentencias.tokenize(texto)
 
 	return [nltk.word_tokenize(oracion) for oracion in oraciones]
-
-
