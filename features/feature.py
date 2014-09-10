@@ -1,11 +1,10 @@
 
 
-
-
 class Feature:
 	
 	def __init__(self):
-		pass
+		self.nombre = ""
+		self.descripcion = ""
 
 	def calcularFeature(self, tweet):
 		raise NotImplementedError

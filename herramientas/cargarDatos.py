@@ -1,14 +1,15 @@
 import MySQLdb
 import sys
 
-sys.path.append("../Realidad")
-import Tweet
+sys.path.append("../realidad")
 
-DB_HOST = 'localhost' 
-DB_USER = 'pghumor' 
-DB_PASS = 'ckP8t/2l'
-DB_NAME = 'chistesdb'
-DB_NAME_NO_CHISTES = 'nochistesdb'
+import tweet
+
+DB_HOST				= 'localhost' 
+DB_USER				= 'pghumor' 
+DB_PASS				= 'ckP8t/2l'
+DB_NAME				= 'chistesdb'
+DB_NAME_NO_CHISTES	= 'nochistesdb'
 
 def extraerHumor():
 	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
@@ -19,7 +20,7 @@ def extraerHumor():
 
 	cursor.execute(query)
 
-	result = cursor.fetchall();	
+	result = cursor.fetchall();
 
 	resultado = []
 	
@@ -42,14 +43,19 @@ def extraerHumor():
 
 	return resultado
 
-
 ## Por ahora hace lo mismo que extraerHumor
 def extraerNoHumor():
-	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME_NO_CHISTES]
+	datos = [
+		DB_HOST,
+		DB_USER,
+		DB_PASS,
+		DB_NAME_NO_CHISTES,
+	]
+
 	conection = MySQLdb.connect(*datos)
 	cursor = conection.cursor()
 
-	query = "SELECT * FROM nochistesdb.tweets AS T JOIN nochistesdb.twitter_accounts AS A ON T.id_account = A.id_account"
+	query = 'SELECT * FROM nochistesdb.tweets AS T JOIN nochistesdb.twitter_accounts AS A ON T.id_account = A.id_account'
 
 	cursor.execute(query)
 
