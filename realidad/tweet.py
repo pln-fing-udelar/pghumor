@@ -25,8 +25,8 @@ class Tweet:
 		cursor = conection.cursor()
 
 		cursor.execute(query)		
-			for key,value in self.features.items():
-				query = "INSERT INTO features VALUES (" + `self.id` + ",'" + key+ "'," + value + ") ON DUPLICATE KEY UPDATE valor_feature = " + value
-				cursor.execute(query)
+		for key,value in self.features.items():
+			query = "INSERT INTO features VALUES (" + `self.id` + ",'" + key+ "'," + value + ") ON DUPLICATE KEY UPDATE valor_feature = " + value
+			cursor.execute(query)
 
 		conection.commit()

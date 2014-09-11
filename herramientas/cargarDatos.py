@@ -24,17 +24,17 @@ def extraerHumor():
 
 	resultado = []
 	
-	for tweet in result:
+	for t in result:
 		try:
-			tweet[1].decode('utf-8')
-			tweet[8].decode('utf-8')
-			tw = Tweet.Tweet()
-			tw.id = tweet[0]
-			tw.texto = tweet[1]
-			tw.favoritos = tweet[2]
-			tw.retweets = tweet[3]
-			tw.cuenta = tweet[8]
-			tw.seguidores = tweet[9]
+			t[1].decode('utf-8')
+			t[8].decode('utf-8')
+			tw = tweet.Tweet()
+			tw.id = t[0]
+			tw.texto = t[1]
+			tw.favoritos = t[2]
+			tw.retweets = t[3]
+			tw.cuenta = t[8]
+			tw.seguidores = t[9]
 			tw.es_humor = True
 
 			resultado.append(tw)
@@ -63,17 +63,17 @@ def extraerNoHumor():
 
 	resultado = []
 	
-	for tweet in result:
+	for t in result:
 		try:
-			tweet[1].decode('utf-8')
-			tweet[6].decode('utf-8')
-			tw = Tweet.Tweet()
-			tw.id = tweet[0]
-			tw.texto = tweet[1]
-			tw.favoritos = tweet[2]
-			tw.retweets = tweet[3]
-			tw.cuenta = tweet[6]
-			tw.seguidores = tweet[7]#
+			t[1].decode('utf-8')
+			t[6].decode('utf-8')
+			tw = tweet.Tweet()
+			tw.id = t[0]
+			tw.texto = t[1]
+			tw.favoritos = t[2]
+			tw.retweets = t[3]
+			tw.cuenta = t[6]
+			tw.seguidores = t[7]
 			tw.es_humor = False
 
 			resultado.append(tw)
