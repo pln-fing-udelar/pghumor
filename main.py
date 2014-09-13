@@ -37,4 +37,4 @@ grupos = [tweet.es_humor for tweet in entrenamiento]
 clasificador = svm.SVC()
 clasificador.fit(features, grupos)
 
-clasificador.predict(evaluacion[0])
+#clasificador.predict(evaluacion[0])
