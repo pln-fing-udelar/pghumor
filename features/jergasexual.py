@@ -12,7 +12,7 @@ class JergaSexual(feature.Feature):
 
 	def __init__(self):
 		self.nombre = 'Jerga Sexual'
-		self.palabrasSexuales = utils.obtenerDiccionario("../diccionarios/" + define.PATH_DICCIONARIO_SEXUAL)
+		self.palabrasSexuales = utils.obtenerDiccionario('../diccionarios/' + define.PATH_DICCIONARIO_SEXUAL)
 		
 	def calcularFeature(self, tweet):
 		tt = TreeTagger(tweet.texto)
