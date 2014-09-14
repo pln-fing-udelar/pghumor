@@ -1,11 +1,13 @@
-import utils
+from __future__ import absolute_import
+
+import herramientas.utils
 import re
 
 class TreeTagger:
 
 	def __init__(self, texto):
 		command = 'echo "' + texto + '" |  tree-tagger-spanish'
-		resultado = utils.ejecutarComando(command)
+		resultado = herramientas.utils.ejecutarComando(command)
 		self.tokens = []
 		for line in resultado:
 			matcheo = re.search('^(.*)\t(.*)\t(.*)\n', line)

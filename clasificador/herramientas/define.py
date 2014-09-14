@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 #Archivos
 PATH_DICCIONARIO_SEXUAL = 'DiccionarioSexual.txt'
 PATH_DICCIONARIO_ANIMAL = 'DiccionarioAnimal.txt'

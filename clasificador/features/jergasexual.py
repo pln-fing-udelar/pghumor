@@ -1,16 +1,19 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import math
 import sys
 
-import .feature
+from features.feature import Feature
 import herramientas.define
-from herramientas.treetagger import *
+from herramientas.treetagger import TreeTagger
 import herramientas.utils
 
-class JergaSexual(feature.Feature):
+class JergaSexual(Feature):
 
 	def __init__(self):
 		self.nombre = 'Jerga Sexual'
-		self.palabrasSexuales = utils.obtenerDiccionario('../diccionarios/' + define.PATH_DICCIONARIO_SEXUAL)
+		self.palabrasSexuales = herramientas.utils.obtenerDiccionario('diccionarios/' + herramientas.define.PATH_DICCIONARIO_SEXUAL)
 		
 	def calcularFeature(self, tweet):
 		tt = TreeTagger(tweet.texto)
@@ -19,4 +22,7 @@ class JergaSexual(feature.Feature):
 			if (token.token in self.palabrasSexuales) or (token.lemma in self.palabrasSexuales):
 				cantPalabrasSexuales += 1
 
-		tweet.features[self.nombre] = cantPalabrasSexuales/math.sqrt(len(tt.tokens))
+		if len(tt.tokens) == 0: # FIXME: no debería pasar
+			tweet.features[self.nombre] = 0
+		else:
+			tweet.features[self.nombre] = cantPalabrasSexuales/math.sqrt(len(tt.tokens))

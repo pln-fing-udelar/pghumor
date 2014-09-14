@@ -1,12 +1,14 @@
-import .jergasexual
-import .oov
+from __future__ import absolute_import
+
+import features.jergasexual
+import features.oov
 
 class Features:
 	
 	def __init__(self):
 		self.features = [
-			jergasexual.JergaSexual(),
-			oov.OOV(),
+			features.jergasexual.JergaSexual(),
+			features.oov.OOV(),
 		]
 
 	def calcularFeatures(self, tweets):

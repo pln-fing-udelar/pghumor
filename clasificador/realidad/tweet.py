@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import MySQLdb
 
 DB_HOST = 'localhost' 
@@ -19,14 +21,13 @@ class Tweet:
 		self.features = {}
 
 	def persistir(self):
-		
 		datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
-		conection = MySQLdb.connect(*datos)
-		cursor = conection.cursor()
+		conexion = MySQLdb.connect(*datos)
+		cursor = conexion.cursor()
 
 		cursor.execute(query)		
 		for key,value in self.features.items():
-			query = "INSERT INTO features VALUES (" + `self.id` + ",'" + key+ "'," + value + ") ON DUPLICATE KEY UPDATE valor_feature = " + value
+			query = "INSERT INTO features VALUES (" + `self.id` + ",'" + key + "'," + value + ") ON DUPLICATE KEY UPDATE valor_feature = " + value
 			cursor.execute(query)
 
-		conection.commit()
+		conexion.commit()
