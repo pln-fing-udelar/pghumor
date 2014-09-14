@@ -13,12 +13,12 @@ DB_NAME_NO_CHISTES	= 'nochistesdb'
 
 def extraerHumor():
 	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
-	connection = MySQLdb.connect(*datos)
-	cursor = connection.cursor()
+	conexion = MySQLdb.connect(*datos)
+	cursor = conexion.cursor()
 
-	query = 'SELECT * FROM chistesdb.tweets AS T JOIN chistesdb.twitter_accounts AS A ON T.twitter_accounts_id_account = A.id_account'
+	consulta = 'SELECT * FROM chistesdb.tweets AS T JOIN chistesdb.twitter_accounts AS A ON T.twitter_accounts_id_account = A.id_account'
 
-	cursor.execute(query)
+	cursor.execute(consulta)
 
 	result = cursor.fetchall();
 
@@ -52,12 +52,12 @@ def extraerNoHumor():
 		DB_NAME_NO_CHISTES,
 	]
 
-	connection = MySQLdb.connect(*datos)
-	cursor = connection.cursor()
+	conexion = MySQLdb.connect(*datos)
+	cursor = conexion.cursor()
 
-	query = 'SELECT * FROM nochistesdb.tweets AS T JOIN nochistesdb.twitter_accounts AS A ON T.id_account = A.id_account'
+	consulta = 'SELECT * FROM nochistesdb.tweets AS T JOIN nochistesdb.twitter_accounts AS A ON T.id_account = A.id_account'
 
-	cursor.execute(query)
+	cursor.execute(consulta)
 
 	result = cursor.fetchall();	
 
