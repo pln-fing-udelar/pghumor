@@ -1,9 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import random
 from sklearn import svm
 
-import cargarDatos
-#import featuresDiccionarios
-import tokenizacion
+import herramientas.cargardatos
+#import features.features
+import herramientas.tokenizacion
 
 #def recolectarFeatures(tweets):
 #	return [obtenerFeaturePalabrasSexuales(tweets), obtenerFeaturePalabrasAnimales(tweets), obtenerFeaturePalabrasPersonal(tweets)]
@@ -11,7 +15,7 @@ import tokenizacion
 #def darFeatures(*features):
 #	return [list(tupla) for tupla in zip(*features)]
 
-humor, no_humor = cargarDatos.extraer()
+humor, no_humor = herramientas.cargardatos.extraerTweets()
 
 corpus = humor + no_humor
 

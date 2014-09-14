@@ -1,12 +1,10 @@
 import math
 import sys
 
-sys.path.append("../herramientas")
-
-import define
-import feature
-from treetagger import *
-import utils
+import .feature
+import herramientas.define
+from herramientas.treetagger import *
+import herramientas.utils
 
 class JergaSexual(feature.Feature):
 
