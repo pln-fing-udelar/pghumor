@@ -1,10 +1,8 @@
 import math
 import sys
 
-sys.path.append("../herramientas")
-
-import feature
-from treetagger import *
+import .feature
+from herramientas.treetagger import *
 
 class OOV(feature.Feature):
 

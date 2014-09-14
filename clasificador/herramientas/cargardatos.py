@@ -1,9 +1,7 @@
 import MySQLdb
 import sys
 
-sys.path.append("../realidad")
-
-import tweet
+from realidad.tweet import Tweet
 
 DB_HOST				= 'localhost' 
 DB_USER				= 'pghumor' 
@@ -13,22 +11,22 @@ DB_NAME_NO_CHISTES	= 'nochistesdb'
 
 def extraerHumor():
 	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
-	conection = MySQLdb.connect(*datos)
-	cursor = conection.cursor()
+	connection = MySQLdb.connect(*datos)
+	cursor = connection.cursor()
 
-	query = "SELECT * FROM chistesdb.tweets AS T JOIN chistesdb.twitter_accounts AS A ON T.twitter_accounts_id_account = A.id_account"
+	query = 'SELECT * FROM chistesdb.tweets AS T JOIN chistesdb.twitter_accounts AS A ON T.twitter_accounts_id_account = A.id_account'
 
 	cursor.execute(query)
 
 	result = cursor.fetchall();
 
 	resultado = []
-	
+
 	for t in result:
 		try:
 			t[1].decode('utf-8')
 			t[8].decode('utf-8')
-			tw = tweet.Tweet()
+			tw = realidad.tweet.Tweet()
 			tw.id = t[0]
 			tw.texto = t[1]
 			tw.favoritos = t[2]
@@ -38,7 +36,7 @@ def extraerHumor():
 			tw.es_humor = True
 
 			resultado.append(tw)
-		except:
+		except UnicodeDecodeError as e:
 			pass
 
 	return resultado
@@ -52,8 +50,8 @@ def extraerNoHumor():
 		DB_NAME_NO_CHISTES,
 	]
 
-	conection = MySQLdb.connect(*datos)
-	cursor = conection.cursor()
+	connection = MySQLdb.connect(*datos)
+	cursor = connection.cursor()
 
 	query = 'SELECT * FROM nochistesdb.tweets AS T JOIN nochistesdb.twitter_accounts AS A ON T.id_account = A.id_account'
 
@@ -67,7 +65,7 @@ def extraerNoHumor():
 		try:
 			t[1].decode('utf-8')
 			t[6].decode('utf-8')
-			tw = tweet.Tweet()
+			tw = Tweet()
 			tw.id = t[0]
 			tw.texto = t[1]
 			tw.favoritos = t[2]
@@ -77,10 +75,10 @@ def extraerNoHumor():
 			tw.es_humor = False
 
 			resultado.append(tw)
-		except:
+		except UnicodeDecodeError as e:
 			pass
 
 	return resultado
 
-def extraer():
+def extraerTweets():
 	return extraerHumor(), extraerNoHumor()

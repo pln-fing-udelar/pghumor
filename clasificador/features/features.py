@@ -1,5 +1,5 @@
-import jergasexual
-import oov
+import .jergasexual
+import .oov
 
 class Features:
 	
