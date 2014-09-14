@@ -26,7 +26,7 @@ def extraerHumor():
 		try:
 			t[1].decode('utf-8')
 			t[8].decode('utf-8')
-			tw = realidad.tweet.Tweet()
+			tw = Tweet()
 			tw.id = t[0]
 			tw.texto = t[1]
 			tw.favoritos = t[2]
