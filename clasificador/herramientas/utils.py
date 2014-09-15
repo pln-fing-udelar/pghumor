@@ -11,4 +11,4 @@ def ejecutarComando(command):
 	return p.stdout.readlines()
 
 def escapar(texto):
-	return texto.replace('"','\\"').replace("'","\\'")
+	return texto.replace('"','\\"').replace("'","\\'").replace("`","\\`")
