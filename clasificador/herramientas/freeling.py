@@ -6,7 +6,7 @@ import re
 class Freeling:
 
 	def __init__(self, texto):
-		command = 'echo "' + herramientas.utils.escapar(texto) + '" |  analyzer_client 55555'
+		command = 'echo "' + herramientas.utils.escapar(texto) + '" | analyzer_client 55555'
 		resultado = herramientas.utils.ejecutarComando(command)
 		self.tokens = []
 		for line in resultado:

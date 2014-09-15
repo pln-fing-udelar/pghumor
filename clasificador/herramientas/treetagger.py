@@ -6,7 +6,7 @@ import re
 class TreeTagger:
 
 	def __init__(self, texto):
-		command = 'echo "' + herramientas.utils.escapar(texto) + '" |  tree-tagger-spanish'
+		command = 'echo "' + herramientas.utils.escapar(texto) + '" | tree-tagger-spanish'
 		resultado = herramientas.utils.ejecutarComando(command)
 		self.tokens = []
 		for line in resultado:
