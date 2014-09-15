@@ -17,7 +17,7 @@ class PrimeraPersona(Feature):
 		tf = Freeling(tweet.texto)
 		primeraPersona = 0
 		for token in tf.tokens:
-			if (self.estaEnPrimeraPersona(token.tag)):
+			if self.estaEnPrimeraPersona(token.tag):
 				primeraPersona += 1
 
 		if len(tf.tokens) == 0: # FIXME: no debería pasar
@@ -27,5 +27,6 @@ class PrimeraPersona(Feature):
 			tweet.features[self.nombre] = primeraPersona/math.sqrt(len(tf.tokens))
 
 	def estaEnPrimeraPersona(self, tag):
-		#Determinante en primera persona or verbo en primera persona or Pronombre en primera persona
-		return (tag[0] == 'D' and tag[2] == '1') or (tag[0] == 'V' and tag[4] == '1') or (tag[0] == 'P' and tag[2] == '1')
+		return (tag[0] == 'D' and tag[2] == '1') # determinante en primera persona
+			or (tag[0] == 'V' and tag[4] == '1') # verbo en primera persona
+			or (tag[0] == 'P' and tag[2] == '1') # pronombre en primera persona
