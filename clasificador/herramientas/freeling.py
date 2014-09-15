@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import herramientas.utils
 import re
 
-
 class Freeling:
 
 	def __init__(self, texto):
@@ -19,7 +18,6 @@ class Freeling:
 				detalle.tag = matcheo.group(3)
 				detalle.probabilidad = matcheo.group(4)
 				self.tokens.append(detalle)
-
 
 #DataType
 class TokenFL:
