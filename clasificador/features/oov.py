@@ -20,6 +20,7 @@ class OOV(Feature):
 				cantPalabrasOOV += 1
 
 		if len(tt.tokens) == 0: # FIXME: no debería pasar
+			print "Error: ", tweet.texto
 			tweet.features[self.nombre] = 0
 		else:
 			tweet.features[self.nombre] = cantPalabrasOOV/math.sqrt(len(tt.tokens))

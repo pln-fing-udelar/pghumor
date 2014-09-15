@@ -9,3 +9,6 @@ def obtenerDiccionario(filename):
 def ejecutarComando(command):
 	p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	return p.stdout.readlines()
+
+def escapar(texto):
+	return texto.replace('"','\\"').replace("'","\\'")
