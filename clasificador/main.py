@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	corpus = clasificador.herramientas.persistencia.extraer_tweets()
+	corpus = clasificador.herramientas.persistencia.cargar_tweets()
 
 	if args.recalcular_features:
 		features_obj = Features()
