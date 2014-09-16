@@ -8,6 +8,8 @@ import clasificador.herramientas.define
 from clasificador.herramientas.treetagger import TreeTagger
 import clasificador.herramientas.utils
 
+from pkg_resources import resource_filename
+
 
 class JergaSexual(Feature):
 	def __init__(self):
@@ -15,7 +17,7 @@ class JergaSexual(Feature):
 		self.nombre = 'Jerga Sexual'
 		self.descripcion = 'Esta caracteristica mide la cantidad de jerga sexual que contiene el texto'
 		self.palabrasSexuales = clasificador.herramientas.utils.obtener_diccionario(
-			'diccionarios/' + clasificador.herramientas.define.PATH_DICCIONARIO_SEXUAL)
+			resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'))
 
 	def calcular_feature(self, tweet):
 		tt = TreeTagger(tweet.texto)
