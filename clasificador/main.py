@@ -5,7 +5,7 @@ from __future__ import absolute_import
 import random
 from sklearn import svm
 
-import clasificador.herramientas.cargardatos
+import clasificador.herramientas.persistencia
 from clasificador.features.features import Features
 
 import argparse
@@ -25,14 +25,16 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	corpus = clasificador.herramientas.cargardatos.extraer_tweets()
+	corpus = clasificador.herramientas.persistencia.extraer_tweets()
 
 	if args.recalcular_features:
 		features_obj = Features()
 		features_obj.calcular_features(corpus)
+		clasificador.herramientas.persistencia.guardar_features(corpus)
 	elif args.recalcular_feature is not None:
 		features_obj = Features()
 		features_obj.calcular_feature(corpus, args.recalcular_feature)
+		clasificador.herramientas.persistencia.guardar_features(corpus)
 
 	fraccion_evaluacion = .1
 

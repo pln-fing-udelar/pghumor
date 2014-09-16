@@ -23,7 +23,3 @@ class Features:
 	def calcular_feature(self, tweets, nombre_feature):
 		for tweet in tweets:
 			self.features[nombre_feature].calcular_feature(tweet)
-
-	def guardar_features(self, tweets):
-		for tweet in tweets:
-			tweet.persistir()

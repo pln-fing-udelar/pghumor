@@ -1,11 +1,7 @@
 from __future__ import absolute_import
 
 import MySQLdb
-
-DB_HOST = 'localhost'
-DB_USER = 'pghumor'
-DB_PASS = 'ckP8t/2l'
-DB_NAME = 'corpus'
+from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 
 
 class Tweet:
@@ -26,7 +22,7 @@ class Tweet:
 		cursor = conexion.cursor()
 
 		for key, value in self.features.items():
-			query = "INSERT INTO features VALUES (" + `self.id` + ",'" + key + "'," + value + ") ON DUPLICATE KEY UPDATE valor_feature = " + value
+			query = "INSERT INTO features VALUES (" + str(self.id) + ",'" + key + "'," + str(value) + ") ON DUPLICATE KEY UPDATE valor_feature = " + str(value)
 			cursor.execute(query)
 
 		conexion.commit()
