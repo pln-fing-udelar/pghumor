@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
 	fraccion_evaluacion = .1
 
-	elegir10 = random.sample(range(len(corpus)), int(len(corpus)*fraccion_evaluacion))
+	elegir10 = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
 	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir10]
 	evaluacion = [corpus[i] for i in elegir10]
 
@@ -34,7 +34,6 @@ if __name__ == "__main__":
 	grupos_entrenamiento = [tweet.es_humor for tweet in entrenamiento]
 
 	clasificador.fit(features_entrenamiento, grupos_entrenamiento)
-
 
 	# Reporte de estadísticas
 
@@ -61,14 +60,14 @@ if __name__ == "__main__":
 	if verdaderos_positivos + falsos_positivos == 0:
 		precision = 1.0
 	else:
-		precision = float(verdaderos_positivos)/(verdaderos_positivos + falsos_positivos)
+		precision = float(verdaderos_positivos) / (verdaderos_positivos + falsos_positivos)
 
 	if verdaderos_positivos + falsos_negativos == 0:
 		recall = 1.0
 	else:
-		recall = float(verdaderos_positivos)/(verdaderos_positivos + falsos_negativos)
+		recall = float(verdaderos_positivos) / (verdaderos_positivos + falsos_negativos)
 
-	accuracy = float(verdaderos_positivos + verdaderos_negativos)/len(evaluacion)
+	accuracy = float(verdaderos_positivos + verdaderos_negativos) / len(evaluacion)
 
 	print('VP: ' + str(verdaderos_positivos))
 	print('FP: ' + str(falsos_positivos))
