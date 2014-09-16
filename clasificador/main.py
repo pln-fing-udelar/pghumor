@@ -8,6 +8,9 @@ from sklearn import svm
 import clasificador.herramientas.cargardatos
 from clasificador.features.features import Features
 
+import argparse
+
+
 corpus = []
 
 entrenamiento = []
@@ -16,12 +19,22 @@ evaluacion = []
 clasificador_usado = svm.SVC()
 
 if __name__ == "__main__":
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--recalcular-features', action='store_true', default=False)
+	parser.add_argument('--recalcular-feature', type=str)
+
+	args = parser.parse_args()
+
 	humor, no_humor = clasificador.herramientas.cargardatos.extraer_tweets()
 
 	corpus = humor + no_humor
 
-	features_obj = Features()
-	features_obj.calcular_features(corpus)
+	if args.recalcular_features:
+		features_obj = Features()
+		features_obj.calcular_features(corpus)
+	elif args.recalcular_feature is not None:
+		features_obj = Features()
+		features_obj.calcular_feature(corpus, args.recalcular_feature)
 
 	fraccion_evaluacion = .1
 
