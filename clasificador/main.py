@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
 	if args.limit is not None:
 		elegir_algunos = random.sample(range(len(corpus)), args.limit)
-		corpus = [corpus[i] for i in range(len(corpus)) if i not in elegir_algunos]
+		corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
 
 	if args.recalcular_features:
 		features_obj = Features()
