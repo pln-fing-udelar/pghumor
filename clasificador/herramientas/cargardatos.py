@@ -7,83 +7,43 @@ from clasificador.realidad.tweet import Tweet
 DB_HOST = 'localhost'
 DB_USER = 'pghumor'
 DB_PASS = 'ckP8t/2l'
-DB_NAME = 'chistesdb'
-DB_NAME_NO_CHISTES = 'nochistesdb'
+DB_NAME = 'corpus'
 
 
-def extraer_humor():
-	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
-	conexion = MySQLdb.connect(*datos)
-	cursor = conexion.cursor()
-
-	consulta = 'SELECT * FROM chistesdb.tweets AS T JOIN chistesdb.twitter_accounts AS A ON ' + \
-			   'T.twitter_accounts_id_account = A.id_account'
-
-	cursor.execute(consulta)
-
-	result = cursor.fetchall();
-
-	resultado = []
-
-	for t in result:
-		try:
-			t[1].decode('utf-8')
-			t[8].decode('utf-8')
-			tw = Tweet()
-			tw.id = t[0]
-			tw.texto = t[1]
-			tw.favoritos = t[2]
-			tw.retweets = t[3]
-			tw.cuenta = t[8]
-			tw.seguidores = t[9]
-			tw.es_humor = True
-
-			resultado.append(tw)
-		except UnicodeDecodeError as e:
-			pass
-
-	return resultado
-
-
-# # Por ahora hace lo mismo que extraerHumor
-def extraer_no_humor():
+def extraer_tweets():
 	datos = [
 		DB_HOST,
 		DB_USER,
 		DB_PASS,
-		DB_NAME_NO_CHISTES,
+		DB_NAME,
 	]
 
 	conexion = MySQLdb.connect(*datos)
 	cursor = conexion.cursor()
 
-	consulta = 'SELECT * FROM nochistesdb.tweets AS T JOIN nochistesdb.twitter_accounts AS A ON T.id_account = A.id_account'
+	consulta = 'SELECT id_account, id_tweet, text_tweet, favorite_count_tweet, retweet_count_tweet, eschiste_tweet, '\
+			   'name_account, followers_count_account FROM ' + DB_NAME + '.tweets NATURAL JOIN ' + DB_NAME\
+			   + '.twitter_accounts'
 
 	cursor.execute(consulta)
 
-	result = cursor.fetchall()
-
 	resultado = []
 
-	for t in result:
+	for t in cursor.fetchall():
 		try:
-			t[1].decode('utf-8')
+			t[2].decode('utf-8')
 			t[6].decode('utf-8')
 			tw = Tweet()
-			tw.id = t[0]
-			tw.texto = t[1]
-			tw.favoritos = t[2]
-			tw.retweets = t[3]
+			tw.id = t[1]
+			tw.texto = t[2]
+			tw.favoritos = t[3]
+			tw.retweets = t[4]
+			tw.es_humor = t[5]
 			tw.cuenta = t[6]
 			tw.seguidores = t[7]
-			tw.es_humor = False
 
 			resultado.append(tw)
 		except UnicodeDecodeError as e:
 			pass
 
 	return resultado
-
-
-def extraer_tweets():
-	return extraer_humor(), extraer_no_humor()

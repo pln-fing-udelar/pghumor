@@ -25,9 +25,7 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	humor, no_humor = clasificador.herramientas.cargardatos.extraer_tweets()
-
-	corpus = humor + no_humor
+	corpus = clasificador.herramientas.cargardatos.extraer_tweets()
 
 	if args.recalcular_features:
 		features_obj = Features()
