@@ -13,7 +13,7 @@ class Features:
 			features.primerapersona.PrimeraPersona()
 		]
 
-	def calcularFeatures(self, tweets):
+	def calcular_features(self, tweets):
 		for feature in self.features:
 			for tweet in tweets:
-				feature.calcularFeature(tweet)
+				feature.calcular_feature(tweet)

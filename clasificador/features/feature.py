@@ -9,6 +9,7 @@ class Feature:
 		self.nombre = ""
 		self.descripcion = ""
 
+
 	@abc.abstractmethod
 	def calcularFeature(self, tweet):
 		"""Calcula la feature para el tweet y le asigna su valor al mismo"""
