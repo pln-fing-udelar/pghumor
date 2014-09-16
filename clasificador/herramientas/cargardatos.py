@@ -5,13 +5,14 @@ import sys
 
 from realidad.tweet import Tweet
 
-DB_HOST				= 'localhost' 
-DB_USER				= 'pghumor' 
-DB_PASS				= 'ckP8t/2l'
-DB_NAME				= 'chistesdb'
-DB_NAME_NO_CHISTES	= 'nochistesdb'
+DB_HOST = 'localhost'
+DB_USER = 'pghumor'
+DB_PASS = 'ckP8t/2l'
+DB_NAME = 'chistesdb'
+DB_NAME_NO_CHISTES = 'nochistesdb'
 
-def extraerHumor():
+
+def extraer_humor():
 	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME]
 	conexion = MySQLdb.connect(*datos)
 	cursor = conexion.cursor()
@@ -43,8 +44,9 @@ def extraerHumor():
 
 	return resultado
 
-## Por ahora hace lo mismo que extraerHumor
-def extraerNoHumor():
+
+# # Por ahora hace lo mismo que extraerHumor
+def extraer_no_humor():
 	datos = [
 		DB_HOST,
 		DB_USER,
@@ -59,10 +61,10 @@ def extraerNoHumor():
 
 	cursor.execute(consulta)
 
-	result = cursor.fetchall();	
+	result = cursor.fetchall()
 
 	resultado = []
-	
+
 	for t in result:
 		try:
 			t[1].decode('utf-8')
@@ -82,5 +84,6 @@ def extraerNoHumor():
 
 	return resultado
 
-def extraerTweets():
-	return extraerHumor(), extraerNoHumor()
+
+def extraer_tweets():
+	return extraer_humor(), extraer_no_humor()
