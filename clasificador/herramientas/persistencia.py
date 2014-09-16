@@ -6,7 +6,7 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 from clasificador.realidad.tweet import Tweet
 
 
-def extraer_tweets():
+def cargar_tweets():
 	datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME, ]
 
 	conexion = MySQLdb.connect(*datos)

@@ -4,6 +4,8 @@ import clasificador.features.jergasexual
 import clasificador.features.oov
 import clasificador.features.primerapersona
 
+from progress.bar import Bar
+
 
 class Features:
 	def __init__(self):
@@ -16,10 +18,18 @@ class Features:
 			self.features[feature.nombre] = feature
 
 	def calcular_features(self, tweets):
+		bar = Bar('Calculando features', max=len(tweets) * len(self.features), suffix='%(percent).2f%% - ETA: %(eta)ds')
+		bar.next(0)
 		for feature in self.features.values():
 			for tweet in tweets:
 				feature.calcular_feature(tweet)
+				bar.next()
+		bar.finish()
 
 	def calcular_feature(self, tweets, nombre_feature):
+		bar = Bar('Calculando feature', max=len(tweets))
+		bar.next(0)
 		for tweet in tweets:
 			self.features[nombre_feature].calcular_feature(tweet)
+			bar.next()
+		bar.finish()
