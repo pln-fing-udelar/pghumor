@@ -5,7 +5,7 @@ import MySQLdb
 DB_HOST = 'localhost'
 DB_USER = 'pghumor'
 DB_PASS = 'ckP8t/2l'
-DB_NAME = 'chistesdb'
+DB_NAME = 'corpus'
 
 
 class Tweet:
