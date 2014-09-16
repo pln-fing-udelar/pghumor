@@ -3,13 +3,14 @@ from __future__ import absolute_import
 
 import math
 
-from features.feature import Feature
-from herramientas.treetagger import *
+from clasificador.features.feature import Feature
+from clasificador.herramientas.treetagger import *
 
 
 class OOV(Feature):
 
 	def __init__(self):
+		super(OOV, self).__init__()
 		self.nombre = "OOV"
 
 	def calcular_feature(self, tweet):

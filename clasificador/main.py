@@ -5,23 +5,23 @@ from __future__ import absolute_import
 import random
 from sklearn import svm
 
-import herramientas.cargardatos
-from features.features import Features
+import clasificador.herramientas.cargardatos
+from clasificador.features.features import Features
 
 corpus = []
 
 entrenamiento = []
 evaluacion = []
 
-clasificador = svm.SVC()
+clasificador_usado = svm.SVC()
 
 if __name__ == "__main__":
-	humor, no_humor = herramientas.cargardatos.extraer_tweets()
+	humor, no_humor = clasificador.herramientas.cargardatos.extraer_tweets()
 
 	corpus = humor + no_humor
 
 	features_obj = Features()
-	features_obj.calcularFeatures(corpus)
+	features_obj.calcular_features(corpus)
 
 	fraccion_evaluacion = .1
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
 	grupos_entrenamiento = [tweet.es_humor for tweet in entrenamiento]
 
-	clasificador.fit(features_entrenamiento, grupos_entrenamiento)
+	clasificador_usado.fit(features_entrenamiento, grupos_entrenamiento)
 
 	# Reporte de estadísticas
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 	falsos_negativos = []
 
 	for tweet in evaluacion:
-		clasificacion_es_humor = clasificador.predict(tweet.features.values())
+		clasificacion_es_humor = clasificador_usado.predict(tweet.features.values())
 
 		if clasificacion_es_humor == tweet.es_humor:
 			if clasificacion_es_humor:

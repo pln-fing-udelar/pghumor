@@ -1,16 +1,16 @@
 from __future__ import absolute_import
 
-import features.jergasexual
-import features.oov
-import features.primerapersona
+import clasificador.features.jergasexual
+import clasificador.features.oov
+import clasificador.features.primerapersona
 
 
 class Features:
 	def __init__(self):
 		self.features = [
-			features.jergasexual.JergaSexual(),
-			features.oov.OOV(),
-			features.primerapersona.PrimeraPersona()
+			clasificador.features.jergasexual.JergaSexual(),
+			clasificador.features.oov.OOV(),
+			clasificador.features.primerapersona.PrimeraPersona(),
 		]
 
 	def calcular_features(self, tweets):
