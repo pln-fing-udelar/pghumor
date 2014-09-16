@@ -16,7 +16,7 @@ evaluacion = []
 clasificador = svm.SVC()
 
 if __name__ == "__main__":
-	humor, no_humor = herramientas.cargardatos.extraerTweets()
+	humor, no_humor = herramientas.cargardatos.extraer_tweets()
 
 	corpus = humor + no_humor
 
@@ -37,47 +37,47 @@ if __name__ == "__main__":
 
 	# Reporte de estadísticas
 
-	verdaderos_positivos = 0
-	falsos_positivos = 0
+	verdaderos_positivos = []
+	falsos_positivos = []
 
-	verdaderos_negativos = 0
-	falsos_negativos = 0
+	verdaderos_negativos = []
+	falsos_negativos = []
 
 	for tweet in evaluacion:
 		clasificacion_es_humor = clasificador.predict(tweet.features.values())
 
 		if clasificacion_es_humor == tweet.es_humor:
 			if clasificacion_es_humor:
-				verdaderos_positivos += 1
+				verdaderos_positivos.append(tweet)
 			else:
-				verdaderos_negativos += 1
+				verdaderos_negativos.append(tweet)
 		else:
 			if clasificacion_es_humor:
-				falsos_positivos += 1
+				falsos_positivos.append(tweet)
 			else:
-				falsos_negativos += 1
+				falsos_negativos.append(tweet)
 
-	if verdaderos_positivos + falsos_positivos == 0:
+	if len(verdaderos_positivos) + len(falsos_positivos) == 0:
 		precision = 1.0
 	else:
-		precision = float(verdaderos_positivos) / (verdaderos_positivos + falsos_positivos)
+		precision = float(len(verdaderos_positivos)) / (len(verdaderos_positivos) + len(falsos_positivos))
 
-	if verdaderos_positivos + falsos_negativos == 0:
+	if len(verdaderos_positivos) + len(falsos_negativos) == 0:
 		recall = 1.0
 	else:
-		recall = float(verdaderos_positivos) / (verdaderos_positivos + falsos_negativos)
+		recall = float(len(verdaderos_positivos)) / (len(verdaderos_positivos) + len(falsos_negativos))
 
-	accuracy = float(verdaderos_positivos + verdaderos_negativos) / len(evaluacion)
+	accuracy = float(len(verdaderos_positivos) + len(verdaderos_negativos)) / len(evaluacion)
 
-	print('VP: ' + str(verdaderos_positivos))
-	print('FP: ' + str(falsos_positivos))
-	print('VN: ' + str(verdaderos_negativos))
-	print('FN: ' + str(falsos_negativos))
+	print('VP: ' + str(len(verdaderos_positivos)))
+	print('FP: ' + str(len(falsos_positivos)))
+	print('VN: ' + str(len(verdaderos_negativos)))
+	print('FN: ' + str(len(falsos_negativos)))
 	print
 	print('Matriz de confusión:')
 	print('\tP\tN')
-	print('P\t' + str(verdaderos_positivos) + '\t' + str(falsos_positivos))
-	print('N\t' + str(falsos_negativos) + '\t' + str(verdaderos_negativos))
+	print('P\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_positivos)))
+	print('N\t' + str(len(falsos_negativos)) + '\t' + str(len(verdaderos_negativos)))
 	print
 	print('Precision: ' + str(precision))
 	print('Recall: ' + str(recall))
