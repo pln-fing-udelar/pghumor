@@ -4,8 +4,8 @@ import features.jergasexual
 import features.oov
 import features.primerapersona
 
+
 class Features:
-	
 	def __init__(self):
 		self.features = [
 			features.jergasexual.JergaSexual(),
