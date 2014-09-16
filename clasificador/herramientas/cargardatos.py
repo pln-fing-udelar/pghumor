@@ -1,9 +1,8 @@
 from __future__ import absolute_import
 
 import MySQLdb
-import sys
 
-from realidad.tweet import Tweet
+from clasificador.realidad.tweet import Tweet
 
 DB_HOST = 'localhost'
 DB_USER = 'pghumor'
@@ -17,7 +16,8 @@ def extraer_humor():
 	conexion = MySQLdb.connect(*datos)
 	cursor = conexion.cursor()
 
-	consulta = 'SELECT * FROM chistesdb.tweets AS T JOIN chistesdb.twitter_accounts AS A ON T.twitter_accounts_id_account = A.id_account'
+	consulta = 'SELECT * FROM chistesdb.tweets AS T JOIN chistesdb.twitter_accounts AS A ON ' + \
+			   'T.twitter_accounts_id_account = A.id_account'
 
 	cursor.execute(consulta)
 

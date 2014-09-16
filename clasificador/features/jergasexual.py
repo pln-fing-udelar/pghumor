@@ -2,20 +2,21 @@
 from __future__ import absolute_import
 
 import math
-import sys
 
-from features.feature import Feature
-import herramientas.define
-from herramientas.treetagger import TreeTagger
-import herramientas.utils
+from clasificador.features.feature import Feature
+import clasificador.herramientas.define
+from clasificador.herramientas.treetagger import TreeTagger
+import clasificador.herramientas.utils
+
 
 class JergaSexual(Feature):
-
 	def __init__(self):
+		super(JergaSexual, self).__init__()
 		self.nombre = 'Jerga Sexual'
 		self.descripcion = 'Esta caracteristica mide la cantidad de jerga sexual que contiene el texto'
-		self.palabrasSexuales = herramientas.utils.obtenerDiccionario('diccionarios/' + herramientas.define.PATH_DICCIONARIO_SEXUAL)
-		
+		self.palabrasSexuales = clasificador.herramientas.utils.obtener_diccionario(
+			'diccionarios/' + clasificador.herramientas.define.PATH_DICCIONARIO_SEXUAL)
+
 	def calcular_feature(self, tweet):
 		tt = TreeTagger(tweet.texto)
 		cant_palabras_sexuales = 0
@@ -27,4 +28,4 @@ class JergaSexual(Feature):
 			print "Error de tokens vacíos en " + self.nombre + ": ", tweet.texto
 			tweet.features[self.nombre] = 0
 		else:
-			tweet.features[self.nombre] = cant_palabras_sexuales/math.sqrt(len(tt.tokens))
+			tweet.features[self.nombre] = cant_palabras_sexuales / math.sqrt(len(tt.tokens))

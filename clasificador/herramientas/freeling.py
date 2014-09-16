@@ -1,14 +1,14 @@
 from __future__ import absolute_import
 
-import herramientas.utils
+import clasificador.herramientas.utils
 import re
 
 
 class Freeling:
 
 	def __init__(self, texto):
-		command = 'echo "' + herramientas.utils.escapar(texto) + '" | analyzer_client 55555'
-		resultado = herramientas.utils.ejecutarComando(command)
+		command = 'echo "' + clasificador.herramientas.utils.escapar(texto) + '" | analyzer_client 55555'
+		resultado = clasificador.herramientas.utils.ejecutar_comando(command)
 		self.tokens = []
 		for line in resultado:
 			matcheo = re.search('^(.*)\s(.*)\s(.*)\s(.*)\n', line)
