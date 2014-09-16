@@ -22,8 +22,7 @@ def extraer_tweets():
 	cursor = conexion.cursor()
 
 	consulta = 'SELECT id_account, id_tweet, text_tweet, favorite_count_tweet, retweet_count_tweet, eschiste_tweet, '\
-			   'name_account, followers_count_account FROM ' + DB_NAME + '.tweets NATURAL JOIN ' + DB_NAME\
-			   + '.twitter_accounts'
+			   'name_account, followers_count_account FROM tweets NATURAL JOIN twitter_accounts'
 
 	cursor.execute(consulta)
 
