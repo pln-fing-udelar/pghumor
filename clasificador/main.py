@@ -22,10 +22,15 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--recalcular-features', action='store_true', default=False)
 	parser.add_argument('--recalcular-feature', type=str)
+	parser.add_argument('--limit', type=int)
 
 	args = parser.parse_args()
 
 	corpus = clasificador.herramientas.persistencia.cargar_tweets()
+
+	if args.limit is not None:
+		elegir_algunos = random.sample(range(len(corpus)), args.limit)
+		corpus = [corpus[i] for i in range(len(corpus)) if i not in elegir_algunos]
 
 	if args.recalcular_features:
 		features_obj = Features()
@@ -38,9 +43,9 @@ if __name__ == "__main__":
 
 	fraccion_evaluacion = .1
 
-	elegir10 = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
-	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir10]
-	evaluacion = [corpus[i] for i in elegir10]
+	elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
+	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
+	evaluacion = [corpus[i] for i in elegir_fraccion]
 
 	features_entrenamiento = [tweet.features.values() for tweet in entrenamiento]
 
