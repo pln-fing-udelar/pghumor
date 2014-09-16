@@ -36,10 +36,7 @@ if __name__ == "__main__":
 	clasificador.fit(features_entrenamiento, grupos_entrenamiento)
 
 
-
-
-	clasificados_positivos = 0
-	son_positivos = 0
+	# Reporte de estadísticas
 
 	verdaderos_positivos = 0
 	falsos_positivos = 0
@@ -47,22 +44,10 @@ if __name__ == "__main__":
 	verdaderos_negativos = 0
 	falsos_negativos = 0
 
-	precision = 0
-	recall = 0
-	accuracy = 0
-
 	for tweet in evaluacion:
 		clasificacion_es_humor = clasificador.predict(tweet.features.values())
 
-		if clasificacion_es_humor:
-			clasificados_positivos += 1
-
-		if tweet.es_humor:
-			son_positivos += 1
-
 		if clasificacion_es_humor == tweet.es_humor:
-			accuracy += 1
-
 			if clasificacion_es_humor:
 				verdaderos_positivos += 1
 			else:
@@ -73,17 +58,17 @@ if __name__ == "__main__":
 			else:
 				falsos_negativos += 1
 
-	if clasificados_positivos == 0:
+	if verdaderos_positivos + falsos_positivos == 0:
 		precision = 1.0
 	else:
-		precision = float(verdaderos_positivos)/clasificados_positivos
+		precision = float(verdaderos_positivos)/(verdaderos_positivos + falsos_positivos)
 
-	if son_positivos == 0:
+	if verdaderos_positivos + falsos_negativos == 0:
 		recall = 1.0
 	else:
-		recall = float(verdaderos_positivos)/son_positivos
+		recall = float(verdaderos_positivos)/(verdaderos_positivos + falsos_negativos)
 
-	accuracy = float(accuracy)/len(evaluacion)
+	accuracy = float(verdaderos_positivos + verdaderos_negativos)/len(evaluacion)
 
 	print('VP: ' + str(verdaderos_positivos))
 	print('FP: ' + str(falsos_positivos))
