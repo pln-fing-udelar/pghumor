@@ -7,7 +7,7 @@ from clasificador.realidad.tweet import Tweet
 
 
 def cargar_tweets():
-	conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+	conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME, use_unicode=False)
 	cursor = conexion.cursor()
 
 	consulta = 'SELECT id_account, id_tweet, text_tweet, favorite_count_tweet, retweet_count_tweet, eschiste_tweet, ' \
@@ -19,21 +19,18 @@ def cargar_tweets():
 
 	for t in cursor.fetchall():
 		try:
-			print
-			#t[2].decode('utf-8')
-			#t[6].decode('utf-8')
 			tw = Tweet()
 			tw.id = t[1]
-			tw.texto = t[2]
+			tw.texto = t[2].decode('utf-7')
 			tw.favoritos = t[3]
 			tw.retweets = t[4]
 			tw.es_humor = t[5]
-			tw.cuenta = t[6]
+			tw.cuenta = t[6].decode('utf-8')
 			tw.seguidores = t[7]
 
 			resultado[tw.id] = tw
 		except UnicodeDecodeError as e:
-			print("Error de decode: " + t[2])
+			#print("Error de decode: " + t[2])
 			pass
 
 	consulta = 'SELECT id_tweet, nombre_feature, valor_feature FROM features'
@@ -44,7 +41,8 @@ def cargar_tweets():
 		id_tweet = t[0]
 		nombre_feature = t[1]
 		valor_feature = t[2]
-		resultado[id_tweet].features[nombre_feature] = valor_feature
+		if id_tweet in resultado:
+			resultado[id_tweet].features[nombre_feature] = valor_feature
 
 	return list(resultado.values())
 

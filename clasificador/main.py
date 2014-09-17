@@ -43,7 +43,10 @@ if __name__ == "__main__":
 
 	fraccion_evaluacion = .1
 
+	print(type(corpus[1].texto))
 	print(corpus[1].texto)
+	for i in range(1, 100):
+		print(corpus[i].texto)
 
 	elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
 	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
