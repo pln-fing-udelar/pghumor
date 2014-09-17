@@ -15,6 +15,7 @@ def main():
 	guardarDiccionario(dic)
 
 def bootstrap():
+	global tweets
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 	auth.set_access_token(access_key, access_secret)
 
@@ -29,7 +30,7 @@ def bootstrap():
 		for palabra2 in palabrasSexuales:
 			if palabra1 != palabra2:			
 				
-				print "Buscando: " + palabra1 + " - " + palabra2
+				print("Buscando: " + palabra1 + " - " + palabra2)
 
 				query = palabra1 + " " + palabra2
 				reintentos = 0
@@ -41,8 +42,7 @@ def bootstrap():
 					except Exception:
 						time.sleep(60)
 						reintentos = reintentos + 1
-						print "Ocurrio un error ." + "Haciendo el intento numero " + `reintentos` + "."
-
+						print("Ocurrio un error ." + "Haciendo el intento numero " + `reintentos` + ".")
 
 				for tweet in tweets:
 					for oracion in tokenizar(tweet.text):
