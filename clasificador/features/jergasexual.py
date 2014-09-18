@@ -27,7 +27,7 @@ class JergaSexual(Feature):
 				cant_palabras_sexuales += 1
 
 		if len(tt.tokens) == 0:
-			print "Error de tokens vacíos en " + self.nombre + ": ", tweet.texto
+			print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
 			tweet.features[self.nombre] = 0
 		else:
 			tweet.features[self.nombre] = cant_palabras_sexuales / math.sqrt(len(tt.tokens))
