@@ -4,7 +4,13 @@ import re
 import mysql.connector
 from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 
-patron_retweet = re.compile('RT @\w+: (.+)', re.UNICODE)
+patron_retweet = re.compile(r'RT @\w+: (.+)', re.UNICODE)
+
+patron_url = re.compile(
+	r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+	re.IGNORECASE)
+
+patron_espacios_multiples = re.compile(r' +')
 
 
 def remover_retweet_si_hay(texto):
@@ -16,7 +22,11 @@ def remover_retweet_si_hay(texto):
 
 
 def remover_links(texto):
-	return texto
+	return re.sub(patron_url, '', texto)
+
+
+def remover_espacios_multiples_y_strip(texto):
+	return re.sub(patron_espacios_multiples, ' ', texto).strip()
 
 
 class Tweet:
@@ -47,3 +57,4 @@ class Tweet:
 		self.texto_original = self.texto
 		self.texto = remover_retweet_si_hay(self.texto)
 		self.texto = remover_links(self.texto)
+		self.texto = remover_espacios_multiples_y_strip(self.texto)
