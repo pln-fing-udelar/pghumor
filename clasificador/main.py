@@ -43,6 +43,11 @@ if __name__ == "__main__":
 
 	fraccion_evaluacion = .1
 
+	print(type(corpus[1].texto))
+	print(corpus[1].texto)
+	for i in range(1, 100):
+		print(corpus[i].texto)
+
 	elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
 	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
 	evaluacion = [corpus[i] for i in elegir_fraccion]
@@ -91,12 +96,12 @@ if __name__ == "__main__":
 	print('FP: ' + str(len(falsos_positivos)))
 	print('VN: ' + str(len(verdaderos_negativos)))
 	print('FN: ' + str(len(falsos_negativos)))
-	print
+	print()
 	print('Matriz de confusión:')
 	print('\tP\tN')
 	print('P\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_positivos)))
 	print('N\t' + str(len(falsos_negativos)) + '\t' + str(len(verdaderos_negativos)))
-	print
+	print()
 	print('Precision: ' + str(precision))
 	print('Recall: ' + str(recall))
 	print('Accuracy: ' + str(accuracy))

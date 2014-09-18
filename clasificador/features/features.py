@@ -20,8 +20,8 @@ class Features:
 	def calcular_features(self, tweets):
 		bar = Bar('Calculando features', max=len(tweets) * len(self.features), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
 		bar.next(0)
-		for feature in self.features.values():
-			for tweet in tweets:
+		for tweet in tweets:
+			for feature in self.features.values():
 				feature.calcular_feature(tweet)
 				bar.next()
 		bar.finish()

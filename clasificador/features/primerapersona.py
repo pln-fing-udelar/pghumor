@@ -30,7 +30,7 @@ class PrimeraPersona(Feature):
 				primera_persona += 1
 
 		if len(tf.tokens) == 0:  # FIXME: no debería pasar
-			print "Error de tokens vacíos en " + self.nombre + ": ", tweet.texto
+			print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
 			tweet.features[self.nombre] = 0
 		else:
 			tweet.features[self.nombre] = primera_persona / math.sqrt(len(tf.tokens))
