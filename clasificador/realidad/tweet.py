@@ -29,6 +29,8 @@ def remover_espacios_multiples_y_strip(texto):
 	return re.sub(patron_espacios_multiples, ' ', texto).strip()
 
 
+# TODO: remover usuarios y hashtags
+
 class Tweet:
 	def __init__(self):
 		self.id = 0
