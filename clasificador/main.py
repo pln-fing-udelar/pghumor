@@ -32,6 +32,9 @@ if __name__ == "__main__":
 		elegir_algunos = random.sample(range(len(corpus)), args.limit)
 		corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
 
+	for tweet in corpus:
+		tweet.preprocesar()
+
 	if args.recalcular_features:
 		features_obj = Features()
 		features_obj.calcular_features(corpus)
