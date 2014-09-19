@@ -29,7 +29,6 @@ def cargar_tweets():
 
 		resultado[tw.id] = tw
 
-
 	consulta = 'SELECT id_tweet, nombre_feature, valor_feature FROM features'
 
 	cursor.execute(consulta)
@@ -38,7 +37,7 @@ def cargar_tweets():
 		id_tweet = t[0]
 		nombre_feature = t[1]
 		valor_feature = t[2]
-		#if id_tweet in resultado:
+		# if id_tweet in resultado:
 		resultado[id_tweet].features[nombre_feature] = valor_feature
 
 	return list(resultado.values())

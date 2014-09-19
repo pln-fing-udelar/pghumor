@@ -46,11 +46,6 @@ if __name__ == "__main__":
 
 	fraccion_evaluacion = .1
 
-	print(type(corpus[1].texto))
-	print(corpus[1].texto)
-	for i in range(1, 100):
-		print(corpus[i].texto)
-
 	elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
 	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
 	evaluacion = [corpus[i] for i in elegir_fraccion]
@@ -58,6 +53,10 @@ if __name__ == "__main__":
 	features_entrenamiento = [tweet.features.values() for tweet in entrenamiento]
 
 	grupos_entrenamiento = [tweet.es_humor for tweet in entrenamiento]
+
+	for vector in features_entrenamiento:
+		if len(vector) != 3:
+			print vector, len(vector)
 
 	clasificador_usado.fit(features_entrenamiento, grupos_entrenamiento)
 
