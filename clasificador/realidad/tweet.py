@@ -30,7 +30,7 @@ def remover_espacios_multiples_y_strip(texto):
 
 
 # TODO: remover usuarios y hashtags
-
+# TODO: html decode
 class Tweet:
 	def __init__(self):
 		self.id = 0
