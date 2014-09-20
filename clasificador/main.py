@@ -18,6 +18,12 @@ evaluacion = []
 
 clasificador_usado = svm.SVC()
 
+# Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
+
+# Ver esto: https://stackoverflow.com/questions/8764066/preprocessing-400-million-tweets-in-python-faster
+
+# Ver esto: https://www.google.com.uy/search?q=process+tweet+like+normal+text&oq=process+tweet+like+normal+text&aqs=chrome..69i57j69i60l4j69i61.4367j0j7&sourceid=chrome&es_sm=93&ie=UTF-8#q=preprocess+tweet+like+normal+text
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--recalcular-features', action='store_true', default=False)
