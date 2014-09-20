@@ -6,7 +6,7 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 
 import HTMLParser # import html.parser # in python 3
 
-patron_retweet = re.compile(r'RT @\w+: (.+)', re.UNICODE)
+patron_retweet = re.compile(r'^RT @\w+: ', re.UNICODE)
 
 patron_url = re.compile(
 	r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
@@ -18,11 +18,7 @@ patron_hashtag = re.compile(r'\B#\w+')
 
 
 def remover_retweet_si_hay(texto):
-	match = re.match(patron_retweet, texto)
-	if match is None:
-		return texto
-	else:
-		return match.group(1)
+	return re.sub(patron_retweet, '', texto)
 
 
 def remover_links(texto):

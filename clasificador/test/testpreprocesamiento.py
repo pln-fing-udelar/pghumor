@@ -79,8 +79,6 @@ class TestSequenceFunctions(unittest.TestCase):
 		tweet.es_humor = 1
 		tweet.cuenta = 142482558
 
-		print remover_hashtags(tweet.texto)
-
 		self.assertEqual(remover_hashtags(tweet.texto),
 						 u' Lol Respeten un poco Este TT es igual como si fuese  Que gracia  siempre ',
 						 u"El texto sin los hashtags no es el esperado")
