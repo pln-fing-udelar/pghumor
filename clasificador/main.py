@@ -60,6 +60,7 @@ if __name__ == "__main__":
 
 	grupos_entrenamiento = [tweet.es_humor for tweet in entrenamiento]
 
+	# Para ver aquellos que no tienen todas las features
 	for vector in features_entrenamiento:
 		if len(vector) != 3:
 			print vector, len(vector)
