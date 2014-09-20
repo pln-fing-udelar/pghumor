@@ -16,6 +16,8 @@ patron_espacios_multiples = re.compile(r' +')
 
 patron_hashtag = re.compile(r'\B#\w+')
 
+patron_usuario = re.compile(r'\B@\w+')
+
 
 def remover_retweet_si_hay(texto):
 	return re.sub(patron_retweet, '', texto)
@@ -29,11 +31,14 @@ def remover_hashtags(texto):
 	return re.sub(patron_hashtag, '', texto)
 
 
+def remover_usuarios(texto):
+	return re.sub(patron_usuario, '', texto)
+
+
 def remover_espacios_multiples_y_strip(texto):
 	return re.sub(patron_espacios_multiples, ' ', texto).strip()
 
 
-# TODO: remover usuarios
 class Tweet:
 	def __init__(self):
 		self.id = 0
@@ -60,8 +65,7 @@ class Tweet:
 
 	def preprocesar(self):
 		self.texto_original = self.texto
-		html_parser = HTMLParser.HTMLParser()
-		self.texto = html_parser.unescape(self.texto)
+		self.texto = HTMLParser.HTMLParser().unescape(self.texto)
 		self.texto = remover_retweet_si_hay(self.texto)
 		self.texto = remover_links(self.texto)
 		self.texto = remover_espacios_multiples_y_strip(self.texto)
