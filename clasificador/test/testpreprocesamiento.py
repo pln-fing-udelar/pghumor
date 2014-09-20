@@ -1,7 +1,7 @@
 # coding=utf-8
 import unittest
 from clasificador.realidad.tweet import Tweet, remover_retweet_si_hay, remover_links, remover_espacios_multiples_y_strip, \
-	remover_hashtags
+	remover_hashtags, remover_usuarios
 
 
 class TestSequenceFunctions(unittest.TestCase):
@@ -82,6 +82,19 @@ class TestSequenceFunctions(unittest.TestCase):
 		self.assertEqual(remover_hashtags(tweet.texto),
 						 u' Lol Respeten un poco Este TT es igual como si fuese  Que gracia  siempre ',
 						 u"El texto sin los hashtags no es el esperado")
+
+	def test_remover_usuarios(self):
+		tweet = Tweet()
+		tweet.id = 301726981937057792
+		tweet.texto = u'#ThankYou @clauditaa_love @vivirocha17 @jeanm23 @freddycastro19 @eleze12 @josfersp @vicenteanthonio Retuiters destacados de hoy, gracias!'
+		tweet.favoritos = 0
+		tweet.retweets = 71
+		tweet.es_humor = 1
+		tweet.cuenta = 142482558
+
+		self.assertEqual(remover_usuarios(tweet.texto),
+						 u'#ThankYou        Retuiters destacados de hoy, gracias!',
+						 u"El texto sin los usuarios no es el esperado")
 
 
 if __name__ == '__main__':
