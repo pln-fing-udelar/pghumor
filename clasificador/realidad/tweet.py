@@ -41,14 +41,14 @@ def remover_espacios_multiples_y_strip(texto):
 
 class Tweet:
 	def __init__(self):
+		self.cuenta = ""
+		self.es_humor = False
+		self.favoritos = 0
 		self.id = 0
+		self.retweets = 0
+		self.seguidores = 0
 		self.texto = ""
 		self.texto_original = ""
-		self.retweets = 0
-		self.favoritos = 0
-		self.cuenta = ""
-		self.seguidores = 0
-		self.es_humor = False
 
 		self.features = {}
 
