@@ -1,6 +1,7 @@
 # coding=utf-8
 import unittest
-from clasificador.realidad.tweet import Tweet, remover_retweet_si_hay, remover_links, remover_espacios_multiples_y_strip
+from clasificador.realidad.tweet import Tweet, remover_retweet_si_hay, remover_links, remover_espacios_multiples_y_strip, \
+	remover_hashtags
 
 
 class TestSequenceFunctions(unittest.TestCase):
@@ -68,6 +69,21 @@ class TestSequenceFunctions(unittest.TestCase):
 		self.assertEqual(remover_espacios_multiples_y_strip(tweet.texto),
 						 u'RT @laseptimabutaca: Trailer de "Rápido y Furioso 6" que se estrenará en mayo de este año 2013',
 						 u"El texto sin los espacios múltiples y sin strip no es el esperado")
+
+	def test_remover_hashtags(self):
+		tweet = Tweet()
+		tweet.id = 301726981937057792
+		tweet.texto = u'#DiaMundialDelOrgasmoFemenino Lol Respeten un poco Este TT es igual como si fuese #ILoveReggaeton Que gracia  siempre #CojenComoObjetoSexual'
+		tweet.favoritos = 0
+		tweet.retweets = 71
+		tweet.es_humor = 1
+		tweet.cuenta = 142482558
+
+		print remover_hashtags(tweet.texto)
+
+		self.assertEqual(remover_hashtags(tweet.texto),
+						 u' Lol Respeten un poco Este TT es igual como si fuese  Que gracia  siempre ',
+						 u"El texto sin los hashtags no es el esperado")
 
 
 if __name__ == '__main__':

@@ -4,6 +4,8 @@ import re
 import mysql.connector
 from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 
+import HTMLParser # import html.parser # in python 3
+
 patron_retweet = re.compile(r'RT @\w+: (.+)', re.UNICODE)
 
 patron_url = re.compile(
@@ -11,6 +13,8 @@ patron_url = re.compile(
 	re.IGNORECASE)
 
 patron_espacios_multiples = re.compile(r' +')
+
+patron_hashtag = re.compile(r'\B#\w+')
 
 
 def remover_retweet_si_hay(texto):
@@ -25,12 +29,15 @@ def remover_links(texto):
 	return re.sub(patron_url, '', texto)
 
 
+def remover_hashtags(texto):
+	return re.sub(patron_hashtag, '', texto)
+
+
 def remover_espacios_multiples_y_strip(texto):
 	return re.sub(patron_espacios_multiples, ' ', texto).strip()
 
 
-# TODO: remover usuarios y hashtags
-# TODO: html decode
+# TODO: remover usuarios
 class Tweet:
 	def __init__(self):
 		self.id = 0
@@ -57,6 +64,8 @@ class Tweet:
 
 	def preprocesar(self):
 		self.texto_original = self.texto
+		html_parser = HTMLParser.HTMLParser()
+		self.texto = html_parser.unescape(self.texto)
 		self.texto = remover_retweet_si_hay(self.texto)
 		self.texto = remover_links(self.texto)
 		self.texto = remover_espacios_multiples_y_strip(self.texto)
