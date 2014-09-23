@@ -20,7 +20,7 @@ class JergaSexual(Feature):
 			resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'))
 
 	def calcular_feature(self, tweet):
-		tt = TreeTagger(tweet.texto)
+		tt = TreeTagger(tweet)
 		cant_palabras_sexuales = 0
 		for token in tt.tokens:
 			if (token.token in self.palabrasSexuales) or (token.lemma in self.palabrasSexuales):

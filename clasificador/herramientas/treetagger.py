@@ -5,10 +5,23 @@ import re
 
 
 class TreeTagger:
-	def __init__(self, texto):
+
+	cache = {}
+
+	def __init__(self, tweet):
+
+		if tweet.id not in TreeTagger.cache:
+			self.tokens = TreeTagger.procesar_texto(tweet.texto_original)
+			TreeTagger.cache[tweet.id] = self
+		else:
+			#Esta en cache
+			self.tokens = TreeTagger.cache[tweet.id].tokens
+
+	@staticmethod
+	def procesar_texto(texto):
 		command = 'echo "' + clasificador.herramientas.utils.escapar(texto) + '" | tree-tagger-spanish'
 		resultado = clasificador.herramientas.utils.ejecutar_comando(command)
-		self.tokens = []
+		tokens = []
 		for line in resultado:
 			matcheo = re.search('^(.*)\t(.*)\t(.*)\n', line)
 			if matcheo is not None:
@@ -17,7 +30,9 @@ class TreeTagger:
 				detalle.tag = matcheo.group(2)
 				detalle.lemma = matcheo.group(3)
 
-				self.tokens.append(detalle)
+				tokens.append(detalle)
+
+		return tokens
 
 
 # Datatype

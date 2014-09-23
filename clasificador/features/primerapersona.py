@@ -23,13 +23,13 @@ class PrimeraPersona(Feature):
 		self.descripcion = 'Esta caracteristica mide si el texto esta expresado en primera persona'
 
 	def calcular_feature(self, tweet):
-		tf = Freeling(tweet.texto)
+		tf = Freeling(tweet)
 		primera_persona = 0
 		for token in tf.tokens:
 			if esta_en_primera_persona(token.tag):
 				primera_persona += 1
 
-		if len(tf.tokens) == 0:  # FIXME: no debería pasar
+		if len(tf.tokens) == 0:
 			print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
 			tweet.features[self.nombre] = 0
 		else:

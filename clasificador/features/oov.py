@@ -14,7 +14,7 @@ class OOV(Feature):
 		self.nombre = "OOV"
 
 	def calcular_feature(self, tweet):
-		tt = TreeTagger(tweet.texto)
+		tt = TreeTagger(tweet)
 		cant_palabras_oov = 0
 		for token in tt.tokens:
 			if token.lemma == '<unknown>':
