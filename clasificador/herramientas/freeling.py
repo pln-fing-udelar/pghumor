@@ -6,10 +6,21 @@ import re
 
 class Freeling:
 
-	def __init__(self, texto):
+
+	cache = {}
+
+	def __init__(self, tweet):
+		if tweet.id not in Freeling.cache:
+			self.tokens = Freeling.procesar_texto(tweet.texto_original)
+			Freeling.cache[tweet.id] = self
+		else:
+			self.tokens = Freeling.cache[tweet.id].tokens
+
+	@staticmethod
+	def procesar_texto(texto):
 		command = 'echo "' + clasificador.herramientas.utils.escapar(texto) + '" | analyzer_client 55555'
 		resultado = clasificador.herramientas.utils.ejecutar_comando(command)
-		self.tokens = []
+		tokens = []
 		for line in resultado:
 			matcheo = re.search('^(.*)\s(.*)\s(.*)\s(.*)\n', line)
 			if matcheo is not None:
@@ -18,7 +29,8 @@ class Freeling:
 				detalle.lemma = matcheo.group(2)
 				detalle.tag = matcheo.group(3)
 				detalle.probabilidad = matcheo.group(4)
-				self.tokens.append(detalle)
+				tokens.append(detalle)
+		return tokens
 
 
 #DataType
