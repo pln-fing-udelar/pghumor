@@ -29,6 +29,7 @@ if __name__ == "__main__":
 	parser.add_argument('--recalcular-features', action='store_true', default=False)
 	parser.add_argument('--recalcular-feature', type=str)
 	parser.add_argument('--limit', type=int)
+	parser.add_argument('--evaluar', action='store_true', default=False)  # TODO: Hacer algo en este caso
 
 	args = parser.parse_args()
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
 		features_obj.calcular_feature(corpus, args.recalcular_feature)
 		clasificador.herramientas.persistencia.guardar_features(corpus)
 
-	fraccion_evaluacion = .1
+	fraccion_evaluacion = .2
 
 	elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
 	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
@@ -68,6 +69,8 @@ if __name__ == "__main__":
 	clasificador_usado.fit(features_entrenamiento, grupos_entrenamiento)
 
 	# Reporte de estadísticas
+
+	# TODO: cross validation
 
 	verdaderos_positivos = []
 	falsos_positivos = []

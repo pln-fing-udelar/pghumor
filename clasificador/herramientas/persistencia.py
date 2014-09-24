@@ -11,7 +11,7 @@ def cargar_tweets():
 	cursor = conexion.cursor()
 
 	consulta = 'SELECT id_account, id_tweet, text_tweet, favorite_count_tweet, retweet_count_tweet, eschiste_tweet, ' \
-			   'name_account, followers_count_account FROM tweets NATURAL JOIN twitter_accounts'
+			   'name_account, followers_count_account FROM tweets NATURAL JOIN twitter_accounts WHERE evaluacion = 0'
 
 	cursor.execute(consulta)
 
@@ -29,7 +29,7 @@ def cargar_tweets():
 
 		resultado[tw.id] = tw
 
-	consulta = 'SELECT id_tweet, nombre_feature, valor_feature FROM features'
+	consulta = 'SELECT id_tweet, nombre_feature, valor_feature FROM features NATURAL JOIN tweets WHERE evaluacion = 0'
 
 	cursor.execute(consulta)
 
