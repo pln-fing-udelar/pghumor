@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import numpy
 import random
+from sklearn import cross_validation
 from sklearn import naive_bayes, svm
 from sklearn import metrics
 
@@ -27,8 +29,8 @@ def train_test_split_pro(corpus, **options):
 
 
 def features_clases_split(tweets):
-	features = [tweet.features.values() for tweet in tweets]
-	clases = [tweet.es_humor for tweet in tweets]
+	features = numpy.array([numpy.array(tweet.features.values()) for tweet in tweets])
+	clases = numpy.array([tweet.es_humor for tweet in tweets])
 	return features, clases
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
@@ -43,6 +45,7 @@ if __name__ == "__main__":
 	parser.add_argument('--recalcular-feature', type=str)
 	parser.add_argument('--limit', type=int)
 	parser.add_argument('--evaluar', action='store_true', default=False)
+	parser.add_argument('--cross-validation', action='store_true', default=False)
 
 	args = parser.parse_args()
 
@@ -76,6 +79,17 @@ if __name__ == "__main__":
 	# clasificador_usado = naive_bayes.GaussianNB()
 	# clasificador_usado = naive_bayes.MultinomialNB()
 	clasificador_usado = svm.SVC()
+
+	if args.cross_validation and not args.evaluar:
+		features, clases = features_clases_split(corpus)
+
+		puntajes = cross_validation.cross_val_score(clasificador_usado, features, clases, cv=5, verbose=True)
+		print('Cross-validation:')
+		print('')
+		print('Puntajes: ' + str(puntajes))
+		print("Acierto: %0.2f (+/- %0.2f)" % (puntajes.mean(), puntajes.std() * 2))
+		print('')
+		print('')
 
 	clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
 
