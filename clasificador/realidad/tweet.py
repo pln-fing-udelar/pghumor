@@ -14,9 +14,9 @@ patron_url = re.compile(
 
 patron_espacios_multiples = re.compile(r' +')
 
-patron_hashtag = re.compile(r'\B#\w+')
+patron_hashtag = re.compile(r'\B#\w+', re.UNICODE)
 
-patron_usuario = re.compile(r'\B@\w+')
+patron_usuario = re.compile(r'\B@\w+', re.UNICODE)
 
 
 def remover_retweet_si_hay(texto):

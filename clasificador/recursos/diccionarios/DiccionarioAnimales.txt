@@ -1,7 +1,16 @@
+conejo
+caballo
+cerdo
 elefante
-ganso
 gato
 jirafa
+león
+lobo
+mono
+murciélago
 oso
-pato
+oveja
 perro
+rata o ratón
+tigre
+toro
