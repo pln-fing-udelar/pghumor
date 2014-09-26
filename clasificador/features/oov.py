@@ -60,7 +60,6 @@ class OOV(Feature):
 	def __init__(self):
 		super(OOV, self).__init__()
 		self.nombre = "OOV"
-		self.diccionario = obtener_diccionario(resource_filename('clasificador.recursos.diccionarios', 'lemario-espanol.txt'))
 
 	def calcular_feature(self, tweet):
 		texto = tweet.texto
