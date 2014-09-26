@@ -19,7 +19,7 @@ import mechanize
 def esta_en_diccionario(texto):
 	resultado = ejecutar_comando("echo '" + texto + "' | analyzer_client 11111")
 	if len(resultado) == 0:
-		print "No hay resultado para la plabra: ", texto, "de largo: ", len(texto)
+		print "No hay resultado para la palabra: ", texto, "de largo: ", len(texto)
 		return True
 	return resultado[0] != (texto + "\n")
 
