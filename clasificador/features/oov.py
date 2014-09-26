@@ -35,7 +35,7 @@ def google_search(search):
 	try:
 		browser = mechanize.Browser()
 		browser.set_handle_robots(False)
-		browser.addheaders = [('User-agent','Mozilla')]
+		browser.addheaders = [('User-agent', 'Mozilla')]
 
 		htmltext = browser.open("https://www.google.com.uy/search?q=" + search)
 		img_urls = []
