@@ -20,6 +20,7 @@ def cargar_tweets():
 	for t in cursor.fetchall():
 		tw = Tweet()
 		tw.id = t[1]
+		tw.texto_original = t[2]
 		tw.texto = t[2]
 		tw.favoritos = t[3]
 		tw.retweets = t[4]
