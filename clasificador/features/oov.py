@@ -39,7 +39,7 @@ def google_search(search):
 		browser.addheaders = [('User-agent', 'Mozilla')]
 
 		htmltext = browser.open("https://www.google.com.uy/search?q=" + search)
-		#img_urls = []
+		# img_urls = []
 		soup = BeautifulSoup(htmltext)
 		result = soup.findAll("body")
 		se_encuentra = '<div id="_FQd" ' not in str(result[0])
@@ -62,6 +62,12 @@ class OOV(Feature):
 	def __init__(self):
 		super(OOV, self).__init__()
 		self.nombre = "OOV"
+		self.descripcion = """
+			Esta característica mide la cantidad de palabras fuera del vocabulario que contiene el texto.
+			Tiene en cuenta falta de ortografía, palabras no comunes, cosas como "holaaaaaa", etc.
+			Éstas indican menos seriedad en el tweet. Por ejemplo, en una cuenta de CNN no ocurren este
+			tipo de cosas. Por lo tanto, no interesa corregir las faltas para detectar la palabra verdadera.
+		"""
 		self.diccionario = obtener_diccionario(
 			resource_filename('clasificador.recursos.diccionarios', 'lemario-espanol.txt'))
 
