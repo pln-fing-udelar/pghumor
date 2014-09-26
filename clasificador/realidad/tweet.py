@@ -43,6 +43,7 @@ class Tweet:
 	def __init__(self):
 		self.cuenta = ""
 		self.es_humor = False
+		self.evaluacion = False
 		self.favoritos = 0
 		self.id = 0
 		self.retweets = 0
