@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import numpy
 import random
-from sklearn import svm
+from sklearn import cross_validation
+from sklearn import naive_bayes, svm
+from sklearn import metrics
 
 import clasificador.herramientas.persistencia
 from clasificador.features.features import Features
@@ -11,12 +14,24 @@ from clasificador.features.features import Features
 import argparse
 
 
-corpus = []
+def train_test_split_pro(corpus, **options):
+	# El de sklearn no deja saber qué tweets están en qué conjunto.
+	# features_entrenamiento, features_evaluacion, clases_entrenamiento, clases_evaluacion \
+	# = train_test_split(features, clases, test_size=fraccion_evaluacion)
 
-entrenamiento = []
-evaluacion = []
+	fraccion_evaluacion = options.pop('test_size', 0.25)
 
-clasificador_usado = svm.SVC()
+	elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
+	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
+	evaluacion = [corpus[i] for i in elegir_fraccion]
+
+	return entrenamiento, evaluacion
+
+
+def features_clases_split(tweets):
+	features = numpy.array([numpy.array(tweet.features.values()) for tweet in tweets])
+	clases = numpy.array([tweet.es_humor for tweet in tweets])
+	return features, clases
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
 
@@ -29,10 +44,12 @@ if __name__ == "__main__":
 	parser.add_argument('--recalcular-features', action='store_true', default=False)
 	parser.add_argument('--recalcular-feature', type=str)
 	parser.add_argument('--limit', type=int)
+	parser.add_argument('--evaluar', action='store_true', default=False)
+	parser.add_argument('--cross-validation', action='store_true', default=False)
 
 	args = parser.parse_args()
 
-	corpus = clasificador.herramientas.persistencia.cargar_tweets()
+	corpus = clasificador.herramientas.persistencia.cargar_tweets(cargar_evaluacion=args.evaluar)
 
 	if args.limit is not None:
 		elegir_algunos = random.sample(range(len(corpus)), args.limit)
@@ -50,67 +67,59 @@ if __name__ == "__main__":
 		features_obj.calcular_feature(corpus, args.recalcular_feature)
 		clasificador.herramientas.persistencia.guardar_features(corpus)
 
-	fraccion_evaluacion = .1
+	if args.evaluar:
+		entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
+		evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
+	else:
+		entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
-	elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
-	entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
-	evaluacion = [corpus[i] for i in elegir_fraccion]
+	features_entrenamiento, clases_entrenamiento = features_clases_split(entrenamiento)
+	features_evaluacion, clases_evaluacion = features_clases_split(evaluacion)
 
-	features_entrenamiento = [tweet.features.values() for tweet in entrenamiento]
+	# clasificador_usado = naive_bayes.GaussianNB()
+	# clasificador_usado = naive_bayes.MultinomialNB()
+	clasificador_usado = svm.SVC()
 
-	grupos_entrenamiento = [tweet.es_humor for tweet in entrenamiento]
+	if args.cross_validation and not args.evaluar:
+		features, clases = features_clases_split(corpus)
 
-	# Para ver aquellos que no tienen todas las features
-	for vector in features_entrenamiento:
-		if len(vector) != 3:
-			print vector, len(vector)
+		puntajes = cross_validation.cross_val_score(clasificador_usado, features, clases, cv=5, verbose=True)
+		print('Cross-validation:')
+		print('')
+		print('Puntajes: ' + str(puntajes))
+		print("Acierto: %0.2f (+/- %0.2f)" % (puntajes.mean(), puntajes.std() * 2))
+		print('')
+		print('')
 
-	clasificador_usado.fit(features_entrenamiento, grupos_entrenamiento)
+	clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
+
+	clases_predecidas = clasificador_usado.predict(features_evaluacion)
+
+	verdaderos_positivos = [evaluacion[i] for i in range(0, len(evaluacion)) if clases_predecidas[i] and clases_evaluacion[i]]
+	falsos_positivos = [evaluacion[i] for i in range(0, len(evaluacion)) if clases_predecidas[i] and not clases_evaluacion[i]]
+	falsos_negativos = [evaluacion[i] for i in range(0, len(evaluacion)) if not clases_predecidas[i] and clases_evaluacion[i]]
+	verdaderos_negativos = [evaluacion[i] for i in range(0, len(evaluacion)) if not clases_predecidas[i] and not clases_evaluacion[i]]
 
 	# Reporte de estadísticas
 
-	verdaderos_positivos = []
-	falsos_positivos = []
-
-	verdaderos_negativos = []
-	falsos_negativos = []
-
-	for tweet in evaluacion:
-		clasificacion_es_humor = clasificador_usado.predict(tweet.features.values())
-
-		if clasificacion_es_humor == tweet.es_humor:
-			if clasificacion_es_humor:
-				verdaderos_positivos.append(tweet)
-			else:
-				verdaderos_negativos.append(tweet)
-		else:
-			if clasificacion_es_humor:
-				falsos_positivos.append(tweet)
-			else:
-				falsos_negativos.append(tweet)
-
-	if len(verdaderos_positivos) + len(falsos_positivos) == 0:
-		precision = 1.0
-	else:
-		precision = float(len(verdaderos_positivos)) / (len(verdaderos_positivos) + len(falsos_positivos))
-
-	if len(verdaderos_positivos) + len(falsos_negativos) == 0:
-		recall = 1.0
-	else:
-		recall = float(len(verdaderos_positivos)) / (len(verdaderos_positivos) + len(falsos_negativos))
-
-	accuracy = float(len(verdaderos_positivos) + len(verdaderos_negativos)) / len(evaluacion)
-
-	print('VP: ' + str(len(verdaderos_positivos)))
-	print('FP: ' + str(len(falsos_positivos)))
-	print('VN: ' + str(len(verdaderos_negativos)))
-	print('FN: ' + str(len(falsos_negativos)))
+	print(metrics.classification_report(clases_evaluacion, clases_predecidas, target_names=['N', 'P']))
 	print('')
+
+	print('Acierto: ' + str(metrics.accuracy_score(clases_evaluacion, clases_predecidas)))
+	print('')
+
+	matriz_de_confusion = metrics.confusion_matrix(clases_evaluacion, clases_predecidas, labels=[True, False])
+	# Con 'labels' pido el orden para la matriz
+
+	assert len(verdaderos_positivos) == matriz_de_confusion[0][0]
+	assert len(falsos_negativos) == matriz_de_confusion[0][1]
+	assert len(falsos_positivos) == matriz_de_confusion[1][0]
+	assert len(verdaderos_negativos) == matriz_de_confusion[1][1]
+
 	print('Matriz de confusión:')
-	print('\tP\tN')
-	print('P\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_positivos)))
-	print('N\t' + str(len(falsos_negativos)) + '\t' + str(len(verdaderos_negativos)))
 	print('')
-	print('Precision: ' + str(precision))
-	print('Recall: ' + str(recall))
-	print('Accuracy: ' + str(accuracy))
+	print('\t\t(clasificados como)')
+	print('\t\tP\tN')
+	print('(son)\tP\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_negativos)))
+	print('(son)\tN\t' + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
+	print('')
