@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-
-CARACTERES_ESPANOL = 255
+import traceback
 
 from pkg_resources import resource_filename
 import math
@@ -13,6 +12,8 @@ from clasificador.realidad.tweet import *
 
 from bs4 import BeautifulSoup
 import mechanize
+
+CARACTERES_ESPANOL = 255
 
 
 def esta_en_diccionario(texto):
@@ -38,29 +39,31 @@ def google_search(search):
 		browser.addheaders = [('User-agent', 'Mozilla')]
 
 		htmltext = browser.open("https://www.google.com.uy/search?q=" + search)
-		img_urls = []
+		#img_urls = []
 		soup = BeautifulSoup(htmltext)
 		result = soup.findAll("body")
 		se_encuentra = '<div id="_FQd" ' not in str(result[0])
-		#if se_encuentra:
-		#	print search, " se encuentra"
+		# if se_encuentra:
+		# print search, " se encuentra"
 		#else:
 		#	print search, " no se encuentra"
 
 		return se_encuentra
 	except Exception:
-		print "error"
+		traceback.print_exc()
 		return False
 
+
 def eliminar_underscore(token):
-		return token.replace('_', ' ')
+	return token.replace('_', ' ')
+
 
 class OOV(Feature):
-
 	def __init__(self):
 		super(OOV, self).__init__()
 		self.nombre = "OOV"
-		self.diccionario = obtener_diccionario(resource_filename('clasificador.recursos.diccionarios', 'lemario-espanol.txt'))
+		self.diccionario = obtener_diccionario(
+			resource_filename('clasificador.recursos.diccionarios', 'lemario-espanol.txt'))
 
 	def calcular_feature(self, tweet):
 		texto = tweet.texto
@@ -83,4 +86,4 @@ class OOV(Feature):
 			print("Error: ", tweet.texto)
 			tweet.features[self.nombre] = 0
 		else:
-			tweet.features[self.nombre] = cant_palabras_oov/math.sqrt(len(tokens))
+			tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(tokens))
