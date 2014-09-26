@@ -8,7 +8,6 @@ import math
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import *
-from clasificador.herramientas.treetagger import *
 from clasificador.herramientas.utils import *
 from clasificador.realidad.tweet import *
 
