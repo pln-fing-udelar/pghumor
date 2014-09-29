@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-
-CARACTERES_ESPANOL = 255
+import traceback
 
 from pkg_resources import resource_filename
 import math
@@ -13,6 +12,8 @@ from clasificador.realidad.tweet import *
 
 from bs4 import BeautifulSoup
 import mechanize
+
+CARACTERES_ESPANOL = 255
 
 
 def esta_en_diccionario(texto):
@@ -35,31 +36,40 @@ def google_search(search):
 	try:
 		browser = mechanize.Browser()
 		browser.set_handle_robots(False)
-		browser.addheaders = [('User-agent','Mozilla')]
+		browser.addheaders = [('User-agent', 'Mozilla')]
 
 		htmltext = browser.open("https://www.google.com.uy/search?q=" + search)
-		img_urls = []
+		# img_urls = []
 		soup = BeautifulSoup(htmltext)
 		result = soup.findAll("body")
 		se_encuentra = '<div id="_FQd" ' not in str(result[0])
-		#if se_encuentra:
-		#	print search, " se encuentra"
+		# if se_encuentra:
+		# print search, " se encuentra"
 		#else:
 		#	print search, " no se encuentra"
 
 		return se_encuentra
 	except Exception:
-		print "error"
+		traceback.print_exc()
 		return False
 
+
 def eliminar_underscore(token):
-		return token.replace('_', ' ')
+	return token.replace('_', ' ')
+
 
 class OOV(Feature):
-
 	def __init__(self):
 		super(OOV, self).__init__()
 		self.nombre = "OOV"
+		self.descripcion = """
+			Esta característica mide la cantidad de palabras fuera del vocabulario que contiene el texto.
+			Tiene en cuenta falta de ortografía, palabras no comunes, cosas como "holaaaaaa", etc.
+			Éstas indican menos seriedad en el tweet. Por ejemplo, en una cuenta de CNN no ocurren este
+			tipo de cosas. Por lo tanto, no interesa corregir las faltas para detectar la palabra verdadera.
+		"""
+		self.diccionario = obtener_diccionario(
+			resource_filename('clasificador.recursos.diccionarios', 'lemario-espanol.txt'))
 
 	def calcular_feature(self, tweet):
 		texto = tweet.texto
@@ -82,4 +92,4 @@ class OOV(Feature):
 			print("Error: ", tweet.texto)
 			tweet.features[self.nombre] = 0
 		else:
-			tweet.features[self.nombre] = cant_palabras_oov/math.sqrt(len(tokens))
+			tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(tokens))
