@@ -19,7 +19,6 @@ CARACTERES_ESPANOL = 255
 def esta_en_diccionario(texto):
 	resultado = ejecutar_comando("echo '" + texto + "' | analyzer_client 11111")
 	if len(resultado) == 0:
-		print "No hay resultado para la palabra: ", texto, "de largo: ", len(texto)
 		return True
 	return resultado[0] != (texto + "\n")
 
@@ -68,8 +67,6 @@ class OOV(Feature):
 			Éstas indican menos seriedad en el tweet. Por ejemplo, en una cuenta de CNN no ocurren este
 			tipo de cosas. Por lo tanto, no interesa corregir las faltas para detectar la palabra verdadera.
 		"""
-		self.diccionario = obtener_diccionario(
-			resource_filename('clasificador.recursos.diccionarios', 'lemario-espanol.txt'))
 
 	def calcular_feature(self, tweet):
 		texto = tweet.texto
@@ -81,12 +78,10 @@ class OOV(Feature):
 
 			if len(token.token) > 3 and contiene_caracteres_no_espanoles(token.token):
 				cant_palabras_oov += 1
-				print token.token, " - ", tweet.es_humor, " - ", tweet.texto_original, "\n"
 			else:
 				if not esta_en_diccionario(eliminar_underscore(token.token)):
 					if not google_search(token.token):
 						cant_palabras_oov += 1
-						print token.token, " - ", tweet.es_humor, " - ", tweet.texto_original, "\n"
 
 		if len(tokens) == 0:
 			print("Error: ", tweet.texto)
