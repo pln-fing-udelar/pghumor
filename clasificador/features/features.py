@@ -29,7 +29,7 @@ class Features:
 			t = Thread(target=self.calcular_features_thread, args=(tweets, i, i*intervalo, (i+1)*intervalo))
 			threads.append(t)
 
-		t = Thread(target=self.calcular_features_thread, args=(tweets, CANTIDAD_THREADS, (CANTIDAD_THREADS - 1)*intervalo, len(intervalo)))
+		t = Thread(target=self.calcular_features_thread, args=(tweets, CANTIDAD_THREADS, (CANTIDAD_THREADS - 1)*intervalo, len(tweets)))
 		threads.append(t)
 
 		for hilo in threads:
