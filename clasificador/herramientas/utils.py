@@ -9,8 +9,17 @@ def obtener_diccionario(filename):
 
 
 def ejecutar_comando(command):
-	p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-	return p.stdout.readlines()
+
+	exito = False
+	while not exito:
+		try:
+			p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			retorno = p.stdout.readlines()
+			exito = True
+		except:
+			exito = False
+
+	return retorno
 
 
 def escapar(texto):

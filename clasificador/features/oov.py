@@ -17,9 +17,14 @@ CARACTERES_ESPANOL = 255
 
 
 def esta_en_diccionario(texto):
-	resultado = ejecutar_comando("echo '" + texto + "' | analyzer_client 11111")
+	command = "echo '" + texto + "' | analyzer_client 11111"
+	resultado = ejecutar_comando(command)
+	while (len(resultado) == 0) or ((len(resultado) > 0) and resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[0] == 'Server not ready?\n'):
+		resultado = ejecutar_comando(command)
+
 	if len(resultado) == 0:
 		return True
+
 	return resultado[0] != (texto + "\n")
 
 
