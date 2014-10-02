@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import clasificador.features.antonimos
 import clasificador.features.jergasexual
 import clasificador.features.oov
 import clasificador.features.primerapersona
@@ -8,7 +9,8 @@ import clasificador.features.palabras_claves
 from threading import Thread
 from progress.bar import Bar
 
-CANTIDAD_THREADS=4
+CANTIDAD_THREADS = 1
+
 
 class Features:
 	def __init__(self):
@@ -18,21 +20,24 @@ class Features:
 				clasificador.features.jergasexual.JergaSexual(), \
 				clasificador.features.oov.OOV(), \
 				clasificador.features.primerapersona.PrimeraPersona(), \
-				clasificador.features.presencia_animales.PresenciaAnimales(),\
-				clasificador.features.palabras_claves.PalabrasClaves()\
+				clasificador.features.presencia_animales.PresenciaAnimales(), \
+				clasificador.features.palabras_claves.PalabrasClaves(), \
+				clasificador.features.antonimos.Antonimos(), \
 				]:
 			self.features[feature.nombre] = feature
 
 	def calcular_features(self, tweets):
-		intervalo = len(tweets)/CANTIDAD_THREADS
+		intervalo = len(tweets) / CANTIDAD_THREADS
 		threads = []
-		for i in range(0,CANTIDAD_THREADS-1):
-			t = Thread(target=self.calcular_features_thread, args=(tweets[i*intervalo: (i+1)*intervalo], i))
+		for i in range(0, CANTIDAD_THREADS - 1):
+			t = Thread(target=self.calcular_features_thread, args=(tweets[i * intervalo: (i + 1) * intervalo], i))
 			threads.append(t)
 
-		t = Thread(target=self.calcular_features_thread, args=(tweets[(CANTIDAD_THREADS - 1)*intervalo:], CANTIDAD_THREADS - 1))
+		t = Thread(target=self.calcular_features_thread,
+				   args=(tweets[(CANTIDAD_THREADS - 1) * intervalo:], CANTIDAD_THREADS - 1))
 		threads.append(t)
-		self.bar = Bar('Calculando features ', max=len(tweets) * len(self.features), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+		self.bar = Bar('Calculando features ', max=len(tweets) * len(self.features),
+					   suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
 		self.bar.next(0)
 
 		for hilo in threads:
@@ -42,15 +47,18 @@ class Features:
 			hilo.join()
 
 	def calcular_feature(self, tweets, nombre_feature):
-		intervalo = len(tweets)/CANTIDAD_THREADS
+		intervalo = len(tweets) / CANTIDAD_THREADS
 		threads = []
-		for i in range(0, CANTIDAD_THREADS-1):
-			t = Thread(target=self.calcular_feature_thread, args=(tweets[i*intervalo:(i+1)*intervalo], nombre_feature, i))
+		for i in range(0, CANTIDAD_THREADS - 1):
+			t = Thread(target=self.calcular_feature_thread,
+					   args=(tweets[i * intervalo:(i + 1) * intervalo], nombre_feature, i))
 			threads.append(t)
 
-		t = Thread(target=self.calcular_feature_thread, args=(tweets[(CANTIDAD_THREADS - 1)*intervalo:], nombre_feature, CANTIDAD_THREADS - 1))
+		t = Thread(target=self.calcular_feature_thread,
+				   args=(tweets[(CANTIDAD_THREADS - 1) * intervalo:], nombre_feature, CANTIDAD_THREADS - 1))
 		threads.append(t)
-		self.bar = Bar('Calculando feature ',  max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+		self.bar = Bar('Calculando feature ', max=len(tweets),
+					   suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
 		self.bar.next(0)
 		for hilo in threads:
 			hilo.start()
