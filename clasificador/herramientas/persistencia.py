@@ -15,10 +15,10 @@ def cargar_tweets(**options):
 	if cargar_evaluacion:
 		where_cargar_evaluacion = ''
 	else:
-		where_cargar_evaluacion = ' WHERE evaluacion = 0'
+		where_cargar_evaluacion = ' WHERE evaluacion = 0 AND (EXISTS( SELECT 1 FROM votos AS V WHERE V.id_tweet = T.id_tweet ) AND NOT EXISTS (SELECT 1 FROM votos AS V WHERE (V.voto = \'x\') OR (V.voto = \'n\'))) OR (eschiste_tweet = 0);'
 
 	consulta = 'SELECT id_account, id_tweet, text_tweet, favorite_count_tweet, retweet_count_tweet, eschiste_tweet, ' \
-			   'name_account, followers_count_account, evaluacion FROM tweets NATURAL JOIN twitter_accounts' \
+			   'name_account, followers_count_account, evaluacion FROM tweets AS T NATURAL JOIN twitter_accounts' \
 			   + where_cargar_evaluacion
 
 	cursor.execute(consulta)
@@ -39,7 +39,7 @@ def cargar_tweets(**options):
 
 		resultado[tw.id] = tw
 
-	consulta = 'SELECT id_tweet, nombre_feature, valor_feature FROM features NATURAL JOIN tweets' + where_cargar_evaluacion
+	consulta = 'SELECT id_tweet, nombre_feature, valor_feature FROM features NATURAL JOIN tweets AS T' + where_cargar_evaluacion
 
 	cursor.execute(consulta)
 
