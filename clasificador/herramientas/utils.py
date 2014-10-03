@@ -14,10 +14,11 @@ def ejecutar_comando(command):
 	while not exito:
 		try:
 			p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			p.wait()
 			retorno = p.stdout.readlines()
 			exito = True
 		except:
-			exito = False
+			pass
 
 	return retorno
 

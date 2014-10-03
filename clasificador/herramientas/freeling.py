@@ -19,7 +19,10 @@ class Freeling:
 	@staticmethod
 	def procesar_texto(texto):
 
-		command = 'echo "' + clasificador.herramientas.utils.escapar(texto) + '" | analyzer_client 55555'
+		if re.search('^\s*$', texto) is not None:
+			return []
+
+		command = 'echo "' + clasificador.herramientas.utils.escapar(texto) + '" | analyzer_client 192.168.1.104:55555'
 		resultado = clasificador.herramientas.utils.ejecutar_comando(command)
 		while (len(resultado) == 0) or ((len(resultado) > 0) and resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[0] == 'Server not ready?\n'):
 			resultado = clasificador.herramientas.utils.ejecutar_comando(command)
