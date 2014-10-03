@@ -53,8 +53,7 @@ class Features:
 		t = Thread(target=self.calcular_feature_thread,
 				   args=(tweets[(CANTIDAD_THREADS - 1) * intervalo:], nombre_feature, CANTIDAD_THREADS - 1))
 		threads.append(t)
-		self.bar = Bar('Calculando feature ',  max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
-		self.bar.next(0)
+
 		for hilo in threads:
 			hilo.start()
 

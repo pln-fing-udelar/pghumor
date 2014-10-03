@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 
 import mysql.connector
+from progress.bar import Bar
+
 from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 
 from clasificador.realidad.tweet import Tweet
@@ -53,5 +55,11 @@ def cargar_tweets(**options):
 
 
 def guardar_features(tweets):
+	print "Guardando tweets"
+	bar = Bar('Guardando tweets ',  max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+	bar.next(0)
 	for tweet in tweets:
 		tweet.persistir()
+		bar.next()
+	bar.finish()
+	print "Fin Guardando tweets"
