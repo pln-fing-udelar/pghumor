@@ -17,10 +17,11 @@ def cargar_tweets(**options):
 	if cargar_evaluacion:
 		where_cargar_evaluacion = ''
 	else:
-		where_cargar_evaluacion = ' WHERE evaluacion = 0 AND (EXISTS( SELECT 1 FROM votos AS V WHERE V.id_tweet = T.id_tweet ) AND NOT EXISTS (SELECT 1 FROM votos AS V WHERE (V.voto = \'x\') OR (V.voto = \'n\'))) OR (eschiste_tweet = 0);'
+		where_cargar_evaluacion = ' AND evaluacion = 0'
 
 	consulta = 'SELECT id_account, id_tweet, text_tweet, favorite_count_tweet, retweet_count_tweet, eschiste_tweet, ' \
 			   'name_account, followers_count_account, evaluacion FROM tweets AS T NATURAL JOIN twitter_accounts' \
+			   'WHERE (EXISTS( SELECT 1 FROM votos AS V WHERE V.id_tweet = T.id_tweet ) AND NOT EXISTS (SELECT 1 FROM votos AS V WHERE (V.voto = \'x\') OR (V.voto = \'n\'))) OR (eschiste_tweet = 0)' \
 			   + where_cargar_evaluacion
 
 	cursor.execute(consulta)
