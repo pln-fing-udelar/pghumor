@@ -17,14 +17,13 @@ def cargar_tweets(**options):
 	if cargar_evaluacion:
 		where_cargar_evaluacion = ''
 	else:
-		where_cargar_evaluacion = ' AND evaluacion = 0'
-
-	where_bien_votado = '( ( EXISTS (SELECT * FROM   votos AS V WHERE  V.id_tweet = T.id_tweet) AND NOT EXISTS (SELECT * ' \
-		'FROM votos AS V WHERE  V.id_tweet = T.id_tweet AND ( V.voto = \'x\' OR V.voto = \'n\' )) ) OR eschiste_tweet = 0 )'
+		where_cargar_evaluacion = ' evaluacion = 0 '
 
 	consulta = 'SELECT id_account, id_tweet, text_tweet, favorite_count_tweet, retweet_count_tweet, eschiste_tweet, ' \
-		'name_account, followers_count_account, evaluacion FROM tweets AS T NATURAL JOIN twitter_accounts WHERE ' \
-		+ where_bien_votado + where_cargar_evaluacion
+			   'name_account, followers_count_account, evaluacion, (SELECT COUNT(*) FROM votos AS V WHERE ' \
+			   'V.id_tweet = T.id_tweet) as votos, (SELECT COUNT(*) FROM votos AS V WHERE  V.id_tweet = T.id_tweet ' \
+			   'AND (V.voto = \'x\' OR V.voto = \'n\' )) AS votos_no_humor_u_omitido FROM tweets AS T NATURAL JOIN twitter_accounts WHERE ' \
+			   + where_cargar_evaluacion + ' HAVING votos > 0 AND votos_no_humor/votos <= 0.25'
 
 	cursor.execute(consulta)
 
@@ -44,8 +43,10 @@ def cargar_tweets(**options):
 
 		resultado[tw.id] = tw
 
-	consulta = 'SELECT id_tweet, nombre_feature, valor_feature FROM features NATURAL JOIN tweets AS T WHERE ' \
-			   + where_bien_votado + where_cargar_evaluacion
+	consulta = 'SELECT id_tweet, nombre_feature, valor_feature, (SELECT COUNT(*) FROM votos AS V WHERE ' \
+			   'V.id_tweet = T.id_tweet) as votos, (SELECT COUNT(*) FROM votos AS V WHERE  V.id_tweet = T.id_tweet ' \
+			   'AND (V.voto = \'x\' OR V.voto = \'n\' )) AS votos_no_humor_u_omitido FROM features NATURAL JOIN tweets AS T WHERE ' \
+			   + where_cargar_evaluacion + ' HAVING votos > 0 AND votos_no_humor/votos <= 0.25'
 
 	cursor.execute(consulta)
 
@@ -60,7 +61,7 @@ def cargar_tweets(**options):
 
 def guardar_features(tweets):
 	print "Guardando tweets..."
-	bar = Bar('Guardando tweets',  max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+	bar = Bar('Guardando tweets', max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
 	bar.next(0)
 	for tweet in tweets:
 		tweet.persistir()
