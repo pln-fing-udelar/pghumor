@@ -96,7 +96,6 @@ class OOV(Feature):
 						cant_palabras_oov += 1
 
 		if len(tokens) == 0:
-			print("Error: ", tweet.texto)
 			tweet.features[self.nombre] = 0
 		else:
 			tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(tokens))
