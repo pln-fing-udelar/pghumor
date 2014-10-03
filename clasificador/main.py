@@ -30,7 +30,7 @@ def train_test_split_pro(corpus, **options):
 
 def features_clases_split(tweets):
 	features = numpy.array([numpy.array(tweet.features.values()) for tweet in tweets])
-	clases = numpy.array([tweet.es_humor for tweet in tweets])
+	clases = numpy.array([tweet.es_humor for tweet in tweets], dtype=float)
 	return features, clases
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
