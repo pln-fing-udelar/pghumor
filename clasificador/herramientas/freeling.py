@@ -5,8 +5,6 @@ import re
 
 
 class Freeling:
-
-
 	cache = {}
 
 	def __init__(self, tweet):
@@ -40,9 +38,8 @@ class Freeling:
 		return tokens
 
 
-#DataType
+# DataType
 class TokenFL:
-
 	def __init__(self):
 		self.token = ""
 		self.tag = ""

@@ -17,7 +17,6 @@ class PalabrasClaves(Feature):
 			resource_filename('clasificador.recursos.diccionarios', 'DiccionarioFrecuentes.txt'))
 
 
-
 	def calcular_feature(self, tweet):
 		tf = Freeling(tweet)
 		cant_palabras_claves = 0
