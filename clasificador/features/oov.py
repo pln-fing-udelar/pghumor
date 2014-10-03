@@ -21,7 +21,7 @@ def esta_en_diccionario(texto):
 	if re.search('^\s*$', texto) is not None:
 		return True
 
-	command = 'echo "' + texto + '" | analyzer_client 192.168.1.104:11111'
+	command = 'echo "' + texto + '" | analyzer_client 11111'
 	resultado = ejecutar_comando(command)
 	while (len(resultado) == 0) or ((len(resultado) > 0) and resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[0] == 'Server not ready?\n'):
 		print resultado
