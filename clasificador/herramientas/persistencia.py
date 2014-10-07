@@ -23,7 +23,7 @@ def cargar_tweets(**options):
 			   'name_account, followers_count_account, evaluacion, (SELECT COUNT(*) FROM votos AS V WHERE ' \
 			   'V.id_tweet = T.id_tweet) as votos, (SELECT COUNT(*) FROM votos AS V WHERE  V.id_tweet = T.id_tweet ' \
 			   'AND (V.voto = \'x\' OR V.voto = \'n\' )) AS votos_no_humor_u_omitido FROM tweets AS T NATURAL JOIN twitter_accounts WHERE ' \
-			   + where_cargar_evaluacion + ' HAVING votos > 0 AND votos_no_humor/votos <= 0.25'
+			   + where_cargar_evaluacion + ' HAVING ((votos > 0 AND votos_no_humor_u_omitido/votos <= 0.25) OR eschiste_tweet = 0)'
 
 	cursor.execute(consulta)
 
@@ -45,8 +45,8 @@ def cargar_tweets(**options):
 
 	consulta = 'SELECT id_tweet, nombre_feature, valor_feature, (SELECT COUNT(*) FROM votos AS V WHERE ' \
 			   'V.id_tweet = T.id_tweet) as votos, (SELECT COUNT(*) FROM votos AS V WHERE  V.id_tweet = T.id_tweet ' \
-			   'AND (V.voto = \'x\' OR V.voto = \'n\' )) AS votos_no_humor_u_omitido FROM features NATURAL JOIN tweets AS T WHERE ' \
-			   + where_cargar_evaluacion + ' HAVING votos > 0 AND votos_no_humor/votos <= 0.25'
+			   'AND (V.voto = \'x\' OR V.voto = \'n\' )) AS votos_no_humor_u_omitido, eschiste_tweet FROM features NATURAL JOIN tweets AS T WHERE ' \
+			   + where_cargar_evaluacion + ' HAVING ((votos > 0 AND votos_no_humor_u_omitido/votos <= 0.25) OR eschiste_tweet = 0)'
 
 	cursor.execute(consulta)
 

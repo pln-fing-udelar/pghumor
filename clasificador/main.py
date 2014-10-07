@@ -77,9 +77,9 @@ if __name__ == "__main__":
 	features_entrenamiento, clases_entrenamiento = features_clases_split(entrenamiento)
 	features_evaluacion, clases_evaluacion = features_clases_split(evaluacion)
 
-	# clasificador_usado = naive_bayes.GaussianNB()
-	# clasificador_usado = naive_bayes.MultinomialNB()
-	clasificador_usado = svm.SVC()
+	clasificador_usado = naive_bayes.GaussianNB()
+	#clasificador_usado = naive_bayes.MultinomialNB()
+	#clasificador_usado = svm.SVC()
 
 	if args.cross_validation and not args.evaluar:
 		features, clases = features_clases_split(corpus)
