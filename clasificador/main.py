@@ -72,14 +72,21 @@ if __name__ == "__main__":
 		entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
 		evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
 	else:
+		humor = [tweet for tweet in corpus if tweet.es_humor]
+		nohumor = [tweet for tweet in corpus if not tweet.es_humor]
+		#if len(humor) > len(nohumor):
+		#	corpus = nohumor + humor[:len(nohumor)]
+		#else:
+		#	corpus = nohumor[:len(humor)] + humor
+
 		entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
 	features_entrenamiento, clases_entrenamiento = features_clases_split(entrenamiento)
 	features_evaluacion, clases_evaluacion = features_clases_split(evaluacion)
 
-	clasificador_usado = naive_bayes.GaussianNB()
+	#clasificador_usado = naive_bayes.GaussianNB()
 	#clasificador_usado = naive_bayes.MultinomialNB()
-	#clasificador_usado = svm.SVC()
+	clasificador_usado = svm.SVC()
 
 	if args.cross_validation and not args.evaluar:
 		features, clases = features_clases_split(corpus)
