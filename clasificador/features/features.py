@@ -5,6 +5,7 @@ from threading import Thread
 from progress.bar import Bar
 
 import clasificador.features.antonimos
+import clasificador.features.dialogo
 import clasificador.features.jergasexual
 import clasificador.features.oov
 import clasificador.features.primerapersona
@@ -20,12 +21,13 @@ class Features:
         self.bar = ""
         self.features = {}
         for feature in [
+            clasificador.features.antonimos.Antonimos(),
+            clasificador.features.dialogo.Dialogo(),
             clasificador.features.jergasexual.JergaSexual(),
             clasificador.features.oov.OOV(),
-            clasificador.features.primerapersona.PrimeraPersona(),
-            clasificador.features.presencia_animales.PresenciaAnimales(),
             clasificador.features.palabras_claves.PalabrasClaves(),
-            clasificador.features.antonimos.Antonimos(),
+            clasificador.features.presencia_animales.PresenciaAnimales(),
+            clasificador.features.primerapersona.PrimeraPersona(),
         ]:
             self.features[feature.nombre] = feature
 
@@ -72,7 +74,7 @@ class Features:
             for feature in self.features.values():
                 feature.calcular_feature(tweet)
                 bar.next()
-        print "termino thread " + str(identificador)
+        #print("termino thread " + str(identificador))
         bar.finish()
 
     def calcular_feature_thread(self, tweets, nombre_feature, identificador):
@@ -82,5 +84,5 @@ class Features:
         for tweet in tweets:
             self.features[nombre_feature].calcular_feature(tweet)
             bar.next()
-        print "Termino thread " + str(identificador)
+        #print("Termino thread " + str(identificador))
         bar.finish()

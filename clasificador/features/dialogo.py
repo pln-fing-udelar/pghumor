@@ -13,4 +13,4 @@ class Dialogo(Feature):
         """
 
     def calcular_feature(self, tweet):
-        pass
+        tweet.features[self.nombre] = tweet.texto.startswith(u"-") or tweet.texto.startswith(u"—")

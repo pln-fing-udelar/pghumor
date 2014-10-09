@@ -65,7 +65,7 @@ if __name__ == "__main__":
     elif args.recalcular_feature is not None:
         features_obj = Features()
         features_obj.calcular_feature(corpus, args.recalcular_feature)
-        clasificador.herramientas.persistencia.guardar_features(corpus)
+        clasificador.herramientas.persistencia.guardar_features(corpus, nombre_feature=args.recalcular_feature)
 
     #print("Realizando método de aprendizaje automático")
     if args.evaluar:

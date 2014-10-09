@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import absolute_import
 
 import mysql.connector
@@ -7,11 +8,11 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 from clasificador.realidad.tweet import Tweet
 
 
-def cargar_tweets(**options):
-    cargar_evaluacion = options.pop('cargar_evaluacion', False)
+def cargar_tweets(**opciones):
+    cargar_evaluacion = opciones.pop('cargar_evaluacion', False)
 
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
-    cursor = conexion.cursor()
+    cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     if cargar_evaluacion:
         where_cargar_evaluacion = ''
@@ -29,8 +30,7 @@ def cargar_tweets(**options):
            followers_count_account,
            evaluacion,
            votos,
-           votos_no_humor_u_omitido,
-           eschiste_tweet
+           votos_no_humor_u_omitido
     FROM   tweets AS T
            NATURAL JOIN twitter_accounts
                         LEFT JOIN (SELECT id_tweet,
@@ -51,21 +51,28 @@ def cargar_tweets(**options):
 
     cursor.execute(consulta)
 
+    bar = Bar('Cargando tweets', max=cursor.rowcount, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    bar.next(0)
+
     resultado = {}
 
-    for t in cursor.fetchall():
+    for (id_account, tweet_id, texto, favoritos, retweets, es_humor, cuenta, seguidores, evaluacion, votos,
+         votos_no_humor_u_omotido) in cursor:
         tw = Tweet()
-        tw.id = t[1]
-        tw.texto_original = t[2]
-        tw.texto = t[2]
-        tw.favoritos = t[3]
-        tw.retweets = t[4]
-        tw.es_humor = t[5]
-        tw.cuenta = t[6]
-        tw.seguidores = t[7]
-        tw.evaluacion = t[8]
+        tw.id = tweet_id
+        tw.texto_original = texto
+        tw.texto = texto
+        tw.favoritos = favoritos
+        tw.retweets = retweets
+        tw.es_humor = es_humor
+        tw.cuenta = cuenta
+        tw.seguidores = seguidores
+        tw.evaluacion = evaluacion
 
         resultado[tw.id] = tw
+        bar.next()
+
+    bar.finish()
 
     consulta = """
     SELECT T.id_tweet,
@@ -94,21 +101,42 @@ def cargar_tweets(**options):
 
     cursor.execute(consulta)
 
-    for t in cursor.fetchall():
-        id_tweet = t[0]
-        nombre_feature = t[1]
-        valor_feature = t[2]
+    bar = Bar('Cargando features', max=cursor.rowcount, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    bar.next(0)
+
+    for (id_tweet, nombre_feature, valor_feature, votos, votos_no_humor_u_omotido, es_humor) in cursor:
         resultado[id_tweet].features[nombre_feature] = valor_feature
+        bar.next()
+
+    bar.finish()
+
+    cursor.close()
+    conexion.close()
 
     return list(resultado.values())
 
 
-def guardar_features(tweets):
-    print "Guardando tweets..."
-    bar = Bar('Guardando tweets', max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+def guardar_features(tweets, **opciones):
+    nombre_feature = opciones.pop('nombre_feature', None)
+    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+    cursor = conexion.cursor()
+
+    consulta = "INSERT INTO features VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE valor_feature = %s"
+
+    bar = Bar('Guardando features', max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
     bar.next(0)
+
     for tweet in tweets:
-        tweet.persistir()
+        if nombre_feature is None:
+            for key, value in tweet.features.items():
+                cursor.execute(consulta, (tweet.id, key, value, value))
+        else:
+            cursor.execute(consulta, (tweet.id, nombre_feature, tweet.features[nombre_feature], tweet.features[nombre_feature]))
         bar.next()
+
+    conexion.commit()
     bar.finish()
-    print "Fin Guardando tweets"
+
+    cursor.close()
+    conexion.close()
+    conexion.disconnect()

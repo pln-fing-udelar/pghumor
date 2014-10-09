@@ -53,17 +53,6 @@ class Tweet:
 
         self.features = {}
 
-    def persistir(self):
-        conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
-        cursor = conexion.cursor()
-
-        consulta = "INSERT INTO features VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE valor_feature = %s"
-
-        for key, value in self.features.items():
-            cursor.execute(consulta, (self.id, key, value, value))
-
-        conexion.commit()
-
     def preprocesar(self):
         self.texto_original = self.texto
         self.texto = HTMLParser.HTMLParser().unescape(self.texto)
