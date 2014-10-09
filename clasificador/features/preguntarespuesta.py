@@ -26,4 +26,5 @@ class PreguntaRespuesta(Feature):
         """
 
     def calcular_feature(self, tweet):
+        # TODO: hacer que mire cuántas oraciones de Freeling son
         tweet.features[self.nombre] = patron.search(tweet.texto) is not None

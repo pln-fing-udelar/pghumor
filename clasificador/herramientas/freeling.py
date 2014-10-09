@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import re
+import itertools
 
 import clasificador.herramientas.utils
 
@@ -9,11 +10,12 @@ class Freeling:
     cache = {}
 
     def __init__(self, tweet):
-        if tweet.id not in Freeling.cache:
-            self.tokens = Freeling.procesar_texto(tweet.texto_original)
-            Freeling.cache[tweet.id] = self
+        if tweet.id in Freeling.cache:
+            self.oraciones = Freeling.cache[tweet.id].tokens
         else:
-            self.tokens = Freeling.cache[tweet.id].tokens
+            self.oraciones = Freeling.procesar_texto(tweet.texto_original)
+            Freeling.cache[tweet.id] = self
+        self.tokens = itertools.chain(*self.oraciones)
 
     @staticmethod
     def procesar_texto(texto):
@@ -27,7 +29,8 @@ class Freeling:
                 resultado[0] == 'Server not ready?\n'):
             resultado = clasificador.herramientas.utils.ejecutar_comando(command)
 
-        tokens = []
+        oraciones = []
+        oracion = []
         for line in resultado:
             matcheo = re.search(r'^(.*)\s(.*)\s(.*)\s(.*)\n', line)
             if matcheo is not None:
@@ -36,8 +39,11 @@ class Freeling:
                 detalle.lemma = matcheo.group(2)
                 detalle.tag = matcheo.group(3)
                 detalle.probabilidad = matcheo.group(4)
-                tokens.append(detalle)
-        return tokens
+                oracion.append(detalle)
+            elif line == '\n':
+                oraciones.append(oracion)
+                oracion = []
+        return oraciones
 
 
 # DataType

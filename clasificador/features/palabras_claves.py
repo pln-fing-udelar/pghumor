@@ -21,12 +21,12 @@ class PalabrasClaves(Feature):
     def calcular_feature(self, tweet):
         tf = Freeling(tweet)
         cant_palabras_claves = 0
-        for token in tf.tokens:
+        for token in tf.oraciones:
             if (token.token in self.palabrasAnimales) or (token.lemma in self.palabrasAnimales):
                 cant_palabras_claves += 1
 
-        if len(tf.tokens) == 0:
+        if len(tf.oraciones) == 0:
             print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
             tweet.features[self.nombre] = 0
         else:
-            tweet.features[self.nombre] = cant_palabras_claves / math.sqrt(len(tf.tokens))
+            tweet.features[self.nombre] = cant_palabras_claves / math.sqrt(len(tf.oraciones))
