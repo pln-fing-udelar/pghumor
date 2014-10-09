@@ -95,7 +95,7 @@ if __name__ == "__main__":
         print('Cross-validation:')
         print('')
         print('Puntajes: ' + str(puntajes))
-        print("Acierto: %0.2f (+/- %0.2f)" % (puntajes.mean(), puntajes.std() * 2))
+        print("Acierto: %0.4f (+/- %0.4f)" % (puntajes.mean(), puntajes.std() * 2))
         print('')
         print('')
 

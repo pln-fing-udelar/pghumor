@@ -123,7 +123,12 @@ def guardar_features(tweets, **opciones):
 
     consulta = "INSERT INTO features VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE valor_feature = %s"
 
-    bar = Bar('Guardando features', max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    if nombre_feature is None:
+        mensaje = 'Guardando features'
+    else:
+        mensaje = 'Guardando feature ' + nombre_feature
+
+    bar = Bar(mensaje, max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
     bar.next(0)
 
     for tweet in tweets:
