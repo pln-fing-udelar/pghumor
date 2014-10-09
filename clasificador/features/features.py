@@ -67,7 +67,7 @@ class Features:
             hilo.join()
 
     def calcular_features_thread(self, tweets, identificador):
-        bar = Bar('Calculando features ' + str(identificador), max=len(tweets) * len(self.features),
+        bar = Bar('Calculando features - ' + str(identificador), max=len(tweets) * len(self.features),
                   suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
         bar.next(0)
         for tweet in tweets:
@@ -78,7 +78,7 @@ class Features:
         bar.finish()
 
     def calcular_feature_thread(self, tweets, nombre_feature, identificador):
-        bar = Bar('Calculando feature ' + str(identificador), max=len(tweets),
+        bar = Bar('Calculando feature ' + nombre_feature + ' - ' + str(identificador), max=len(tweets),
                   suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
         bar.next(0)
         for tweet in tweets:
