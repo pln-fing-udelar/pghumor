@@ -9,8 +9,8 @@ class Preguntas(Feature):
         super(Preguntas, self).__init__()
         self.nombre = "Preguntas"
         self.descripcion = """
-			Esta característica mide si existe en el tweet preguntas y respuestas
-		"""
+            Esta característica mide si existe en el tweet preguntas y respuestas
+        """
 
     def calcular_feature(self, tweet):
         pass

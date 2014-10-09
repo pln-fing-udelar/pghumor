@@ -75,7 +75,7 @@ if __name__ == "__main__":
         humor = [tweet for tweet in corpus if tweet.es_humor]
         nohumor = [tweet for tweet in corpus if not tweet.es_humor]
         # if len(humor) > len(nohumor):
-        #	corpus = nohumor + humor[:len(nohumor)]
+        # corpus = nohumor + humor[:len(nohumor)]
         #else:
         #	corpus = nohumor[:len(humor)] + humor
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     features_evaluacion, clases_evaluacion = features_clases_split(evaluacion)
 
     # clasificador_usado = naive_bayes.GaussianNB()
-    #clasificador_usado = naive_bayes.MultinomialNB()
+    # clasificador_usado = naive_bayes.MultinomialNB()
     clasificador_usado = svm.SVC()
 
     if args.cross_validation and not args.evaluar:
