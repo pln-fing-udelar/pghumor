@@ -8,9 +8,10 @@ import clasificador.features.antonimos
 import clasificador.features.dialogo
 import clasificador.features.jergasexual
 import clasificador.features.oov
-import clasificador.features.primerapersona
-import clasificador.features.presencia_animales
 import clasificador.features.palabras_claves
+import clasificador.features.preguntarespuesta
+import clasificador.features.presencia_animales
+import clasificador.features.primerapersona
 
 
 CANTIDAD_THREADS = 1
@@ -26,6 +27,7 @@ class Features:
             clasificador.features.jergasexual.JergaSexual(),
             clasificador.features.oov.OOV(),
             clasificador.features.palabras_claves.PalabrasClaves(),
+            clasificador.features.preguntarespuesta.PreguntaRespuesta(),
             clasificador.features.presencia_animales.PresenciaAnimales(),
             clasificador.features.primerapersona.PrimeraPersona(),
         ]:
