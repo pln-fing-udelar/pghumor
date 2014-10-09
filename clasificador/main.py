@@ -103,13 +103,13 @@ if __name__ == "__main__":
 
     clases_predecidas = clasificador_usado.predict(features_evaluacion)
 
-    verdaderos_positivos = [evaluacion[i] for i in range(0, len(evaluacion)) if
+    verdaderos_positivos = [evaluacion[i] for i in range(len(evaluacion)) if
                             clases_predecidas[i] and clases_evaluacion[i]]
-    falsos_positivos = [evaluacion[i] for i in range(0, len(evaluacion)) if
+    falsos_positivos = [evaluacion[i] for i in range(len(evaluacion)) if
                         clases_predecidas[i] and not clases_evaluacion[i]]
-    falsos_negativos = [evaluacion[i] for i in range(0, len(evaluacion)) if
+    falsos_negativos = [evaluacion[i] for i in range(len(evaluacion)) if
                         not clases_predecidas[i] and clases_evaluacion[i]]
-    verdaderos_negativos = [evaluacion[i] for i in range(0, len(evaluacion)) if
+    verdaderos_negativos = [evaluacion[i] for i in range(len(evaluacion)) if
                             not clases_predecidas[i] and not clases_evaluacion[i]]
 
     # Reporte de estadísticas

@@ -131,7 +131,8 @@ def guardar_features(tweets, **opciones):
             for key, value in tweet.features.items():
                 cursor.execute(consulta, (tweet.id, key, value, value))
         else:
-            cursor.execute(consulta, (tweet.id, nombre_feature, tweet.features[nombre_feature], tweet.features[nombre_feature]))
+            cursor.execute(consulta,
+                           (tweet.id, nombre_feature, tweet.features[nombre_feature], tweet.features[nombre_feature]))
         bar.next()
 
     conexion.commit()

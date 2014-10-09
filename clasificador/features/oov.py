@@ -74,11 +74,11 @@ class OOV(Feature):
         super(OOV, self).__init__()
         self.nombre = "OOV"
         self.descripcion = """
-			Esta característica mide la cantidad de palabras fuera del vocabulario que contiene el texto.
-			Tiene en cuenta falta de ortografía, palabras no comunes, cosas como "holaaaaaa", etc.
-			Éstas indican menos seriedad en el tweet. Por ejemplo, en una cuenta de CNN no ocurren este
-			tipo de cosas. Por lo tanto, no interesa corregir las faltas para detectar la palabra verdadera.
-		"""
+            Esta característica mide la cantidad de palabras fuera del vocabulario que contiene el texto.
+            Tiene en cuenta falta de ortografía, palabras no comunes, cosas como "holaaaaaa", etc.
+            Éstas indican menos seriedad en el tweet. Por ejemplo, en una cuenta de CNN no ocurren este
+            tipo de cosas. Por lo tanto, no interesa corregir las faltas para detectar la palabra verdadera.
+        """
 
     def calcular_feature(self, tweet):
         texto = tweet.texto
