@@ -19,14 +19,14 @@ class Features:
     def __init__(self):
         self.bar = ""
         self.features = {}
-        for feature in [ \
-                clasificador.features.jergasexual.JergaSexual(), \
-                clasificador.features.oov.OOV(), \
-                clasificador.features.primerapersona.PrimeraPersona(), \
-                clasificador.features.presencia_animales.PresenciaAnimales(), \
-                clasificador.features.palabras_claves.PalabrasClaves(), \
-                clasificador.features.antonimos.Antonimos(), \
-                ]:
+        for feature in [
+            clasificador.features.jergasexual.JergaSexual(),
+            clasificador.features.oov.OOV(),
+            clasificador.features.primerapersona.PrimeraPersona(),
+            clasificador.features.presencia_animales.PresenciaAnimales(),
+            clasificador.features.palabras_claves.PalabrasClaves(),
+            clasificador.features.antonimos.Antonimos(),
+        ]:
             self.features[feature.nombre] = feature
 
     def calcular_features(self, tweets):
