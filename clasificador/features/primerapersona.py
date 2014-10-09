@@ -25,12 +25,12 @@ class PrimeraPersona(Feature):
     def calcular_feature(self, tweet):
         tf = Freeling(tweet)
         primera_persona = 0
-        for token in tf.tokens:
+        for token in tf.oraciones:
             if esta_en_primera_persona(token.tag):
                 primera_persona += 1
 
-        if len(tf.tokens) == 0:
+        if len(tf.oraciones) == 0:
             print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
             tweet.features[self.nombre] = 0
         else:
-            tweet.features[self.nombre] = primera_persona / math.sqrt(len(tf.tokens))
+            tweet.features[self.nombre] = primera_persona / math.sqrt(len(tf.oraciones))

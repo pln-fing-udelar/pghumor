@@ -84,9 +84,9 @@ class OOV(Feature):
         texto = tweet.texto
         texto = remover_hashtags(texto)
         texto = remover_usuarios(texto)
-        tokens = Freeling.procesar_texto(texto)
+        freeling = Freeling(texto)
         cant_palabras_oov = 0
-        for token in tokens:
+        for token in freeling.tokens:
 
             if len(token.token) > 3 and contiene_caracteres_no_espanoles(token.token):
                 cant_palabras_oov += 1
@@ -95,7 +95,7 @@ class OOV(Feature):
                     if not google_search(token.token):
                         cant_palabras_oov += 1
 
-        if len(tokens) == 0:
+        if len(freeling.tokens) == 0:
             tweet.features[self.nombre] = 0
         else:
-            tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(tokens))
+            tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(freeling.tokens))
