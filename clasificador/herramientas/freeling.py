@@ -17,8 +17,7 @@ class Freeling:
 
     @staticmethod
     def procesar_texto(texto):
-
-        if re.search('^\s*$', texto) is not None:
+        if re.search(r'^\s*$', texto) is not None:
             return []
 
         command = 'echo "' + clasificador.herramientas.utils.escapar(texto) + '" | analyzer_client 55555'
@@ -30,7 +29,7 @@ class Freeling:
 
         tokens = []
         for line in resultado:
-            matcheo = re.search('^(.*)\s(.*)\s(.*)\s(.*)\n', line)
+            matcheo = re.search(r'^(.*)\s(.*)\s(.*)\s(.*)\n', line)
             if matcheo is not None:
                 detalle = TokenFL()
                 detalle.token = matcheo.group(1)
