@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
         features_obj.calcular_feature(corpus, args.recalcular_feature)
         clasificador.herramientas.persistencia.guardar_features(corpus)
 
-    print "Realizando método de aprendizaje automático"
+    #print("Realizando método de aprendizaje automático")
     if args.evaluar:
         entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
         evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
