@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-#Twitter API credentials
+# Twitter API credentials
 consumer_key = "GoJjP7Xmj4kpxjttr8qJ9cLtC"
 consumer_secret = "PnbLJGXnJjsE9M97yhHXY2Oyj7ojcrcVulDGM2yQfS05NQjoNK"
 access_key = "2714871673-HF7B4EPK4mWceAuEuBR4TRhJ12AGlJCVS6VPjZb"
