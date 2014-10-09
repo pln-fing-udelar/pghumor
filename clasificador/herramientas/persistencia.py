@@ -44,11 +44,11 @@ def cargar_tweets(**options):
 								   FROM   votos
 								   GROUP  BY id_tweet) V
 							   ON ( V.id_tweet = T.id_tweet )
-	%s
+	{where}
 	HAVING ( ( votos > 0
 			   AND votos_no_humor_u_omitido / votos <= 0.25 )
 			  OR eschiste_tweet = 0 );
-	""" % where_cargar_evaluacion
+	""".format(where=where_cargar_evaluacion)
 
 	cursor.execute(consulta)
 
@@ -87,11 +87,11 @@ def cargar_tweets(**options):
 								   FROM   votos
 								   GROUP  BY id_tweet) V
 							   ON ( V.id_tweet = T.id_tweet )
-	%s
+	{where}
 	HAVING ( ( votos > 0
 			   AND votos_no_humor_u_omitido / votos <= 0.25 )
 			  OR eschiste_tweet = 0 );
-    """ % where_cargar_evaluacion
+    """.format(where=where_cargar_evaluacion)
 
 	cursor.execute(consulta)
 
