@@ -10,6 +10,7 @@ import clasificador.features.jergasexual
 import clasificador.features.oov
 import clasificador.features.palabras_claves
 import clasificador.features.preguntarespuesta
+import clasificador.features.preguntasrespuestas
 import clasificador.features.presencia_animales
 import clasificador.features.primerapersona
 
@@ -28,6 +29,7 @@ class Features:
             clasificador.features.oov.OOV(),
             clasificador.features.palabras_claves.PalabrasClaves(),
             clasificador.features.preguntarespuesta.PreguntaRespuesta(),
+            clasificador.features.preguntasrespuestas.PreguntasRespuestas(),
             clasificador.features.presencia_animales.PresenciaAnimales(),
             clasificador.features.primerapersona.PrimeraPersona(),
         ]:

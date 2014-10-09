@@ -12,7 +12,7 @@ class PreguntaRespuesta(Feature):
         super(PreguntaRespuesta, self).__init__()
         self.nombre = "PreguntaRespuesta"
         self.descripcion = """
-            Esta característica mide si existe en el tweet preguntas y respuestas
+            Dice si es un formato pregunta - respuesta.
         """
 
     def calcular_feature(self, tweet):
