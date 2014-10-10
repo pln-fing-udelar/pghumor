@@ -43,14 +43,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--cross-validation', action='store_true', default=False)
     parser.add_argument('--evaluar', action='store_true', default=False)
-    parser.add_argument('--explain-features', action='store_true', default=False)
+    parser.add_argument('--explicar-features', action='store_true', default=False)
     parser.add_argument('--limit', type=int)
     parser.add_argument('--recalcular-features', action='store_true', default=False)
     parser.add_argument('--recalcular-feature', type=str)
 
     args = parser.parse_args()
 
-    if args.explain_features:
+    if args.explicar_features:
         features_obj = Features()
         for feature in sorted(list(features_obj.features.values()), key=lambda x: x.nombre):
             print(feature.nombre + ":")
