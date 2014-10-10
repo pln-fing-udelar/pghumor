@@ -8,10 +8,10 @@ import clasificador.features.antonimos
 import clasificador.features.dialogo
 import clasificador.features.jergasexual
 import clasificador.features.oov
-import clasificador.features.palabras_claves
+import clasificador.features.palabrasclave
 import clasificador.features.preguntarespuesta
 import clasificador.features.preguntasrespuestas
-import clasificador.features.presencia_animales
+import clasificador.features.presenciaanimales
 import clasificador.features.primerapersona
 import clasificador.features.links
 
@@ -28,10 +28,10 @@ class Features:
             clasificador.features.dialogo.Dialogo(),
             clasificador.features.jergasexual.JergaSexual(),
             clasificador.features.oov.OOV(),
-            clasificador.features.palabras_claves.PalabrasClaves(),
+            clasificador.features.palabrasclave.PalabrasClave(),
             clasificador.features.preguntarespuesta.PreguntaRespuesta(),
             clasificador.features.preguntasrespuestas.PreguntasRespuestas(),
-            clasificador.features.presencia_animales.PresenciaAnimales(),
+            clasificador.features.presenciaanimales.PresenciaAnimales(),
             clasificador.features.primerapersona.PrimeraPersona(),
             clasificador.features.links.Links(),
         ]:
