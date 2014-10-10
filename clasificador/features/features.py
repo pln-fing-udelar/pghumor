@@ -13,6 +13,7 @@ import clasificador.features.preguntarespuesta
 import clasificador.features.preguntasrespuestas
 import clasificador.features.presencia_animales
 import clasificador.features.primerapersona
+import clasificador.features.links
 
 
 CANTIDAD_THREADS = 1
@@ -32,6 +33,7 @@ class Features:
             clasificador.features.preguntasrespuestas.PreguntasRespuestas(),
             clasificador.features.presencia_animales.PresenciaAnimales(),
             clasificador.features.primerapersona.PrimeraPersona(),
+            clasificador.features.links.Links(),
         ]:
             self.features[feature.nombre] = feature
 
