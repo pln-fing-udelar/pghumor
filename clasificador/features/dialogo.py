@@ -15,7 +15,7 @@ class Dialogo(Feature):
         super(Dialogo, self).__init__()
         self.nombre = "Dialogo"
         self.descripcion = """
-            Esta característica mide si existe en el tweet un diálogo
+            Mide si existe un diálogo en el tweet.
         """
 
     def calcular_feature(self, tweet):

@@ -13,7 +13,7 @@ class PreguntasRespuestas(Feature):
         super(PreguntasRespuestas, self).__init__()
         self.nombre = "PreguntasRespuestas"
         self.descripcion = """
-            Dice si el tweet son varias preguntas y respuestas (pregunta - respuesta - pregunta - respuesta - ...)
+            Dice si el tweet son varias preguntas y respuestas (pregunta - respuesta - pregunta - respuesta - ...).
         """
 
     def calcular_feature(self, tweet):

@@ -19,8 +19,10 @@ def esta_en_primera_persona(tag):
 class PrimeraPersona(Feature):
     def __init__(self):
         super(PrimeraPersona, self).__init__()
-        self.nombre = 'Primera Persona'
-        self.descripcion = 'Esta caracteristica mide si el texto esta expresado en primera persona'
+        self.nombre = "Primera Persona"
+        self.descripcion = """
+            Mide si el texto está expresado en primera persona.
+        """
 
     def calcular_feature(self, tweet):
         tf = Freeling(tweet)

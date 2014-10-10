@@ -21,9 +21,9 @@ patron = re.compile(ur'^(' + guiones_dialogo_re() + ur'\s*)?¿[^\?]+\?+[^¿\?]+$
 class PreguntaRespuesta(Feature):
     def __init__(self):
         super(PreguntaRespuesta, self).__init__()
-        self.nombre = 'PreguntaRespuesta'
+        self.nombre = "PreguntaRespuesta"
         self.descripcion = """
-            Dice si es un formato pregunta - respuesta.
+            Dice si es el tweet tiene formato pregunta - respuesta.
         """
 
     def calcular_feature(self, tweet):
