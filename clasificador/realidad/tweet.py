@@ -59,3 +59,6 @@ class Tweet:
         self.texto = remover_retweet_si_hay(self.texto)
         self.texto = remover_links(self.texto)
         self.texto = remover_espacios_multiples_y_strip(self.texto)
+
+    def cantidad_links(self):
+        return len(re.findall(patron_url, self.texto_original))
