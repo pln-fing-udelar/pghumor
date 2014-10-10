@@ -1,10 +1,12 @@
 __author__ = 'matiascubero'
 
+import sys
+
 import numpy as np
 from scipy.stats import sem
 
 from sklearn import metrics
-from Experimentos.Persistencia import *
+from experimentos.Persistencia import *
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.datasets import fetch_20newsgroups
@@ -43,17 +45,16 @@ def train_and_evaluate(clf, X_train, X_test, y_train, y_test):
     print metrics.confusion_matrix(y_test, y_pred)
 
 def ejecutarMachineLearning():
-	chistes = cargar_tweets()
-	chistes2 = cargarChistes();
+	chistes = cargarChistes()
 	
 	news = fetch_20newsgroups(subset='all')
-	SPLIT_PERC = 0.80
+	SPLIT_PERC = 1
 
 	split_size = int(len(chistes)*SPLIT_PERC)
-	X_train = [chistes[i].texto for i in range(len(chistes))][:split_size]
-	X_test = [chistes[i].texto for i in range(len(chistes))][split_size:]
-	Y_train = [chistes[i].es_humor for i in range(len(chistes))][:split_size]
-	Y_test = [chistes[i].es_humor for i in range(len(chistes))][split_size:]
+	X_train = [chistes[i].texto_chiste for i in range(len(chistes))][:split_size]
+	X_test = [chistes[i].texto_chiste for i in range(len(chistes))][split_size:]
+	Y_train = [chistes[i].nombre_clasificacion for i in range(len(chistes))][:split_size]
+	Y_test = [chistes[i].nombre_clasificacion for i in range(len(chistes))][split_size:]
 	stop_words = get_stop_words()
 
 
@@ -66,11 +67,22 @@ def ejecutarMachineLearning():
 	])
 
 	clf_4.fit(X_train, Y_train)
-	evaluate_cross_validation(clf_4, [chistes[i].texto for i in range(len(chistes))], [chistes[i].es_humor for i in range(len(chistes))], 5)
+	#evaluate_cross_validation(clf_4, [chistes[i].texto_chiste for i in range(len(chistes))], [chistes[i].id_clasificacion for i in range(len(chistes))], 5)
 
-	train_and_evaluate(clf_4, X_train, X_test, Y_train, Y_test)
+	#train_and_evaluate(clf_4, X_train, X_test, Y_train, Y_test)
 
+	tweets = cargar_tweets()
 
+	chistesTweet = [chiste for chiste in tweets if chiste.es_humor]
+	nochistes = [chiste for chiste in tweets if not chiste.es_humor]
+
+	for tweet in chistesTweet:
+		print tweet.texto
+		result = clf_4.predict([tweet.texto])
+		print "El resultado es " + result[0]
+		#print len(result)
+		#print "Las probabilidades " + clf_4.predict_proba([tweet.texto])[0]
+		sys.stdin.readline()
 
 
 if __name__ == "__main__":
