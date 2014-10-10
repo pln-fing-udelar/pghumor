@@ -6,14 +6,17 @@ from progress.bar import Bar
 
 import clasificador.features.antonimos
 import clasificador.features.dialogo
+import clasificador.features.exclamacion
 import clasificador.features.jergasexual
+import clasificador.features.links
 import clasificador.features.oov
 import clasificador.features.palabrasclave
 import clasificador.features.preguntarespuesta
 import clasificador.features.preguntasrespuestas
 import clasificador.features.presenciaanimales
 import clasificador.features.primerapersona
-import clasificador.features.links
+
+
 
 
 CANTIDAD_THREADS = 1
@@ -26,14 +29,15 @@ class Features:
         for feature in [
             clasificador.features.antonimos.Antonimos(),
             clasificador.features.dialogo.Dialogo(),
+            clasificador.features.exclamacion.Exclamacion(),
             clasificador.features.jergasexual.JergaSexual(),
+            clasificador.features.links.Links(),
             clasificador.features.oov.OOV(),
             clasificador.features.palabrasclave.PalabrasClave(),
             clasificador.features.preguntarespuesta.PreguntaRespuesta(),
             clasificador.features.preguntasrespuestas.PreguntasRespuestas(),
             clasificador.features.presenciaanimales.PresenciaAnimales(),
             clasificador.features.primerapersona.PrimeraPersona(),
-            clasificador.features.links.Links(),
         ]:
             self.features[feature.nombre] = feature
 

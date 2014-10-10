@@ -2,7 +2,9 @@
 from __future__ import absolute_import
 
 from clasificador.features.feature import Feature
+from clasificador.herramientas.freeling import Freeling
 
+import math
 
 class Exclamacion(Feature):
     def __init__(self):
@@ -13,4 +15,18 @@ class Exclamacion(Feature):
         """
 
     def calcular_feature(self, tweet):
-        pass
+        freeling = Freeling(tweet)
+
+        feature = 0
+        for token in freeling.tokens:
+            if token.tag == 'Fat':
+                feature += 1
+
+
+        #if token.token == token.token.upper():
+        #feature
+
+        if len(freeling.tokens) == 0:
+            tweet.features[self.nombre] = 0
+        else:
+            tweet.features[self.nombre] = feature/math.sqrt(len(freeling.tokens))
