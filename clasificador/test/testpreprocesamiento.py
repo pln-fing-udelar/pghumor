@@ -6,7 +6,7 @@ from clasificador.realidad.tweet import Tweet, remover_retweet_si_hay, remover_l
     remover_hashtags, remover_usuarios
 
 
-class TestSequenceFunctions(unittest.TestCase):
+class TestPreprocesamiento(unittest.TestCase):
     def test_remover_retweet_basico(self):
         tweet = Tweet()
         tweet.id = 58179039764021248

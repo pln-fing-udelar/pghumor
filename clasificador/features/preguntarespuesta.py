@@ -4,6 +4,7 @@ import re
 import clasificador.features.dialogo
 
 from clasificador.features.feature import Feature
+from clasificador.herramientas.freeling import Freeling
 
 
 def guiones_dialogo_re():
@@ -26,5 +27,6 @@ class PreguntaRespuesta(Feature):
         """
 
     def calcular_feature(self, tweet):
-        # TODO: hacer que mire cuántas oraciones de Freeling son
-        tweet.features[self.nombre] = patron.search(tweet.texto) is not None
+        freeling = Freeling(tweet)
+        tweet.features[self.nombre] = len(freeling.oraciones) == 2 and freeling.oraciones[0][-1].tag == "Fit"
+        # patron.search(tweet.texto) is not None
