@@ -8,16 +8,11 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 from clasificador.realidad.tweet import Tweet
 
 
-def cargar_tweets(**opciones):
-    cargar_evaluacion = opciones.pop('cargar_evaluacion', False)
-
+def cargar_tweets():
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
-    if cargar_evaluacion:
-        where_cargar_evaluacion = ''
-    else:
-        where_cargar_evaluacion = 'WHERE evaluacion = 0'
+    # TODO: tendría que traer todos, y después filtrar por los que tienen menos de 25%, así calculo las features para todos
 
     consulta = """
     SELECT id_account,
@@ -43,11 +38,10 @@ def cargar_tweets(**opciones):
                                    FROM   votos
                                    GROUP  BY id_tweet) V
                                ON ( V.id_tweet = T.id_tweet )
-    {where}
     HAVING ( ( votos > 0
                AND votos_no_humor_u_omitido / votos <= 0.25 )
               OR eschiste_tweet = 0 );
-    """.format(where=where_cargar_evaluacion)
+    """
 
     cursor.execute(consulta)
 
@@ -93,11 +87,10 @@ def cargar_tweets(**opciones):
                                    FROM   votos
                                    GROUP  BY id_tweet) V
                                ON ( V.id_tweet = T.id_tweet )
-    {where}
     HAVING ( ( votos > 0
                AND votos_no_humor_u_omitido / votos <= 0.25 )
               OR eschiste_tweet = 0 );
-    """.format(where=where_cargar_evaluacion)
+    """
 
     cursor.execute(consulta)
 

@@ -29,12 +29,12 @@ def train_test_split_pro(corpus, **options):
 
 
 def features_clases_split(tweets):
-    assert len(tweets) > 0
+    assert len(tweets) > 0, "Deben haber tweets para obtener las features y las clases"
     largo_esperado_features = len(list(tweets[0].features.values()))
     features = []
     for tweet in tweets:
         features_tweet = list(tweet.features.values())
-        assert len(features_tweet) == largo_esperado_features
+        assert len(features_tweet) == largo_esperado_features, "Los tweets tienen distinta cantidad de features"
         features.append(features_tweet)
     clases = numpy.array([tweet.es_humor for tweet in tweets], dtype=float)
     return features, clases
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             print(feature.nombre + ":")
             print(feature.descripcion)
     else:
-        corpus = clasificador.herramientas.persistencia.cargar_tweets(cargar_evaluacion=args.evaluar)
+        corpus = clasificador.herramientas.persistencia.cargar_tweets()
 
         if args.limit is not None:
             elegir_algunos = random.sample(range(len(corpus)), args.limit)
@@ -85,12 +85,13 @@ if __name__ == "__main__":
             entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
             evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
         else:
-            humor = [tweet for tweet in corpus if tweet.es_humor]
-            nohumor = [tweet for tweet in corpus if not tweet.es_humor]
-            # if len(humor) > len(nohumor):
-            # corpus = nohumor + humor[:len(nohumor)]
+            corpus = [tweet for tweet in corpus if not tweet.evaluacion]
+            #humor = [tweet for tweet in corpus if tweet.es_humor]
+            #nohumor = [tweet for tweet in corpus if not tweet.es_humor]
+            #if len(humor) > len(nohumor):
+            #    corpus = nohumor + humor[:len(nohumor)]
             #else:
-            #	corpus = nohumor[:len(humor)] + humor
+            #    corpus = nohumor[:len(humor)] + humor
 
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
