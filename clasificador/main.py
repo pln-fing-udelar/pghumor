@@ -55,7 +55,6 @@ if __name__ == "__main__":
         for feature in sorted(list(features_obj.features.values()), key=lambda x: x.nombre):
             print(feature.nombre + ":")
             print(feature.descripcion)
-            print("")
     else:
         corpus = clasificador.herramientas.persistencia.cargar_tweets(cargar_evaluacion=args.evaluar)
 
