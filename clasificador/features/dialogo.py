@@ -5,7 +5,9 @@ from clasificador.features.feature import Feature
 
 
 def guiones_dialogo():
-    return [u"-", u"—", u"–"]  # Estos símbolos no son iguales; son distintos guiones
+    return [u'-', u'—', u'–', u'―', u'‒', u'‐', u'−', u'­', u'‑', u'⁃', u'֊', u'˗', u'⁻', u'⏤', u'─', u'➖']
+    # Estos símbolos no son iguales; son distintos guiones (algunos son hyphen, otros dashes,
+    # otros minus sign, viñetas, etc.)
 
 
 class Dialogo(Feature):

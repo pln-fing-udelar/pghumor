@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import absolute_import
 
 import re
@@ -13,9 +14,10 @@ class Freeling:
         if tweet.id in Freeling.cache:
             self.oraciones = Freeling.cache[tweet.id].tokens
         else:
+            # TODO: no debería ser siempre el texto original
             self.oraciones = Freeling.procesar_texto(tweet.texto_original)
             Freeling.cache[tweet.id] = self
-        self.tokens = itertools.chain(*self.oraciones)
+        self.tokens = list(itertools.chain(*self.oraciones))
 
     @staticmethod
     def procesar_texto(texto):
