@@ -16,9 +16,10 @@ from clasificador.realidad.tweet import remover_hashtags, remover_usuarios
 class Antonimos(Feature):
     def __init__(self):
         super(Antonimos, self).__init__()
-        self.nombre = 'Antonimos'
-        self.descripcion = 'Esta caracteristica mide la cantidad de pares de antónimos presentes en el texto.'
-
+        self.nombre = "Antonimos"
+        self.descripcion = """
+            Mide la cantidad de pares de antónimos presentes en el texto.
+        """
         self.wncr = WordNetCorpusReader(resource_filename('clasificador.recursos', 'wordnet_spa'))
 
     def calcular_feature(self, tweet):

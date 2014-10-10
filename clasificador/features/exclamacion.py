@@ -9,8 +9,7 @@ class Exclamacion(Feature):
         super(Exclamacion, self).__init__()
         self.nombre = "Exclamacion"
         self.descripcion = """
-            Esta característica mide si existe en el tweet exlamaciones
-            y palabras totalmente en mayúscula resaltando un concepto.
+            Mide si existen exclamaciones en el tweet o palabras totalmente en mayúscula resaltando un concepto.
         """
 
     def calcular_feature(self, tweet):
