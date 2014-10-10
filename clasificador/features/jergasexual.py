@@ -14,8 +14,10 @@ import clasificador.herramientas.utils
 class JergaSexual(Feature):
     def __init__(self):
         super(JergaSexual, self).__init__()
-        self.nombre = 'Jerga Sexual'
-        self.descripcion = 'Esta caracteristica mide la cantidad de jerga sexual que contiene el texto'
+        self.nombre = "Jerga Sexual"
+        self.descripcion = """
+            Mide la cantidad de jerga sexual que contiene el texto.
+        """
         self.palabrasSexuales = clasificador.herramientas.utils.obtener_diccionario(
             resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'))
 

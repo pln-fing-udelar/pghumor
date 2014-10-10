@@ -74,7 +74,7 @@ class OOV(Feature):
         super(OOV, self).__init__()
         self.nombre = "OOV"
         self.descripcion = """
-            Esta característica mide la cantidad de palabras fuera del vocabulario que contiene el texto.
+            Mide la cantidad de palabras fuera del vocabulario que contiene el texto.
             Tiene en cuenta falta de ortografía, palabras no comunes, cosas como "holaaaaaa", etc.
             Éstas indican menos seriedad en el tweet. Por ejemplo, en una cuenta de CNN no ocurren este
             tipo de cosas. Por lo tanto, no interesa corregir las faltas para detectar la palabra verdadera.
@@ -84,10 +84,10 @@ class OOV(Feature):
         texto = tweet.texto
         texto = remover_hashtags(texto)
         texto = remover_usuarios(texto)
-        freeling = Freeling(texto)
+        oraciones = Freeling.procesar_texto(texto)
+        tokens = list(itertools.chain(*oraciones))
         cant_palabras_oov = 0
-        for token in freeling.tokens:
-
+        for token in tokens:
             if len(token.token) > 3 and contiene_caracteres_no_espanoles(token.token):
                 cant_palabras_oov += 1
             else:
@@ -95,7 +95,7 @@ class OOV(Feature):
                     if not google_search(token.token):
                         cant_palabras_oov += 1
 
-        if len(freeling.tokens) == 0:
+        if len(tokens) == 0:
             tweet.features[self.nombre] = 0
         else:
-            tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(freeling.tokens))
+            tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(tokens))
