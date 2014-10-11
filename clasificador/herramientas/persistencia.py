@@ -118,21 +118,21 @@ def guardar_features(tweets, **opciones):
 
     consulta = "INSERT INTO features VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE valor_feature = %s"
 
-    if nombre_feature is None:
-        mensaje = 'Guardando features'
-    else:
+    if nombre_feature:
         mensaje = 'Guardando feature ' + nombre_feature
+    else:
+        mensaje = 'Guardando features'
 
     bar = Bar(mensaje, max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
     bar.next(0)
 
     for tweet in tweets:
-        if nombre_feature is None:
-            for key, value in tweet.features.items():
-                cursor.execute(consulta, (tweet.id, key, value, value))
-        else:
+        if nombre_feature:
             cursor.execute(consulta,
                            (tweet.id, nombre_feature, tweet.features[nombre_feature], tweet.features[nombre_feature]))
+        else:
+            for key, value in tweet.features.items():
+                cursor.execute(consulta, (tweet.id, key, value, value))
         bar.next()
 
     conexion.commit()

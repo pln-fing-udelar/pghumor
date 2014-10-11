@@ -9,7 +9,6 @@ class TreeTagger:
     cache = {}
 
     def __init__(self, tweet):
-
         if tweet.id not in TreeTagger.cache:
             self.tokens = TreeTagger.procesar_texto(tweet.texto_original)
             TreeTagger.cache[tweet.id] = self
@@ -24,7 +23,7 @@ class TreeTagger:
         tokens = []
         for line in resultado:
             matcheo = re.search('^(.*)\t(.*)\t(.*)\n', line)
-            if matcheo is not None:
+            if matcheo:
                 detalle = TokenTT()
                 detalle.token = matcheo.group(1)
                 detalle.tag = matcheo.group(2)

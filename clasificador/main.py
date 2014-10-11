@@ -15,10 +15,12 @@ from clasificador.features.features import Features
 
 
 def train_test_split_pro(corpus, **options):
-    # El de sklearn no deja saber qué tweets están en qué conjunto.
-    # features_entrenamiento, features_evaluacion, clases_entrenamiento, clases_evaluacion \
+    """Es como el de sklearn, pero como no deja saber qué tweets están en qué conjunto,
+    hicimos este.
+    # features_entrenamiento, features_evaluacion, clases_entrenamiento, clases_evaluacion
     # = train_test_split(features, clases, test_size=fraccion_evaluacion)
 
+    """
     fraccion_evaluacion = options.pop('test_size', 0.25)
 
     elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
@@ -47,6 +49,7 @@ def features_clases_split(tweets):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('--calcular-faltantes', action='store_true', default=False)
     parser.add_argument('--cross-validation', action='store_true', default=False)
     parser.add_argument('--evaluar', action='store_true', default=False)
     parser.add_argument('--explicar-features', action='store_true', default=False)
@@ -75,7 +78,7 @@ if __name__ == "__main__":
             features_obj = Features()
             features_obj.calcular_features(corpus)
             clasificador.herramientas.persistencia.guardar_features(corpus)
-        elif args.recalcular_feature is not None:
+        elif args.recalcular_feature:
             features_obj = Features()
             features_obj.calcular_feature(corpus, args.recalcular_feature)
             clasificador.herramientas.persistencia.guardar_features(corpus, nombre_feature=args.recalcular_feature)
