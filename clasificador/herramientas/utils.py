@@ -16,7 +16,3 @@ def ejecutar_comando(command):
             return p.stdout.readlines()
         except:
             pass
-
-
-def escapar(texto):
-    return texto.replace('"', '\"').replace("'", "\'")

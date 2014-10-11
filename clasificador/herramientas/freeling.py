@@ -4,6 +4,8 @@ from __future__ import absolute_import
 import re
 import itertools
 
+import pipes
+
 import clasificador.herramientas.utils
 
 
@@ -24,7 +26,7 @@ class Freeling:
         if re.search(r'^\s*$', texto):
             return []
 
-        comando = "echo '" + clasificador.herramientas.utils.escapar(texto) + "' | analyzer_client 55555"
+        comando = "echo " + pipes.quote(texto) + " | analyzer_client 55555"
         resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
         while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[
                 0] == 'Server not ready?\n':
