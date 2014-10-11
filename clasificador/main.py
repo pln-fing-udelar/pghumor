@@ -81,7 +81,7 @@ if __name__ == "__main__":
             clasificador.herramientas.persistencia.guardar_features(corpus, nombre_feature=args.recalcular_feature)
 
         corpus = [tweet for tweet in corpus if
-                  tweet.votos > 0 and tweet.votos_no_humor_u_omitidos / float(tweet.votos) <= 0.25]
+                  tweet.votos > 0 and tweet.votos_no_humor_u_omitido / float(tweet.votos) <= 0.25]
 
         # print("Realizando método de aprendizaje automático")
         if args.evaluar:
