@@ -19,4 +19,4 @@ def ejecutar_comando(command):
 
 
 def escapar(texto):
-    return texto.replace('"', '\\"').replace("'", "\\'").replace("`", "\\`")
+    return texto.replace('"', '\"').replace("'", "\'")

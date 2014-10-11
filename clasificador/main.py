@@ -49,7 +49,7 @@ def features_clases_split(tweets):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--calcular-faltantes', action='store_true', default=False)
+    parser.add_argument('--calcular-features-faltantes', action='store_true', default=False)
     parser.add_argument('--cross-validation', action='store_true', default=False)
     parser.add_argument('--evaluar', action='store_true', default=False)
     parser.add_argument('--explicar-features', action='store_true', default=False)
@@ -82,6 +82,10 @@ if __name__ == "__main__":
             features_obj = Features()
             features_obj.calcular_feature(corpus, args.recalcular_feature)
             clasificador.herramientas.persistencia.guardar_features(corpus, nombre_feature=args.recalcular_feature)
+        elif args.calcular_features_faltantes:
+            features_obj = Features()
+            features_obj.calcular_features_faltantes(corpus)
+            clasificador.herramientas.persistencia.guardar_features(corpus)
 
         corpus = [tweet for tweet in corpus if
                   not tweet.es_humor or (
@@ -94,7 +98,7 @@ if __name__ == "__main__":
         else:
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             # humor = [tweet for tweet in corpus if tweet.es_humor]
-            #nohumor = [tweet for tweet in corpus if not tweet.es_humor]
+            # nohumor = [tweet for tweet in corpus if not tweet.es_humor]
             #if len(humor) > len(nohumor):
             #    corpus = nohumor + humor[:len(nohumor)]
             #else:
