@@ -21,7 +21,7 @@ class Freeling:
 
     @staticmethod
     def procesar_texto(texto):
-        if re.search(r'^\s*$', texto) is not None:
+        if re.search(r'^\s*$', texto):
             return []
 
         comando = "echo '" + clasificador.herramientas.utils.escapar(texto) + "' | analyzer_client 55555"
@@ -34,7 +34,7 @@ class Freeling:
         oracion = []
         for linea in resultado:
             matcheo = re.search(r'^(.*)\s(.*)\s(.*)\s(.*)\n', linea)
-            if matcheo is not None:
+            if matcheo:
                 detalle = TokenFL()
                 detalle.token = matcheo.group(1)
                 detalle.lemma = matcheo.group(2)
