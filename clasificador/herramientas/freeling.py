@@ -12,16 +12,12 @@ class Freeling:
 
     def __init__(self, tweet):
         if tweet.id in Freeling.cache:
-            self.oraciones = Freeling.cache[tweet.id].tokens
+            self.oraciones = Freeling.cache[tweet.id].oraciones
         else:
             # TODO: no debería ser siempre el texto original
             self.oraciones = Freeling.procesar_texto(tweet.texto_original)
             Freeling.cache[tweet.id] = self
-        assert type(self.oraciones[0]) is list
-        print type(self.oraciones[0]) is list
-        assert self.oraciones != []
         self.tokens = Freeling.get_tokens_de_oraciones(self.oraciones)
-        print type(self.oraciones[0]) is list
 
     @staticmethod
     def procesar_texto(texto):
@@ -49,7 +45,6 @@ class Freeling:
             elif linea == '\n':
                 oraciones.append(oracion)
                 oracion = []
-        assert type(oraciones[0]) is list
         return oraciones
 
     @staticmethod
