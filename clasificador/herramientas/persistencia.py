@@ -63,8 +63,10 @@ def cargar_tweets():
         tw.cuenta = cuenta
         tw.seguidores = seguidores
         tw.evaluacion = evaluacion
-        tw.votos = votos
-        tw.votos_no_humor_u_omitido = votos_no_humor_u_omitido
+        if votos:
+            tw.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
+        if votos_no_humor_u_omitido:
+            tw.votos_no_humor_u_omitido = int(votos_no_humor_u_omitido)
 
         resultado[tw.id] = tw
         bar.next()
