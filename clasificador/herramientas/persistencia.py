@@ -9,6 +9,10 @@ from clasificador.realidad.tweet import Tweet
 
 
 def cargar_tweets():
+    """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
+    y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego.
+
+    """
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
@@ -37,10 +41,7 @@ def cargar_tweets():
                                               end) AS votos_no_humor_u_omitido
                                    FROM   votos
                                    GROUP  BY id_tweet) V
-                               ON ( V.id_tweet = T.id_tweet )
-    HAVING ( ( votos > 0
-               AND votos_no_humor_u_omitido / votos <= 0.25 )
-              OR eschiste_tweet = 0 );
+                               ON ( V.id_tweet = T.id_tweet );
     """
 
     cursor.execute(consulta)
@@ -51,7 +52,7 @@ def cargar_tweets():
     resultado = {}
 
     for (id_account, tweet_id, texto, favoritos, retweets, es_humor, cuenta, seguidores, evaluacion, votos,
-         votos_no_humor_u_omotido) in cursor:
+         votos_no_humor_u_omitido) in cursor:
         tw = Tweet()
         tw.id = tweet_id
         tw.texto_original = texto
@@ -62,6 +63,8 @@ def cargar_tweets():
         tw.cuenta = cuenta
         tw.seguidores = seguidores
         tw.evaluacion = evaluacion
+        tw.votos = votos
+        tw.votos_no_humor_u_omitido = votos_no_humor_u_omitido
 
         resultado[tw.id] = tw
         bar.next()
@@ -86,10 +89,7 @@ def cargar_tweets():
                                               end) AS votos_no_humor_u_omitido
                                    FROM   votos
                                    GROUP  BY id_tweet) V
-                               ON ( V.id_tweet = T.id_tweet )
-    HAVING ( ( votos > 0
-               AND votos_no_humor_u_omitido / votos <= 0.25 )
-              OR eschiste_tweet = 0 );
+                               ON ( V.id_tweet = T.id_tweet );
     """
 
     cursor.execute(consulta)
@@ -97,7 +97,7 @@ def cargar_tweets():
     bar = Bar('Cargando features', max=cursor.rowcount, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
     bar.next(0)
 
-    for (id_tweet, nombre_feature, valor_feature, votos, votos_no_humor_u_omotido, es_humor) in cursor:
+    for (id_tweet, nombre_feature, valor_feature, votos, votos_no_humor_u_omitido, es_humor) in cursor:
         resultado[id_tweet].features[nombre_feature] = valor_feature
         bar.next()
 
