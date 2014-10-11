@@ -30,9 +30,8 @@ class Freeling:
 
         comando = "echo '" + clasificador.herramientas.utils.escapar(texto) + "' | analyzer_client 55555"
         resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
-        while len(resultado) == 0 or (
-                len(resultado) > 0 and resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or
-                resultado[0] == 'Server not ready?\n'):
+        while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[
+                0] == 'Server not ready?\n':
             resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
 
         oraciones = []
@@ -45,6 +44,7 @@ class Freeling:
                 detalle.lemma = matcheo.group(2)
                 detalle.tag = matcheo.group(3)
                 detalle.probabilidad = matcheo.group(4)
+
                 oracion.append(detalle)
             elif linea == '\n':
                 oraciones.append(oracion)
