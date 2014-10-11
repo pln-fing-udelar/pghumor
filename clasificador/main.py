@@ -64,7 +64,7 @@ if __name__ == "__main__":
     else:
         corpus = clasificador.herramientas.persistencia.cargar_tweets()
 
-        if args.limit is not None:
+        if args.limit:
             elegir_algunos = random.sample(range(len(corpus)), args.limit)
             corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
 
