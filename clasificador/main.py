@@ -50,6 +50,7 @@ def features_clases_split(tweets):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--calcular-features-faltantes', action='store_true', default=False)
+    parser.add_argument('--clasificador', type=str, default="SVM")
     parser.add_argument('--cross-validation', action='store_true', default=False)
     parser.add_argument('--evaluar', action='store_true', default=False)
     parser.add_argument('--explicar-features', action='store_true', default=False)
@@ -109,9 +110,12 @@ if __name__ == "__main__":
         features_entrenamiento, clases_entrenamiento = features_clases_split(entrenamiento)
         features_evaluacion, clases_evaluacion = features_clases_split(evaluacion)
 
-        # clasificador_usado = naive_bayes.GaussianNB()
-        # clasificador_usado = naive_bayes.MultinomialNB()
-        clasificador_usado = svm.SVC()
+        if args.clasificador == "MNB":
+            clasificador_usado = naive_bayes.MultinomialNB()
+        elif args.clasificador == "GNB":
+            clasificador_usado = naive_bayes.GaussianNB()
+        else:
+            clasificador_usado = svm.SVC()
 
         if args.cross_validation and not args.evaluar:
             features, clases = features_clases_split(corpus)
