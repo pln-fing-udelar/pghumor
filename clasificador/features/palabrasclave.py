@@ -28,6 +28,6 @@ class PalabrasClave(Feature):
 
         if len(tf.tokens) == 0:
             print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
-            tweet.features[self.nombre] = 0
+            return 0
         else:
-            tweet.features[self.nombre] = cant_palabras_claves / math.sqrt(len(tf.tokens))
+            return cant_palabras_claves / math.sqrt(len(tf.tokens))

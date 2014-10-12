@@ -40,6 +40,6 @@ class Antonimos(Feature):
                     break
 
         if len(tokens) == 0:
-            tweet.features[self.nombre] = 0
+            return 0
         else:
-            tweet.features[self.nombre] = cant_antonimos / math.sqrt(len(tokens))
+            return cant_antonimos / math.sqrt(len(tokens))

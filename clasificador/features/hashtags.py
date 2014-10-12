@@ -11,9 +11,9 @@ class Hashtags(Feature):
         super(Hashtags, self).__init__()
         self.nombre = "Hashtags"
         self.descripcion = """
-            Cuenta la cantidad de hashtags
+            Cuenta la cantidad de hashtags.
         """
 
     def calcular_feature(self, tweet):
-        tweet.features[self.nombre] = tweet.cantidad_hashtags()
+        return tweet.cantidad_hashtags()
 

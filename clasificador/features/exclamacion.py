@@ -27,6 +27,6 @@ class Exclamacion(Feature):
         #    feature
 
         if len(freeling.tokens) == 0:
-            tweet.features[self.nombre] = 0
+            return 0
         else:
-            tweet.features[self.nombre] = feature / math.sqrt(len(freeling.tokens))
+            return feature / math.sqrt(len(freeling.tokens))

@@ -11,9 +11,7 @@ def esta_en_primera_persona(tag):
     # determinante en primera persona
     # OR verbo en primera persona
     # OR pronombre en primera persona
-    return (tag[0] == 'D' and tag[2] == '1') \
-           or (tag[0] == 'V' and tag[4] == '1') \
-           or (tag[0] == 'P' and tag[2] == '1')
+    return (tag[0] == 'D' and tag[2] == '1') or (tag[0] == 'V' and tag[4] == '1') or (tag[0] == 'P' and tag[2] == '1')
 
 
 class PrimeraPersona(Feature):
@@ -33,6 +31,6 @@ class PrimeraPersona(Feature):
 
         if len(tf.tokens) == 0:
             print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
-            tweet.features[self.nombre] = 0
+            return 0
         else:
-            tweet.features[self.nombre] = primera_persona / math.sqrt(len(tf.tokens))
+            return primera_persona / math.sqrt(len(tf.tokens))

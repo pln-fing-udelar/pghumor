@@ -88,6 +88,6 @@ class OOV(Feature):
                         cant_palabras_oov += 1
 
         if len(tokens) == 0:
-            tweet.features[self.nombre] = 0
+            return 0
         else:
-            tweet.features[self.nombre] = cant_palabras_oov / math.sqrt(len(tokens))
+            return cant_palabras_oov / math.sqrt(len(tokens))

@@ -11,9 +11,8 @@ class Links(Feature):
         super(Links, self).__init__()
         self.nombre = "Links"
         self.descripcion = """
-            Cuenta la cantidad de links presentes
+            Cuenta la cantidad de links.
         """
 
     def calcular_feature(self, tweet):
-        tweet.features[self.nombre] = tweet.cantidad_links()
-
+        return tweet.cantidad_links()

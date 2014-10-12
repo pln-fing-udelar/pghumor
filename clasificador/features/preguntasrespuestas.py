@@ -17,4 +17,4 @@ class PreguntasRespuestas(Feature):
         """
 
     def calcular_feature(self, tweet):
-        tweet.features[self.nombre] = patron.search(tweet.texto) is not None
+        return patron.search(tweet.texto) is not None
