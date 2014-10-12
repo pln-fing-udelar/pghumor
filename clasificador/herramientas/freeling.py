@@ -26,11 +26,7 @@ class Freeling:
         if re.search(r'^\s*$', texto):
             return []
 
-        comando = "echo " + pipes.quote(texto) + " | analyzer_client 55555"
-        resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
-        while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[
-                0] == 'Server not ready?\n':
-            resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
+        resultado = Freeling.analyzer_client(texto)
 
         oraciones = []
         oracion = []
@@ -48,6 +44,18 @@ class Freeling:
                 oraciones.append(oracion)
                 oracion = []
         return oraciones
+
+    @staticmethod
+    def analyzer_client(texto):
+        comando = "echo " + pipes.quote(texto) + " | analyzer_client 55555"
+        resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
+        while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[
+                0] == 'Server not ready?\n':
+            print(resultado)
+            print(len(texto), texto)
+            print("En este loop")
+            resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
+        return resultado
 
     @staticmethod
     def get_tokens_de_oraciones(oraciones):
