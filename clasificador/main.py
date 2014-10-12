@@ -49,14 +49,18 @@ def features_clases_split(tweets):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--calcular-features-faltantes', action='store_true', default=False)
-    parser.add_argument('--clasificador', type=str, default="SVM")
-    parser.add_argument('--cross-validation', action='store_true', default=False)
-    parser.add_argument('--evaluar', action='store_true', default=False)
-    parser.add_argument('--explicar-features', action='store_true', default=False)
-    parser.add_argument('--limit', type=int)
-    parser.add_argument('--recalcular-features', action='store_true', default=False)
-    parser.add_argument('--recalcular-feature', type=str)
+    parser.add_argument('--calcular-features-faltantes', action='store_true', default=False,
+                        help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
+    parser.add_argument('--clasificador', type=str, default="SVM", help="establece qué tipo de clasificador será usado")
+    parser.add_argument('--cross-validation', action='store_true', default=False, help="para hacer cross-validation")
+    parser.add_argument('--evaluar', action='store_true', default=False,
+                        help="para evaluar con el corpus de evaluación")
+    parser.add_argument('--explicar-features', action='store_true', default=False,
+                        help='para explicar las features disponibles (y no clasificar)')
+    parser.add_argument('--limit', type=int, help="establece una cantidad límite de tweets a procesar")
+    parser.add_argument('--recalcular-features', action='store_true', default=False,
+                        help="recalcula el valor de todas las features")
+    parser.add_argument('--recalcular-feature', type=str, help="recalcula el valor de una feature")
 
     args = parser.parse_args()
 
@@ -100,10 +104,10 @@ if __name__ == "__main__":
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             # humor = [tweet for tweet in corpus if tweet.es_humor]
             # nohumor = [tweet for tweet in corpus if not tweet.es_humor]
-            #if len(humor) > len(nohumor):
-            #    corpus = nohumor + humor[:len(nohumor)]
-            #else:
-            #    corpus = nohumor[:len(humor)] + humor
+            # if len(humor) > len(nohumor):
+            # corpus = nohumor + humor[:len(nohumor)]
+            # else:
+            # corpus = nohumor[:len(humor)] + humor
 
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
@@ -114,7 +118,7 @@ if __name__ == "__main__":
             clasificador_usado = naive_bayes.MultinomialNB()
         elif args.clasificador == "GNB":
             clasificador_usado = naive_bayes.GaussianNB()
-        else:
+        else:  # "SVM"
             clasificador_usado = svm.SVC()
 
         if args.cross_validation and not args.evaluar:
