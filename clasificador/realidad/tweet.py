@@ -64,3 +64,6 @@ class Tweet:
 
     def cantidad_links(self):
         return len(re.findall(patron_url, self.texto_original))
+
+    def cantidad_hashtags(self):
+        return len(re.findall(patron_hashtag, self.texto_original))
