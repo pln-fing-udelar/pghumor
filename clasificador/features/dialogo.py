@@ -19,8 +19,7 @@ class Dialogo(Feature):
         """
 
     def calcular_feature(self, tweet):
-        tweet.features[self.nombre] = False
         for guion in guiones_dialogo():
             if tweet.texto.startswith(guion):
-                tweet.features[self.nombre] = True
-                break
+                return True
+        return False

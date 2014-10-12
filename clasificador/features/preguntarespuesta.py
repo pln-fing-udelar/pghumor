@@ -28,5 +28,5 @@ class PreguntaRespuesta(Feature):
 
     def calcular_feature(self, tweet):
         freeling = Freeling(tweet)
-        tweet.features[self.nombre] = len(freeling.oraciones) == 2 and freeling.oraciones[0][-1].tag == "Fit"
+        return len(freeling.oraciones) == 2 and freeling.oraciones[0][-1].tag == "Fit"
         # patron.search(tweet.texto) is not None

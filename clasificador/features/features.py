@@ -100,7 +100,7 @@ class Features:
         bar.next(0)
         for tweet in tweets:
             for feature in self.features.values():
-                feature.calcular_feature(tweet)
+                tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                 bar.next()
         # print("termino thread " + str(identificador))
         bar.finish()
@@ -109,8 +109,9 @@ class Features:
         bar = Bar('Calculando feature ' + nombre_feature + ' - ' + str(identificador), max=len(tweets),
                   suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
         bar.next(0)
+        feature = self.features[nombre_feature]
         for tweet in tweets:
-            self.features[nombre_feature].calcular_feature(tweet)
+            tweet.features[feature.nombre] = feature.calcular_feature(tweet)
             bar.next()
         # print("Termino thread " + str(identificador))
         bar.finish()
@@ -122,7 +123,7 @@ class Features:
         for tweet in tweets:
             for feature in self.features.values():
                 if feature.nombre not in tweet.features:
-                    feature.calcular_feature(tweet)
+                    tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                 bar.next()
         # print("termino thread " + str(identificador))
         bar.finish()
