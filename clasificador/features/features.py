@@ -7,6 +7,7 @@ from progress.bar import Bar
 import clasificador.features.antonimos
 import clasificador.features.dialogo
 import clasificador.features.exclamacion
+import clasificador.features.hashtags
 import clasificador.features.jergasexual
 import clasificador.features.links
 import clasificador.features.oov
@@ -28,6 +29,7 @@ class Features:
             clasificador.features.antonimos.Antonimos(),
             clasificador.features.dialogo.Dialogo(),
             clasificador.features.exclamacion.Exclamacion(),
+            clasificador.features.hashtags.Hashtags(),
             clasificador.features.jergasexual.JergaSexual(),
             clasificador.features.links.Links(),
             clasificador.features.oov.OOV(),
