@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
         corpus = [tweet for tweet in corpus if
                   not tweet.es_humor or (
-                      tweet.votos > 0 and tweet.votos_no_humor_u_omitido / float(tweet.votos) <= 0.25)]
+                      tweet.votos > 0 and tweet.votos_no_humor_u_omitido / float(tweet.votos) <= 0.5)]
 
         # print("Realizando método de aprendizaje automático")
         if args.evaluar:
