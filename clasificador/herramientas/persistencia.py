@@ -16,8 +16,6 @@ def cargar_tweets():
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
-    # TODO: tendría que traer todos, y después filtrar por los que tienen menos de 25%, así calculo las features para todos
-
     consulta = """
     SELECT id_account,
            T.id_tweet,
