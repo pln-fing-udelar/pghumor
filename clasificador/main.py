@@ -48,19 +48,22 @@ def features_clases_split(tweets):
 # Ver esto: https://www.google.com.uy/search?q=process+tweet+like+normal+text&oq=process+tweet+like+normal+text&aqs=chrome..69i57j69i60l4j69i61.4367j0j7&sourceid=chrome&es_sm=93&ie=UTF-8#q=preprocess+tweet+like+normal+text
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--calcular-features-faltantes', action='store_true', default=False,
+    parser = argparse.ArgumentParser(description='Clasifica humor de los tweets almacenados en MySQL.')
+    parser.add_argument('-a', '--calcular-features-faltantes', action='store_true', default=False,
                         help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
-    parser.add_argument('--clasificador', type=str, default="SVM", help="establece qué tipo de clasificador será usado")
-    parser.add_argument('--cross-validation', action='store_true', default=False, help="para hacer cross-validation")
-    parser.add_argument('--evaluar', action='store_true', default=False,
+    parser.add_argument('-c', '--clasificador', type=str, default="SVM", choices=["GNB", "MNB", "SVM"],
+                        help="establece qué tipo de clasificador será usado, que por defecto es SVM")
+    parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
+                        help="para hacer cross-validation")
+    parser.add_argument('-e', '--evaluar', action='store_true', default=False,
                         help="para evaluar con el corpus de evaluación")
-    parser.add_argument('--explicar-features', action='store_true', default=False,
-                        help='para explicar las features disponibles (y no clasificar)')
-    parser.add_argument('--limit', type=int, help="establece una cantidad límite de tweets a procesar")
-    parser.add_argument('--recalcular-features', action='store_true', default=False,
+    parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
+                        help='muestra las features disponibles y termina el programa')
+    parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
+    parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
-    parser.add_argument('--recalcular-feature', type=str, help="recalcula el valor de una feature")
+    parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
+                        help="recalcula el valor de una feature")
 
     args = parser.parse_args()
 
@@ -72,8 +75,8 @@ if __name__ == "__main__":
     else:
         corpus = clasificador.herramientas.persistencia.cargar_tweets()
 
-        if args.limit:
-            elegir_algunos = random.sample(range(len(corpus)), args.limit)
+        if args.limite:
+            elegir_algunos = random.sample(range(len(corpus)), args.limite)
             corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
 
         for tweet in corpus:
