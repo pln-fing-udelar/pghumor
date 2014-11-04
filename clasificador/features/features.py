@@ -18,7 +18,7 @@ import clasificador.features.presenciaanimales
 import clasificador.features.primerapersona
 
 
-CANTIDAD_THREADS = 1
+CANTIDAD_THREADS = 4
 
 
 class Features:
