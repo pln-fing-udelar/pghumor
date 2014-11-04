@@ -20,7 +20,7 @@ class Antonimos(Feature):
         self.descripcion = """
             Mide la cantidad de pares de antónimos presentes en el texto.
         """
-        self.wncr = WordNetCorpusReader(resource_filename('clasificador.recursos', 'wordnet_spa'))
+        self.wncr = WordNetCorpusReader(resource_filename('clasificador.recursos', 'wordnet_spa'), None)
 
     def calcular_feature(self, tweet):
         oraciones = Freeling.procesar_texto(remover_hashtags(remover_usuarios(tweet.texto)))
