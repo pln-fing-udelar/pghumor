@@ -23,7 +23,7 @@ class Exclamacion(Feature):
             if token.tag == 'Fat':
                 feature += 1
 
-        #if token.token == token.token.upper():
+        # if token.token == token.token.upper():
         #    feature
 
         if len(freeling.tokens) == 0:

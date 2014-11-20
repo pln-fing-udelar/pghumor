@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import sem
 
 from sklearn import metrics
-from experimentos.Persistencia import *
+from experimentos.persistencia import *
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.datasets import fetch_20newsgroups
@@ -48,7 +48,7 @@ def train_and_evaluate(clf, x_train, x_test, y_train, y_test):
 
 def ejecutar_machine_learning():
     chistes = cargar_tweets()
-    chistes2 = cargarChistes()
+    chistes2 = cargar_chistes()
 
     news = fetch_20newsgroups(subset='all')
     SPLIT_PERC = 0.80

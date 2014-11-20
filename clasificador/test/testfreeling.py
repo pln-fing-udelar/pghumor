@@ -1,7 +1,6 @@
 # coding=utf-8
 import unittest
 
-import clasificador.features.preguntarespuesta
 from clasificador.herramientas.freeling import Freeling
 from clasificador.realidad.tweet import Tweet
 

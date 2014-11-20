@@ -105,10 +105,10 @@ def clasificar(dicc):
     return retorno
 
 
-def guardar_dicc_para_feature(palabrasSexuales):
+def guardar_dicc_para_feature(palabras_sexuales):
     file_object = open(resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'), 'a')
 
-    for word in palabrasSexuales:
+    for word in palabras_sexuales:
         file_object.write(word + "\n")
 
     file_object.close()

@@ -7,7 +7,7 @@ from pkg_resources import resource_filename
 
 class TestWordNet(unittest.TestCase):
     def setUp(self):
-        self.wncr = WordNetCorpusReader(resource_filename('clasificador.recursos', 'wordnet_spa'))
+        self.wncr = WordNetCorpusReader(resource_filename('clasificador.recursos', 'wordnet_spa'), None)
 
     def test_invalid_literal_for_int_16(self):
         self.wncr._synset_from_pos_and_line('n',
