@@ -8,13 +8,22 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
 from clasificador.realidad.tweet import Tweet
 
 
-def cargar_tweets():
+def cargar_tweets(prueba=False):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
     y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego.
 
     """
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
+
+    if prueba:
+        cantidad_prueba = 4000
+        consulta_tweets_prueba = "ORDER BY id_tweet LIMIT {cant}".format(cant=cantidad_prueba)
+        consulta_features_prueba = "NATURAL JOIN (SELECT * FROM tweets ORDER BY id_tweet LIMIT {cant}) T".format(
+            cant=cantidad_prueba)
+    else:
+        consulta_tweets_prueba = ""
+        consulta_features_prueba = ""
 
     consulta = """
     SELECT id_account,
@@ -39,8 +48,9 @@ def cargar_tweets():
                                               end) AS votos_no_humor_u_omitido
                                    FROM   votos
                                    GROUP  BY id_tweet) V
-                               ON ( V.id_tweet = T.id_tweet );
-    """
+                               ON ( V.id_tweet = T.id_tweet )
+    {prueba};
+    """.format(prueba=consulta_tweets_prueba)
 
     cursor.execute(consulta)
 
@@ -75,8 +85,8 @@ def cargar_tweets():
     SELECT id_tweet,
            nombre_feature,
            valor_feature
-    FROM   features;
-    """
+    FROM   features {prueba};
+    """.format(prueba=consulta_features_prueba)
 
     cursor.execute(consulta)
 

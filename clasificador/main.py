@@ -66,6 +66,8 @@ if __name__ == "__main__":
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
                         help='muestra las features disponibles y termina el programa')
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
+    parser.add_argument('-p', '--prueba', action='store_true', default=False,
+                        help="establece el modo prueba")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
@@ -81,7 +83,7 @@ if __name__ == "__main__":
             print(feature.nombre + ":")
             print(feature.descripcion)
     else:
-        corpus = cargar_tweets()
+        corpus = cargar_tweets(args.prueba)
 
         if args.limite:
             elegir_algunos = random.sample(range(len(corpus)), args.limite)
@@ -191,7 +193,7 @@ if __name__ == "__main__":
         if args.servidor:
             app = Flask(__name__)
 
-            @app.route("/", methods=['GET'])
+            @app.route("/")
             def inicio():
                 return render_template(resource_filename('clasificador.recursos.evaluacion', 'evaluacion.html'))
 
@@ -203,6 +205,6 @@ if __name__ == "__main__":
                 _features_obj = Features()
                 _features_obj.calcular_features([_tweet])
                 _features = [list(_tweet.features.values())]
-                return clasificador_usado.predict(_features)[0]
+                return str(int(clasificador_usado.predict(_features)[0]))
 
             app.run(debug=True, host='0.0.0.0')
