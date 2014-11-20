@@ -195,7 +195,7 @@ if __name__ == "__main__":
 
             @app.route("/")
             def inicio():
-                return render_template(resource_filename('clasificador.recursos.evaluacion', 'evaluacion.html'))
+                return app.send_static_file('evaluacion.html')
 
             @app.route("/evaluar", methods=['POST'])
             def evaluar():

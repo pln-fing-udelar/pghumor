@@ -29,7 +29,7 @@ def cargar_tweets():
     if cargar_evaluacion:
         where_cargar_evaluacion = ''
     else:
-        where_cargar_evaluacion = 'WHERE evaluacion = 0'
+        where_cargar_evaluacion = 'WHERE static = 0'
 
     consulta = """
     SELECT id_account,
@@ -40,7 +40,7 @@ def cargar_tweets():
            eschiste_tweet,
            name_account,
            followers_count_account,
-           evaluacion,
+           static,
            votos,
            votos_no_humor_u_omitido
     FROM   tweets AS T

@@ -34,7 +34,7 @@ def cargar_tweets(prueba=False):
            eschiste_tweet,
            name_account,
            followers_count_account,
-           evaluacion,
+           static,
            votos,
            votos_no_humor_u_omitido
     FROM   tweets AS T
