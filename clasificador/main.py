@@ -180,13 +180,13 @@ if __name__ == "__main__":
         print('(son)\tN\t' + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
         print('')
 
-        #_tweet = Tweet()
-        #_tweet.texto = "hola si"
-        #_tweet.preprocesar()
-        #_features_obj = Features()
-        #_features_obj.calcular_features([_tweet])
-        #_features = [list(_tweet.features.values())]
-        #res = clasificador_usado.predict(_features)[0]
+        # _tweet = Tweet()
+        # _tweet.texto = "hola si"
+        # _tweet.preprocesar()
+        # _features_obj = Features()
+        # _features_obj.calcular_features([_tweet])
+        # _features = [list(_tweet.features.values())]
+        # res = clasificador_usado.predict(_features)[0]
 
         if args.servidor:
             app = Flask(__name__)
