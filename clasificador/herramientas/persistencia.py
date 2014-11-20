@@ -72,24 +72,10 @@ def cargar_tweets():
     bar.finish()
 
     consulta = """
-    SELECT T.id_tweet,
+    SELECT id_tweet,
            nombre_feature,
-           valor_feature,
-           votos,
-           votos_no_humor_u_omitido,
-           eschiste_tweet
-    FROM   features
-           NATURAL JOIN tweets AS T
-                        LEFT JOIN (SELECT id_tweet,
-                                          Count(*) AS votos,
-                                          Sum(CASE
-                                                WHEN voto = 'x'
-                                                      OR voto = 'n' THEN 1
-                                                ELSE 0
-                                              end) AS votos_no_humor_u_omitido
-                                   FROM   votos
-                                   GROUP  BY id_tweet) V
-                               ON ( V.id_tweet = T.id_tweet );
+           valor_feature
+    FROM   features;
     """
 
     cursor.execute(consulta)
@@ -97,7 +83,7 @@ def cargar_tweets():
     bar = Bar('Cargando features', max=cursor.rowcount, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
     bar.next(0)
 
-    for (id_tweet, nombre_feature, valor_feature, votos, votos_no_humor_u_omitido, es_humor) in cursor:
+    for (id_tweet, nombre_feature, valor_feature) in cursor:
         resultado[id_tweet].features[nombre_feature] = valor_feature
         bar.next()
 
