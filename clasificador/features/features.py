@@ -44,7 +44,7 @@ class Features:
     def calcular_features(self, tweets):
         intervalo = len(tweets) / CANTIDAD_THREADS
         threads = []
-        for i in range(0, CANTIDAD_THREADS - 1):
+        for i in range(CANTIDAD_THREADS - 1):
             t = Thread(target=self.calcular_features_thread, args=(tweets[i * intervalo: (i + 1) * intervalo], i))
             threads.append(t)
 
@@ -95,35 +95,38 @@ class Features:
             hilo.join()
 
     def calcular_features_thread(self, tweets, identificador):
-        bar = Bar('Calculando features - ' + str(identificador), max=len(tweets) * len(self.features),
-                  suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
-        bar.next(0)
-        for tweet in tweets:
-            for feature in self.features.values():
-                tweet.features[feature.nombre] = feature.calcular_feature(tweet)
-                bar.next()
-        # print("termino thread " + str(identificador))
-        bar.finish()
+        if len(tweets) > 0:
+            bar = Bar('Calculando features - ' + str(identificador), max=len(tweets) * len(self.features),
+                      suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+            bar.next(0)
+            for tweet in tweets:
+                for feature in self.features.values():
+                    tweet.features[feature.nombre] = feature.calcular_feature(tweet)
+                    bar.next()
+            # print("termino thread " + str(identificador))
+            bar.finish()
 
     def calcular_feature_thread(self, tweets, nombre_feature, identificador):
-        bar = Bar('Calculando feature ' + nombre_feature + ' - ' + str(identificador), max=len(tweets),
-                  suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
-        bar.next(0)
-        feature = self.features[nombre_feature]
-        for tweet in tweets:
-            tweet.features[feature.nombre] = feature.calcular_feature(tweet)
-            bar.next()
-        # print("Termino thread " + str(identificador))
-        bar.finish()
+        if len(tweets) > 0:
+            bar = Bar('Calculando feature ' + nombre_feature + ' - ' + str(identificador), max=len(tweets),
+                      suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+            bar.next(0)
+            feature = self.features[nombre_feature]
+            for tweet in tweets:
+                tweet.features[feature.nombre] = feature.calcular_feature(tweet)
+                bar.next()
+            # print("Termino thread " + str(identificador))
+            bar.finish()
 
     def calcular_features_faltantes_thread(self, tweets, identificador):
-        bar = Bar('Calculando features - ' + str(identificador), max=len(tweets) * len(self.features),
-                  suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
-        bar.next(0)
-        for tweet in tweets:
-            for feature in self.features.values():
-                if feature.nombre not in tweet.features:
-                    tweet.features[feature.nombre] = feature.calcular_feature(tweet)
-                bar.next()
-        # print("termino thread " + str(identificador))
-        bar.finish()
+        if len(tweets) > 0:
+            bar = Bar('Calculando features - ' + str(identificador), max=len(tweets) * len(self.features),
+                      suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+            bar.next(0)
+            for tweet in tweets:
+                for feature in self.features.values():
+                    if feature.nombre not in tweet.features:
+                        tweet.features[feature.nombre] = feature.calcular_feature(tweet)
+                    bar.next()
+            # print("termino thread " + str(identificador))
+            bar.finish()
