@@ -1,10 +1,7 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import re
-import HTMLParser  # import html.parser # in python 3
-
-import mysql.connector
-
-from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
+import HTMLParser  # import html.parser  # in python 3
 
 patron_retweet = re.compile(r'^RT @\w+: ', re.UNICODE)
 

@@ -2,14 +2,12 @@
 from __future__ import absolute_import
 import traceback
 import math
-import re
 
 from bs4 import BeautifulSoup
 import mechanize
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import *
-from clasificador.herramientas.utils import *
 from clasificador.realidad.tweet import *
 
 CARACTERES_ESPANOL = 255
@@ -47,9 +45,9 @@ def google_search(search):
         result = soup.findAll("body")
         se_encuentra = '<div id="_FQd" ' not in str(result[0])
         # if se_encuentra:
-        # print search, " se encuentra"
+        # print(search, " se encuentra")
         # else:
-        #	print search, " no se encuentra"
+        #     print(search, " no se encuentra")
 
         return se_encuentra
     except Exception:
