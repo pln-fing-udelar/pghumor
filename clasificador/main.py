@@ -2,19 +2,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-import random
 import argparse
-
+from flask import Flask, request, render_template
 import numpy
+import os
+from pkg_resources import resource_filename
+import random
 from sklearn import cross_validation
 from sklearn import naive_bayes, svm
 from sklearn import metrics
+import sys
 
-import clasificador.herramientas.persistencia
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from clasificador.realidad.tweet import Tweet
 from clasificador.features.features import Features
+from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 
 
-def train_test_split_pro(corpus, **options):
+def train_test_split_pro(_corpus, **options):
     """Es como el de sklearn, pero como no deja saber qué tweets están en qué conjunto,
     hicimos este.
     # features_entrenamiento, features_evaluacion, clases_entrenamiento, clases_evaluacion
@@ -23,29 +29,29 @@ def train_test_split_pro(corpus, **options):
     """
     fraccion_evaluacion = options.pop('test_size', 0.25)
 
-    elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
-    entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
-    evaluacion = [corpus[i] for i in elegir_fraccion]
+    elegir_fraccion = random.sample(range(len(_corpus)), int(len(_corpus) * fraccion_evaluacion))
+    _entrenamiento = [_corpus[j] for j in range(len(_corpus)) if j not in elegir_fraccion]
+    _evaluacion = [_corpus[j] for j in elegir_fraccion]
 
-    return entrenamiento, evaluacion
+    return _entrenamiento, _evaluacion
 
 
 def features_clases_split(tweets):
     assert len(tweets) > 0, "Deben haber tweets para obtener las features y las clases"
     largo_esperado_features = len(list(tweets[0].features.values()))
-    features = []
-    for tweet in tweets:
-        features_tweet = list(tweet.features.values())
+    _features = []
+    for _tweet in tweets:
+        features_tweet = list(_tweet.features.values())
         assert len(features_tweet) == largo_esperado_features, "Los tweets tienen distinta cantidad de features"
-        features.append(features_tweet)
-    clases = numpy.array([tweet.es_humor for tweet in tweets], dtype=float)
-    return features, clases
+        _features.append(features_tweet)
+    _clases = numpy.array([_tweet.es_humor for _tweet in tweets], dtype=float)
+    return _features, _clases
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
 
 # Ver esto: https://stackoverflow.com/questions/8764066/preprocessing-400-million-tweets-in-python-faster
 
-# Ver esto: https://www.google.com.uy/search?q=process+tweet+like+normal+text&oq=process+tweet+like+normal+text&aqs=chrome..69i57j69i60l4j69i61.4367j0j7&sourceid=chrome&es_sm=93&ie=UTF-8#q=preprocess+tweet+like+normal+text
+# Ver esto: https://www.google.com.uy/search?q=preprocess+tweet+like+normal+text
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Clasifica humor de los tweets almacenados en MySQL.')
@@ -64,6 +70,8 @@ if __name__ == "__main__":
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
                         help="recalcula el valor de una feature")
+    parser.add_argument('-r', '--servidor', action='store_true', default=False,
+                        help="levanta el servidor para responder a clasificaciones")
 
     args = parser.parse_args()
 
@@ -73,7 +81,7 @@ if __name__ == "__main__":
             print(feature.nombre + ":")
             print(feature.descripcion)
     else:
-        corpus = clasificador.herramientas.persistencia.cargar_tweets()
+        corpus = cargar_tweets()
 
         if args.limite:
             elegir_algunos = random.sample(range(len(corpus)), args.limite)
@@ -85,15 +93,15 @@ if __name__ == "__main__":
         if args.recalcular_features:
             features_obj = Features()
             features_obj.calcular_features(corpus)
-            clasificador.herramientas.persistencia.guardar_features(corpus)
+            guardar_features(corpus)
         elif args.recalcular_feature:
             features_obj = Features()
             features_obj.calcular_feature(corpus, args.recalcular_feature)
-            clasificador.herramientas.persistencia.guardar_features(corpus, nombre_feature=args.recalcular_feature)
+            guardar_features(corpus, nombre_feature=args.recalcular_feature)
         elif args.calcular_features_faltantes:
             features_obj = Features()
             features_obj.calcular_features_faltantes(corpus)
-            clasificador.herramientas.persistencia.guardar_features(corpus)
+            guardar_features(corpus)
 
         corpus = [tweet for tweet in corpus if
                   not tweet.es_humor or (
@@ -171,3 +179,30 @@ if __name__ == "__main__":
         print('(son)\tP\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_negativos)))
         print('(son)\tN\t' + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
         print('')
+
+        #_tweet = Tweet()
+        #_tweet.texto = "hola si"
+        #_tweet.preprocesar()
+        #_features_obj = Features()
+        #_features_obj.calcular_features([_tweet])
+        #_features = [list(_tweet.features.values())]
+        #res = clasificador_usado.predict(_features)[0]
+
+        if args.servidor:
+            app = Flask(__name__)
+
+            @app.route("/", methods=['GET'])
+            def inicio():
+                return render_template(resource_filename('clasificador.recursos.evaluacion', 'evaluacion.html'))
+
+            @app.route("/evaluar", methods=['POST'])
+            def evaluar():
+                _tweet = Tweet()
+                _tweet.texto = request.form['texto']
+                _tweet.preprocesar()
+                _features_obj = Features()
+                _features_obj.calcular_features([_tweet])
+                _features = [list(_tweet.features.values())]
+                return clasificador_usado.predict(_features)[0]
+
+            app.run(debug=True, host='0.0.0.0')
