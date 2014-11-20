@@ -3,10 +3,10 @@
 from __future__ import absolute_import
 
 import argparse
-from flask import Flask, request, render_template
+from flask import Flask, request
+from flask_cors import cross_origin
 import numpy
 import os
-from pkg_resources import resource_filename
 import random
 from sklearn import cross_validation
 from sklearn import naive_bayes, svm
@@ -198,6 +198,7 @@ if __name__ == "__main__":
                 return app.send_static_file('evaluacion.html')
 
             @app.route("/evaluar", methods=['POST'])
+            @cross_origin()
             def evaluar():
                 _tweet = Tweet()
                 _tweet.texto = request.form['texto']
