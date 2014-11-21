@@ -17,13 +17,28 @@ def cargar_tweets(prueba=False):
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     if prueba:
-        cantidad_prueba = 4000
-        consulta_tweets_prueba = "ORDER BY id_tweet LIMIT {cant}".format(cant=cantidad_prueba)
-        consulta_features_prueba = "NATURAL JOIN (SELECT * FROM tweets ORDER BY id_tweet LIMIT {cant}) T".format(
-            cant=cantidad_prueba)
+        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT 1000"
+        cursor.execute(consulta)
+
+        bar = Bar('Cargando tweets de prueba', max=cursor.rowcount,
+                  suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+        bar.next(0)
+
+        ids = []
+
+        for (tweet_id,) in cursor:
+            ids.append(tweet_id)
+            bar.next()
+
+        bar.finish()
+
+        str_ids = "(" + str(ids).strip("[]") + ")"
+
+        consulta_prueba_tweets = "WHERE T.id_tweet IN {ids}".format(ids=str_ids)
+        consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
     else:
-        consulta_tweets_prueba = ""
-        consulta_features_prueba = ""
+        consulta_prueba_tweets = ""
+        consulta_prueba_features = ""
 
     consulta = """
     SELECT id_account,
@@ -49,8 +64,8 @@ def cargar_tweets(prueba=False):
                                    FROM   votos
                                    GROUP  BY id_tweet) V
                                ON ( V.id_tweet = T.id_tweet )
-    {prueba};
-    """.format(prueba=consulta_tweets_prueba)
+    {filtro_prueba}
+    """.format(filtro_prueba=consulta_prueba_tweets)
 
     cursor.execute(consulta)
 
@@ -85,8 +100,9 @@ def cargar_tweets(prueba=False):
     SELECT id_tweet,
            nombre_feature,
            valor_feature
-    FROM   features {prueba};
-    """.format(prueba=consulta_features_prueba)
+    FROM   features
+    {filtro_prueba}
+    """.format(filtro_prueba=consulta_prueba_features)
 
     cursor.execute(consulta)
 
