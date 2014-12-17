@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import re
-import clasificador.features.dialogo
 
+import clasificador.features.dialogo
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
 
 
-def guiones_dialogo_re():
+def guion_dialogo_re():
     guiones = ur"("
     for guion in clasificador.features.dialogo.guiones_dialogo():
         guiones += guion + ur"|"
@@ -15,7 +15,7 @@ def guiones_dialogo_re():
     return guiones[:-1] + ur")"
 
 
-patron = re.compile(ur'^(' + guiones_dialogo_re() + ur'\s*)?¿[^\?]+\?+[^¿\?]+$', re.UNICODE)
+patron = re.compile(ur'^(' + guion_dialogo_re() + ur'\s*)?¿[^\?]+\?+[^¿\?]+$', re.UNICODE)
 
 
 class PreguntaRespuesta(Feature):
