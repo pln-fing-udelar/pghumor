@@ -51,17 +51,14 @@ def cargar_tweets(prueba=False):
            followers_count_account,
            evaluacion,
            votos,
-           votos_no_humor_u_omitido
+           votos_humor
     FROM   tweets AS T
            NATURAL JOIN twitter_accounts
                         LEFT JOIN (SELECT id_tweet,
                                           Count(*) AS votos,
-                                          Sum(CASE
-                                                WHEN voto = 'x'
-                                                      OR voto = 'n' THEN 1
-                                                ELSE 0
-                                              end) AS votos_no_humor_u_omitido
+                                          Count(If(voto <> 'x', 1, NULL)) AS votos_humor
                                    FROM   votos
+                                   WHERE voto <> 'n'
                                    GROUP  BY id_tweet) V
                                ON ( V.id_tweet = T.id_tweet )
     {filtro_prueba}
@@ -75,7 +72,7 @@ def cargar_tweets(prueba=False):
     resultado = {}
 
     for (id_account, tweet_id, texto, favoritos, retweets, es_humor, cuenta, seguidores, evaluacion, votos,
-         votos_no_humor_u_omitido) in cursor:
+         votos_humor) in cursor:
         tw = Tweet()
         tw.id = tweet_id
         tw.texto_original = texto
@@ -88,8 +85,8 @@ def cargar_tweets(prueba=False):
         tw.evaluacion = evaluacion
         if votos:
             tw.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
-        if votos_no_humor_u_omitido:
-            tw.votos_no_humor_u_omitido = int(votos_no_humor_u_omitido)
+        if votos_humor:
+            tw.votos_humor = int(votos_humor)
 
         resultado[tw.id] = tw
         bar.next()

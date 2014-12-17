@@ -47,6 +47,22 @@ def features_clases_split(tweets):
     _clases = numpy.array([_tweet.es_humor for _tweet in tweets], dtype=float)
     return _features, _clases
 
+
+def filtrar_segun_votacion(_corpus):
+    res = []
+    for _tweet in _corpus:
+        if _tweet.es_humor:
+            if _tweet.votos > 0:
+                porcentaje_humor = _tweet.votos_humor / float(_tweet.votos)
+                if porcentaje_humor >= 0.60:
+                    res.append(_tweet)
+                elif porcentaje_humor <= 0.30:
+                    _tweet.es_humor = False
+                    res.append(_tweet)
+        else:
+            res.append(_tweet)
+    return res
+
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
 
 # Ver esto: https://stackoverflow.com/questions/8764066/preprocessing-400-million-tweets-in-python-faster
@@ -105,9 +121,7 @@ if __name__ == "__main__":
             features_obj.calcular_features_faltantes(corpus)
             guardar_features(corpus)
 
-        corpus = [tweet for tweet in corpus if
-                  not tweet.es_humor or (
-                      tweet.votos > 0 and tweet.votos_no_humor_u_omitido / float(tweet.votos) <= 0.5)]
+        corpus = filtrar_segun_votacion(corpus)
 
         # print("Realizando método de aprendizaje automático")
         if args.evaluar:
