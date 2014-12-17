@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-from clasificador.features.xpersona import XPersona
+from clasificador.features.npersona import NPersona
 
 
-class PrimeraPersona(XPersona):
+class PrimeraPersona(NPersona):
     def __init__(self):
         super(PrimeraPersona, self).__init__(1)
         self.nombre = "Primera Persona"
