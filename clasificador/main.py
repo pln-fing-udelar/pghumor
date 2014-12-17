@@ -191,7 +191,7 @@ if __name__ == "__main__":
         print('Matriz de confusión:')
         print('')
         print('\t\t(clasificados como)')
-        print('\t\tP\tN')
+        print('\t\t\tP\tN')
         print('(son)\tP\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_negativos)))
         print('(son)\tN\t' + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
         print('')
