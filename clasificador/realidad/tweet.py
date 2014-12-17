@@ -48,7 +48,7 @@ class Tweet:
         self.texto = ""
         self.texto_original = ""
         self.votos = 0
-        self.votos_no_humor_u_omitido = 0
+        self.votos_humor = 0
 
         self.features = {}
 
