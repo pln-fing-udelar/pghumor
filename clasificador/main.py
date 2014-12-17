@@ -13,11 +13,11 @@ from sklearn import naive_bayes, svm
 from sklearn import metrics
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from clasificador.realidad.tweet import Tweet
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 def train_test_split_pro(_corpus, **options):
