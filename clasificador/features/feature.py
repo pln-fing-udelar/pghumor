@@ -12,5 +12,5 @@ class Feature:
 
     @abc.abstractmethod
     def calcular_feature(self, tweet):
-        """Calcula la feature para el tweet y le asigna su valor al mismo"""
+        """Calcula y devuelve el valor de la feature para el tweet"""
         return
