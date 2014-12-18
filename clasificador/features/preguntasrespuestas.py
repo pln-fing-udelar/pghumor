@@ -3,9 +3,21 @@ from __future__ import absolute_import
 import re
 
 from clasificador.features.feature import Feature
-from clasificador.features.preguntarespuesta import guion_dialogo_re
+from clasificador.features.dialogo import guiones_dialogo
 
-patron = re.compile(ur'^((' + guion_dialogo_re() + ur'\s*)?¿[^\?]+\?+[^¿\?]+)+$', re.UNICODE)
+
+def guion_dialogo_re():
+    return ur"(?:" + ur"|".join(guiones_dialogo()) + ur")"
+
+
+patron = re.compile(ur"""
+                    \s* """ + guion_dialogo_re() + ur"""? \s* ¿+ [^\?]+ \?+ # pregunta
+                    (?:[^¿\?]+ [^\s¿\?] [^¿\?]+) # respuesta
+                    """, re.UNICODE | re.VERBOSE)
+
+
+def cantidad_de_capturas_no_solapadas(_patron, _str):
+    return _patron.subn('', _str)[1]
 
 
 class PreguntasRespuestas(Feature):
@@ -13,8 +25,9 @@ class PreguntasRespuestas(Feature):
         super(PreguntasRespuestas, self).__init__()
         self.nombre = "PreguntasRespuestas"
         self.descripcion = """
-            Dice si el tweet son varias preguntas y respuestas (pregunta - respuesta - pregunta - respuesta - ...).
+            Dice la cantidad de pares de preguntas y respuestas del tweet bajo el formato:
+            pregunta - respuesta - pregunta - respuesta - ...
         """
 
     def calcular_feature(self, tweet):
-        return patron.search(tweet.texto) is not None
+        return cantidad_de_capturas_no_solapadas(patron, tweet.texto)
