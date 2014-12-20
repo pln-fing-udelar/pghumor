@@ -1,6 +1,5 @@
 # Para Ejecutar
-```
-    
+
 Poner la variable de entorno a donde se encuentre el entorno de Freeling y dejarla puesta siempre:
 
 ```bash
