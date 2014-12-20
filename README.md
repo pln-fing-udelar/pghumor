@@ -15,6 +15,7 @@ analyze -f $FREELINGSHARE/config/es.cfg --noprob --outf morfo --server --workers
 
 ```bash
 analyze -f $FREELINGSHARE/config/es.cfg --server --workers 4 --queue 50 --port 55555 --flush
+```
 
 # Para correr todos los tests
 
