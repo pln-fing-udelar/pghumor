@@ -1,5 +1,4 @@
-Para Ejecutar
-===============
+# Para Ejecutar
 
 Levantar los servidores de Freeling:
 
@@ -17,8 +16,7 @@ Poner la variable de entorno a donde se encuentre el entorno de Freeling:
 export FREELINGSHARE=/usr/local/share/freeling
 ```
 
-Para correr todos los tests
-=============================
+# Para correr todos los tests
 
 ```bash
 python -m unittest discover clasificador/test/
