@@ -1,4 +1,12 @@
 # Para Ejecutar
+```
+    
+Poner la variable de entorno a donde se encuentre el entorno de Freeling y dejarla puesta siempre:
+
+```bash
+FREELINGSHARE=/usr/local/share/freeling
+echo "export FREELINGSHARE=/usr/local/share/freeling" >> ~/.bashrc
+```
 
 Levantar los servidores de Freeling:
 
@@ -8,13 +16,6 @@ analyze -f $FREELINGSHARE/config/es.cfg --noprob --outf morfo --server --workers
 
 ```bash
 analyze -f $FREELINGSHARE/config/es.cfg --server --workers 4 --queue 50 --port 55555 --flush
-```
-    
-Poner la variable de entorno a donde se encuentre el entorno de Freeling:
-
-```bash
-export FREELINGSHARE=/usr/local/share/freeling
-```
 
 # Para correr todos los tests
 
