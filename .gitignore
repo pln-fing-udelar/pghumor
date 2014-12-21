@@ -56,3 +56,6 @@ target/
 #IDE
 .idea
 .DS_Store
+
+#WikiCorpus
+clasificador/recursos/wikicorpus
