@@ -6,14 +6,15 @@ import HTMLParser  # import html.parser  # in python 3
 patron_retweet = re.compile(r'^RT @\w+: ', re.UNICODE)
 
 patron_url = re.compile(
-    r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+    r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)',
     re.IGNORECASE)
 
 patron_espacios_multiples = re.compile(r' +')
 
-patron_hashtag = re.compile(r'\B#\w+', re.UNICODE)
+# Rodeo esta y otras regexes con paréntesis para poder referenciarlas enteras al hacer una sustitución en tweetenvivo.py
+patron_hashtag = re.compile(r'(\B#\w+)', re.UNICODE)
 
-patron_usuario = re.compile(r'\B@\w+', re.UNICODE)
+patron_usuario = re.compile(r'(\B@\w+)', re.UNICODE)
 
 
 def remover_retweet_si_hay(texto):
