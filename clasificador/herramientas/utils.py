@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import subprocess
 import glob
+import xml.etree.cElementTree as ET
 
 
 def obtener_diccionario(filename):
@@ -41,5 +42,14 @@ def read_wiki_corpus():
                             documentos.append(documento)
                         else:
                             documento += line.decode('latin-1')
+
+    return documentos
+
+
+def obtener_sample_wikicorpus():
+    tree = ET.parse('clasificador/recursos/wikicorpus_sample.xml')
+    documentos = []
+    for documento in tree.findall('documento'):
+        documentos.append(documento.text)
 
     return documentos

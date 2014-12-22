@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import mysql.connector
 from progress.bar import Bar
 
-from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME
+from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_NAME_CHISTES_DOT_COM
 from clasificador.realidad.tweet import Tweet
 from clasificador.realidad.chiste import Chiste
 
@@ -135,10 +135,11 @@ def guardar_features(tweets, **opciones):
     for tweet in tweets:
         if nombre_feature:
             cursor.execute(consulta,
-                           (tweet.id, nombre_feature, tweet.features[nombre_feature], tweet.features[nombre_feature]))
+                           (tweet.id, nombre_feature, str(tweet.features[nombre_feature]),
+                            str(tweet.features[nombre_feature])))
         else:
             for key, value in tweet.features.items():
-                cursor.execute(consulta, (tweet.id, key, value, value))
+                cursor.execute(consulta, (tweet.id, key, str(value), str(value)))
         bar.next()
 
     conexion.commit()
@@ -154,7 +155,7 @@ def guardar_features(tweets, **opciones):
 
 
 def cargar_chistes_pagina():
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     consulta = """
@@ -185,7 +186,7 @@ def cargar_chistes_pagina():
 
 def obtener_chistes_categoria(categoria):
 
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     consulta = """
@@ -219,7 +220,7 @@ def obtener_chistes_categoria(categoria):
 
 def obtener_categorias():
 
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
     cursor = conexion.cursor()
 
     consulta = """
