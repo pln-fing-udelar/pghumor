@@ -226,8 +226,10 @@ def obtener_categorias():
     cursor = conexion.cursor()
 
     consulta = """
-            SELECT DISTINCT id_clasificacion, nombre_clasificacion
-            FROM chistesdotcom.chistes;
+            SELECT id_clasificacion, nombre_clasificacion
+            FROM chistesdotcom.chistes
+            GROUP BY id_clasificacion, nombre_clasificacion
+            HAVING count(*) > 99;
         """
 
     cursor.execute(consulta)
