@@ -1,12 +1,15 @@
+# -*- coding: utf-8 -*-
+from __future__ import  absolute_import, unicode_literals
 
-from clasificador.herramientas.persistencia import *
-from clasificador.herramientas.utils import *
+import random
 
 from pkg_resources import resource_filename
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
-import random
+
+from clasificador.herramientas.persistencia import *
+from clasificador.herramientas.utils import *
 
 
 def get_stop_words():

@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # coding=utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import HTMLParser
 import json
@@ -21,17 +21,17 @@ CONSUMER_SECRET = "PnbLJGXnJjsE9M97yhHXY2Oyj7ojcrcVulDGM2yQfS05NQjoNK"
 ACCESS_TOKEN = "2714871673-HF7B4EPK4mWceAuEuBR4TRhJ12AGlJCVS6VPjZb"
 ACCESS_TOKEN_SECRET = "Yjp80IStjuot5Muvy4SAt2qoaHQdFGQDMJBqD4HQqX1s6"
 
-COLOR_BLUE = u'\033[94m'
-COLOR_RED = u'\033[91m'
-COLOR_BG_RED = u'\033[41m'
-COLOR_YELLOW = u'\033[93m'
-COLOR_END = u'\033[0m'
+COLOR_BLUE = '\033[94m'
+COLOR_RED = '\033[91m'
+COLOR_BG_RED = '\033[41m'
+COLOR_YELLOW = '\033[93m'
+COLOR_END = '\033[0m'
 
 
 def colorear_texto(texto):
-    sustituir_usuario = patron_usuario.sub(COLOR_YELLOW + ur'\1' + COLOR_END, texto)
-    sustituir_hashtag = patron_hashtag.sub(COLOR_RED + ur'\1' + COLOR_END, sustituir_usuario)
-    return patron_url.sub(COLOR_BG_RED + ur'\1' + COLOR_END, sustituir_hashtag)
+    sustituir_usuario = patron_usuario.sub(COLOR_YELLOW + r'\1' + COLOR_END, texto)
+    sustituir_hashtag = patron_hashtag.sub(COLOR_RED + r'\1' + COLOR_END, sustituir_usuario)
+    return patron_url.sub(COLOR_BG_RED + r'\1' + COLOR_END, sustituir_hashtag)
 
 
 # Para ver localizaciones de tweets: http://www.tweetpaths.com/maps

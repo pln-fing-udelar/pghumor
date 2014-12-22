@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
-import math
+from __future__ import absolute_import, unicode_literals
 
 from clasificador.features.feature import Feature
 
