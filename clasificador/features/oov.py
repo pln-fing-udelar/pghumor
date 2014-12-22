@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
+
 import traceback
 import math
 
@@ -10,11 +11,12 @@ from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import *
 from clasificador.realidad.tweet import *
 
+
 CARACTERES_ESPANOL = 255
 
 
 def esta_en_diccionario(texto):
-    if re.search('^\s*$', texto):
+    if re.search(r'^\s*$', texto):
         return True
 
     resultado = Freeling.analyzer_client(texto)
@@ -22,7 +24,7 @@ def esta_en_diccionario(texto):
     if len(resultado) == 0:
         return True
 
-    return resultado[0] != (texto + "\n")
+    return resultado[0] != (texto + '\n')
 
 
 def contiene_caracteres_no_espanoles(texto):
