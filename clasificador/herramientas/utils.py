@@ -7,7 +7,7 @@ import xml.etree.cElementTree as ET
 
 
 def obtener_diccionario(filename):
-    lines = [line.rstrip('\n') for line in open(filename)]
+    lines = [line.decode('utf-8').rstrip('\n') for line in open(filename)]
     return lines
 
 

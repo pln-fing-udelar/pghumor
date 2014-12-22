@@ -19,7 +19,7 @@ import clasificador.features.segundapersona
 import clasificador.features.distanciacategoria
 import clasificador.herramientas.persistencia
 
-CANTIDAD_THREADS = 4
+CANTIDAD_THREADS = 1  # Cuidado que Antonimos tiene problemas de concurrencia
 
 
 class Features:
@@ -74,7 +74,7 @@ class Features:
     def calcular_feature(self, tweets, nombre_feature):
         intervalo = len(tweets) / CANTIDAD_THREADS
         threads = []
-        for i in range(0, CANTIDAD_THREADS - 1):
+        for i in range(CANTIDAD_THREADS - 1):
             t = Thread(target=self.calcular_feature_thread,
                        args=(tweets[i * intervalo:(i + 1) * intervalo], nombre_feature, i))
             threads.append(t)
@@ -92,7 +92,7 @@ class Features:
     def calcular_features_faltantes(self, tweets):
         intervalo = len(tweets) / CANTIDAD_THREADS
         threads = []
-        for i in range(0, CANTIDAD_THREADS - 1):
+        for i in range(CANTIDAD_THREADS - 1):
             t = Thread(target=self.calcular_features_faltantes_thread,
                        args=(tweets[i * intervalo: (i + 1) * intervalo], i))
             threads.append(t)
