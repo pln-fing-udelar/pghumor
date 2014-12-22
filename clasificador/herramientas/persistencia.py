@@ -9,17 +9,17 @@ from clasificador.realidad.tweet import Tweet
 from clasificador.realidad.chiste import Chiste
 
 
-def cargar_tweets(prueba=False):
+def cargar_tweets(limite=None):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
     y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego."""
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
-    if prueba:
-        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT 1000"
+    if limite:
+        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
         cursor.execute(consulta)
 
-        bar = Bar('Cargando tweets de prueba', max=cursor.rowcount,
+        bar = Bar('Eligiendo tweets aleatorios', max=cursor.rowcount,
                   suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
         bar.next(0)
 

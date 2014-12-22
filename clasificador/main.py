@@ -101,11 +101,11 @@ if __name__ == "__main__":
             print(feature.nombre + ":")
             print(feature.descripcion)
     else:
-        corpus = cargar_tweets(args.prueba)
+        corpus = cargar_tweets(args.limite)
 
-        if args.limite:
-            elegir_algunos = random.sample(range(len(corpus)), args.limite)
-            corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
+        # if args.limite:
+        #    elegir_algunos = random.sample(range(len(corpus)), args.limite)
+        #    corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
 
         for tweet in corpus:
             tweet.preprocesar()
