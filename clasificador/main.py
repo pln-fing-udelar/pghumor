@@ -1,23 +1,25 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import argparse
+import os
+import random
+import sys
+
 from flask import Flask, request
 from flask_cors import cross_origin
 import numpy
-import os
-import random
 from sklearn import cross_validation
 from sklearn import naive_bayes, svm
 from sklearn import metrics
-import sys
+
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from clasificador.realidad.tweet import Tweet
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 def train_test_split_pro(_corpus, **options):
@@ -191,7 +193,7 @@ if __name__ == "__main__":
         print('Matriz de confusión:')
         print('')
         print('\t\t(clasificados como)')
-        print('\t\t\tP\tN')
+        print('\t\tP\tN')
         print('(son)\tP\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_negativos)))
         print('(son)\tN\t' + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
         print('')

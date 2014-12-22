@@ -1,4 +1,6 @@
 # coding=utf-8
+from __future__ import absolute_import, unicode_literals
+
 import unittest
 
 import clasificador.features.preguntasrespuestas
@@ -9,7 +11,7 @@ class TestPreguntasRespuestas(unittest.TestCase):
     def test_preguntasrespuestas_basico(self):
         tweet = Tweet()
         tweet.id = 58179039764021248
-        tweet.texto = u'¿De qué color era el caballo blanco de Artigas? Blanco.'
+        tweet.texto = '¿De qué color era el caballo blanco de Artigas? Blanco.'
         tweet.texto_original = tweet.texto
         tweet.favoritos = 3
         tweet.retweets = 14
@@ -26,7 +28,7 @@ class TestPreguntasRespuestas(unittest.TestCase):
     def test_preguntasrespuestas_basico2(self):
         tweet = Tweet()
         tweet.id = 58179039764021248
-        tweet.texto = u'-¿Qué te duele? -La mano -¿Por qué? -De tanto pensar en ti -¡Asqueroso! -Perdón, entonces no te vuelvo hacer una carta :('
+        tweet.texto = '-¿Qué te duele? -La mano -¿Por qué? -De tanto pensar en ti -¡Asqueroso! -Perdón, entonces no te vuelvo hacer una carta :('
         tweet.texto_original = tweet.texto
         tweet.favoritos = 75
         tweet.retweets = 113

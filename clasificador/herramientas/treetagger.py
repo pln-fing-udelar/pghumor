@@ -1,5 +1,6 @@
-from __future__ import absolute_import
-
+# coding=utf-8
+from __future__ import absolute_import, unicode_literals
+import pipes
 import re
 
 import clasificador.herramientas.utils
@@ -18,11 +19,11 @@ class TreeTagger:
 
     @staticmethod
     def procesar_texto(texto):
-        command = 'echo "' + clasificador.herramientas.utils.escapar(texto) + '" | tree-tagger-spanish'
+        command = 'echo ' + pipes.quote(texto) + ' | tree-tagger-spanish'
         resultado = clasificador.herramientas.utils.ejecutar_comando(command)
         tokens = []
         for line in resultado:
-            matcheo = re.search('^(.*)\t(.*)\t(.*)\n', line)
+            matcheo = re.search(r'^(.*)\t(.*)\t(.*)\n', line)
             if matcheo:
                 detalle = TokenTT()
                 detalle.token = matcheo.group(1)
