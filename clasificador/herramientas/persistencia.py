@@ -11,9 +11,7 @@ from clasificador.realidad.chiste import Chiste
 
 def cargar_tweets(prueba=False):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
-    y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego.
-
-    """
+    y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego."""
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
