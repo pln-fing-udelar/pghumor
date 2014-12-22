@@ -27,7 +27,6 @@ def train_test_split_pro(_corpus, **options):
     hicimos este.
     # features_entrenamiento, features_evaluacion, clases_entrenamiento, clases_evaluacion
     # = train_test_split(features, clases, test_size=fraccion_evaluacion)
-
     """
     fraccion_evaluacion = options.pop('test_size', 0.25)
 
@@ -84,8 +83,6 @@ if __name__ == "__main__":
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
                         help='muestra las features disponibles y termina el programa')
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
-    parser.add_argument('-p', '--prueba', action='store_true', default=False,
-                        help="establece el modo prueba")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
