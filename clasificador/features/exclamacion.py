@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
+
+import math
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
-
-import math
 
 
 class Exclamacion(Feature):

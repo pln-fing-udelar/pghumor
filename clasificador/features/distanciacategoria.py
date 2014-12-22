@@ -1,14 +1,14 @@
-
-from clasificador.herramientas.persistencia import *
-from clasificador.herramientas.utils import *
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 from pkg_resources import resource_filename
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from clasificador.features.feature import  Feature
-import random
 
+from clasificador.herramientas.persistencia import *
+from clasificador.herramientas.utils import *
 
 def get_stop_words():
     return obtener_diccionario(resource_filename('clasificador.recursos.diccionarios', 'stop_words.txt'))

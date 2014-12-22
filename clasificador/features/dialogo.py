@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 from clasificador.features.feature import Feature
 
 
 def guiones_dialogo():
-    return [u'-', u'—', u'–', u'―', u'‒', u'‐', u'−', u'­', u'‑', u'⁃', u'֊', u'˗', u'⁻', u'⏤', u'─', u'➖']
+    return ['-', '—', '–', '―', '‒', '‐', '−', '­', '‑', '⁃', '֊', '˗', '⁻', '⏤', '─', '➖']
     # Estos símbolos no son iguales; son distintos guiones (algunos son hyphen, otros dashes,
     # otros minus sign, viñetas, etc.)
 

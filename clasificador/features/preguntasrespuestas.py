@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
+
 import re
 
 from clasificador.features.feature import Feature
@@ -7,11 +8,11 @@ from clasificador.features.dialogo import guiones_dialogo
 
 
 def guion_dialogo_re():
-    return ur"(?:" + ur"|".join(guiones_dialogo()) + ur")"
+    return r"(?:" + r"|".join(guiones_dialogo()) + r")"
 
 
-patron = re.compile(ur"""
-                    \s* """ + guion_dialogo_re() + ur"""? \s* ¿+ [^\?]+ \?+ # pregunta
+patron = re.compile(r"""
+                    \s* """ + guion_dialogo_re() + r"""? \s* ¿+ [^\?]+ \?+ # pregunta
                     (?:[^¿\?]+ [^\s¿\?] [^¿\?]+) # respuesta
                     """, re.UNICODE | re.VERBOSE)
 

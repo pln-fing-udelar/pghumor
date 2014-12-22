@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import math
 
@@ -7,6 +7,7 @@ from pkg_resources import resource_filename
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import *
+import clasificador.herramientas.utils
 
 
 class PalabrasClave(Feature):
