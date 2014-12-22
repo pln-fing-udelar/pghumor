@@ -14,4 +14,3 @@ class Hashtags(Feature):
 
     def calcular_feature(self, tweet):
         return tweet.cantidad_hashtags()
-
