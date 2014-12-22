@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
 from threading import Thread
@@ -41,7 +42,7 @@ class Features:
             clasificador.features.segundapersona.SegundaPersona(),
         ]:
             self.features[feature.nombre] = feature
-            print 'Cargada catacteristica: ' + feature.nombre
+            print('Cargada catacterística: ' + feature.nombre)
 
         categorias_chistes_dot_com = clasificador.herramientas.persistencia.obtener_categorias()
 
@@ -50,9 +51,10 @@ class Features:
                                                                                   categoria['nombre_clasificacion'],
                                                                                   False)
             self.features[feature.nombre] = feature
-            print 'Cargada catacteristica: ' + feature.nombre
 
-        print 'Fin cargar caracteristicas'
+            print('Cargada catacterística: ' + feature.nombre)
+
+        print('Fin cargar características')
 
     def calcular_features(self, tweets):
         intervalo = len(tweets) / CANTIDAD_THREADS
