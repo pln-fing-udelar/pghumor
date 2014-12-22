@@ -16,7 +16,8 @@ import clasificador.features.preguntasrespuestas
 import clasificador.features.presenciaanimales
 import clasificador.features.primerapersona
 import clasificador.features.segundapersona
-
+import clasificador.features.distanciacategoria
+import clasificador.herramientas.persistencia
 
 CANTIDAD_THREADS = 4
 
@@ -40,6 +41,18 @@ class Features:
             clasificador.features.segundapersona.SegundaPersona(),
         ]:
             self.features[feature.nombre] = feature
+            print u'Cargada catacterística: ' + feature.nombre
+
+        categorias_chistes_dot_com = clasificador.herramientas.persistencia.obtener_categorias()
+
+        for categoria in categorias_chistes_dot_com:
+            feature = clasificador.features.distanciacategoria.DistanciaCategoria(categoria['id_clasificacion'],
+                                                                                  categoria['nombre_clasificacion'],
+                                                                                  False)
+            self.features[feature.nombre] = feature
+            print u'Cargada catacterística: ' + feature.nombre
+
+        print u'Fin cargar características'
 
     def calcular_features(self, tweets):
         intervalo = len(tweets) / CANTIDAD_THREADS
