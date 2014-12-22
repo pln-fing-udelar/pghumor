@@ -5,10 +5,11 @@ from pkg_resources import resource_filename
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
-from clasificador.features.feature import  Feature
 
+from clasificador.features.feature import  Feature
 from clasificador.herramientas.persistencia import *
 from clasificador.herramientas.utils import *
+
 
 def get_stop_words():
     return obtener_diccionario(resource_filename('clasificador.recursos.diccionarios', 'stop_words.txt'))
@@ -33,7 +34,6 @@ class DistanciaCategoria(Feature):
         documentos_wikicorpus = obtener_sample_wikicorpus()
         nuevo_x_train = x_train + documentos_wikicorpus
         nuevo_y_train = y_train + [u'wiki' for i in range(0, len(documentos_wikicorpus))]
-
 
         self.clf_4 = Pipeline([
             ('vect', TfidfVectorizer(
