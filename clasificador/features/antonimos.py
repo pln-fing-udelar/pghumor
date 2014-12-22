@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import math
 
@@ -29,8 +29,8 @@ class Antonimos(Feature):
         for token in tokens:
             antonimos = []
             for synset in self.wncr.synsets(token.lemma):
-                for lemma in synset.lemmas:
-                    antonimos += [lemma_antonimo.name for lemma_antonimo in lemma.antonyms()]
+                for lemma in synset.lemmas():
+                    antonimos += [lemma_antonimo.name() for lemma_antonimo in lemma.antonyms()]
 
             for otro_token in tokens:
                 if otro_token.lemma in antonimos:
@@ -40,4 +40,4 @@ class Antonimos(Feature):
         if len(tokens) == 0:
             return 0
         else:
-            return cant_antonimos / math.sqrt(len(tokens))
+            return cant_antonimos / math.sqrt(len(tokens)) / 2.0
