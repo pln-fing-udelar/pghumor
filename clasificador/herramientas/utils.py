@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+# coding=utf-8
+from __future__ import absolute_import, unicode_literals
 
 import subprocess
 import glob
@@ -14,7 +15,7 @@ def ejecutar_comando(command):
         try:
             p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             p.wait()
-            return p.stdout.readlines()
+            return [_str.decode('utf-8') for _str in p.stdout.readlines()]
         except:
             pass
 

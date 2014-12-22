@@ -1,9 +1,8 @@
 # coding=utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import re
 import itertools
-
 import pipes
 
 import clasificador.herramientas.utils
@@ -47,7 +46,7 @@ class Freeling:
 
     @staticmethod
     def analyzer_client(texto):
-        comando = "echo " + pipes.quote(texto) + " | analyzer_client 55555"
+        comando = u"echo " + pipes.quote(texto) + u" | analyzer_client 55555"
         resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
         while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[
                 0] == 'Server not ready?\n':
