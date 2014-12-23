@@ -5,42 +5,23 @@ from threading import Thread
 
 from progress.bar import Bar
 
-import clasificador.features.antonimos
-import clasificador.features.dialogo
-import clasificador.features.exclamacion
-import clasificador.features.hashtags
-import clasificador.features.jergasexual
-import clasificador.features.links
-import clasificador.features.oov
-import clasificador.features.palabrasclave
-import clasificador.features.preguntasrespuestas
-import clasificador.features.presenciaanimales
-import clasificador.features.primerapersona
-import clasificador.features.segundapersona
 import clasificador.features.distanciacategoria
+from clasificador.features.feature import Feature
 import clasificador.herramientas.persistencia
 
 CANTIDAD_THREADS = 4  # Cuidado que Antonimos tiene problemas de concurrencia
+
+
+def all_subclasses(cls):
+    return cls.__subclasses__() + [g for s in cls.__subclasses__()
+                                   for g in all_subclasses(s)]
 
 
 class Features:
     def __init__(self):
         self.bar = ""
         self.features = {}
-        for feature in [
-            clasificador.features.antonimos.Antonimos(),
-            clasificador.features.dialogo.Dialogo(),
-            clasificador.features.exclamacion.Exclamacion(),
-            clasificador.features.hashtags.Hashtags(),
-            clasificador.features.jergasexual.JergaSexual(),
-            clasificador.features.links.Links(),
-            clasificador.features.oov.OOV(),
-            clasificador.features.palabrasclave.PalabrasClave(),
-            clasificador.features.preguntasrespuestas.PreguntasRespuestas(),
-            clasificador.features.presenciaanimales.PresenciaAnimales(),
-            clasificador.features.primerapersona.PrimeraPersona(),
-            clasificador.features.segundapersona.SegundaPersona(),
-        ]:
+        for feature in all_subclasses(Feature):
             self.features[feature.nombre] = feature
             print('Cargada catacterística: ' + feature.nombre)
 
