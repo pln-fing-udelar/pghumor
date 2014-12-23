@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
 import argparse
@@ -27,7 +27,6 @@ def train_test_split_pro(_corpus, **options):
     hicimos este.
     # features_entrenamiento, features_evaluacion, clases_entrenamiento, clases_evaluacion
     # = train_test_split(features, clases, test_size=fraccion_evaluacion)
-
     """
     fraccion_evaluacion = options.pop('test_size', 0.25)
 
@@ -84,8 +83,6 @@ if __name__ == "__main__":
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
                         help='muestra las features disponibles y termina el programa')
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
-    parser.add_argument('-p', '--prueba', action='store_true', default=False,
-                        help="establece el modo prueba")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
@@ -101,11 +98,11 @@ if __name__ == "__main__":
             print(feature.nombre + ":")
             print(feature.descripcion)
     else:
-        corpus = cargar_tweets(args.prueba)
+        corpus = cargar_tweets(args.limite)
 
-        if args.limite:
-            elegir_algunos = random.sample(range(len(corpus)), args.limite)
-            corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
+        # if args.limite:
+        #    elegir_algunos = random.sample(range(len(corpus)), args.limite)
+        #    corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
 
         for tweet in corpus:
             tweet.preprocesar()

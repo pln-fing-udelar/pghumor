@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
 from threading import Thread
@@ -20,7 +20,7 @@ import clasificador.features.segundapersona
 import clasificador.features.distanciacategoria
 import clasificador.herramientas.persistencia
 
-CANTIDAD_THREADS = 1  # Cuidado que Antonimos tiene problemas de concurrencia
+CANTIDAD_THREADS = 4  # Cuidado que Antonimos tiene problemas de concurrencia
 
 
 class Features:
