@@ -227,7 +227,7 @@ def obtener_categorias():
             SELECT id_clasificacion, nombre_clasificacion
             FROM chistesdotcom.chistes
             GROUP BY id_clasificacion, nombre_clasificacion
-            HAVING count(*) > 99;
+            HAVING count(*) > 350;
         """
 
     cursor.execute(consulta)
