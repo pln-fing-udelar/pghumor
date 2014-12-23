@@ -18,7 +18,7 @@ Levantar antes los servidores de Freeling:
 Luego para correr:
 
 ```bash
-clasificador/main.sh
+clasificador/main.py
 ```
 
 Para bajar los servidores de Freeling:
