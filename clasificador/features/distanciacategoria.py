@@ -7,7 +7,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 
 from clasificador.features.feature import Feature
-from clasificador.herramientas.persistencia import *
+from clasificador.herramientas.chistesdotcom import obtener_chistes_categoria
 from clasificador.herramientas.utils import *
 
 

@@ -7,32 +7,36 @@ from progress.bar import Bar
 
 import clasificador.features.distanciacategoria
 from clasificador.features.feature import Feature
+import clasificador.features.npersona
+import clasificador.herramientas.chistesdotcom
 import clasificador.herramientas.persistencia
+from clasificador.herramientas.utilreflection import cargar_modulos_vecinos, subclases
+
 
 CANTIDAD_THREADS = 4  # Cuidado que Antonimos tiene problemas de concurrencia
-
-
-def all_subclasses(cls):
-    return cls.__subclasses__() + [g for s in cls.__subclasses__()
-                                   for g in all_subclasses(s)]
 
 
 class Features:
     def __init__(self):
         self.bar = ""
         self.features = {}
-        for feature in all_subclasses(Feature):
-            self.features[feature.nombre] = feature
-            print('Cargada catacterística: ' + feature.nombre)
 
-        categorias_chistes_dot_com = clasificador.herramientas.persistencia.obtener_categorias()
+        cargar_modulos_vecinos(__name__, __file__)
+
+        for clase_feature in subclases(Feature):
+            if clase_feature != clasificador.features.distanciacategoria.DistanciaCategoria \
+                    and clase_feature != clasificador.features.npersona.NPersona:
+                objeto_feature = clase_feature()
+                self.features[objeto_feature.nombre] = objeto_feature
+                print('Cargada catacterística: ' + objeto_feature.nombre)
+
+        categorias_chistes_dot_com = clasificador.herramientas.chistesdotcom.obtener_categorias()
 
         for categoria in categorias_chistes_dot_com:
             feature = clasificador.features.distanciacategoria.DistanciaCategoria(categoria['id_clasificacion'],
                                                                                   categoria['nombre_clasificacion'],
                                                                                   False)
             self.features[feature.nombre] = feature
-
             print('Cargada catacterística: ' + feature.nombre)
 
         print('Fin cargar características')
@@ -99,7 +103,6 @@ class Features:
                 for feature in self.features.values():
                     tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                     bar.next()
-            # print("termino thread " + str(identificador))
             bar.finish()
 
     def calcular_feature_thread(self, tweets, nombre_feature, identificador):
@@ -111,7 +114,6 @@ class Features:
             for tweet in tweets:
                 tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                 bar.next()
-            # print("Termino thread " + str(identificador))
             bar.finish()
 
     def calcular_features_faltantes_thread(self, tweets, identificador):
@@ -124,5 +126,4 @@ class Features:
                     if feature.nombre not in tweet.features:
                         tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                     bar.next()
-            # print("termino thread " + str(identificador))
             bar.finish()
