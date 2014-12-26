@@ -40,4 +40,4 @@ class Antonimos(Feature):
         if len(tokens) == 0:
             return 0
         else:
-            return cant_antonimos / math.sqrt(len(tokens)) / 2.0
+            return cant_antonimos / math.sqrt(len(tokens)) / 2.0  # divido entre 2 para contar una vez cada par

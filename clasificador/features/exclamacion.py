@@ -12,7 +12,7 @@ class Exclamacion(Feature):
         super(Exclamacion, self).__init__()
         self.nombre = "Exclamacion"
         self.descripcion = """
-            Mide si existen exclamaciones en el tweet o palabras totalmente en mayúscula resaltando un concepto.
+            Mide la cantidad de signos de exclamación en el tweet.
         """
 
     def calcular_feature(self, tweet):
@@ -20,11 +20,8 @@ class Exclamacion(Feature):
 
         feature = 0
         for token in freeling.tokens:
-            if token.tag == 'Fat':
+            if token.tag == 'Fat' or token.tag == 'Faa':
                 feature += 1
-
-        # if token.token == token.token.upper():
-        #    feature
 
         if len(freeling.tokens) == 0:
             return 0
