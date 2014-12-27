@@ -24,7 +24,7 @@ class PalabrasMayusculas(Feature):
             if token.tag[0] != 'F' and token.token == token.token.upper():
                 tokens_en_mayusculas += 1
 
-        if len(tokens_no_puntuacion) == 0:
+        if tokens_no_puntuacion == 0:
             return 0
         else:
             return tokens_en_mayusculas / tokens_no_puntuacion
