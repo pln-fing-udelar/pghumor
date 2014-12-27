@@ -12,8 +12,9 @@ import clasificador.herramientas.chistesdotcom
 import clasificador.herramientas.persistencia
 from clasificador.herramientas.utilreflection import cargar_modulos_vecinos, subclases
 
-
-CANTIDAD_THREADS = 4  # Cuidado que Antonimos tiene problemas de concurrencia
+# Cuidado que Antonimos tiene problemas de concurrencia
+# https://github.com/nltk/nltk/issues/803
+CANTIDAD_THREADS = 4
 
 
 class Features:
