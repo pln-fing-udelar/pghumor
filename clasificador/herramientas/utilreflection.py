@@ -15,10 +15,17 @@ def paquete(module):
     return '.'.join(module.split('.')[:-1]) + '.'
 
 
+def archivos_python_vecinos(archivo):
+    return glob.glob(os.path.dirname(archivo) + '/*.py')
+
+
+def modulos_vecinos(archivo):
+    return [os.path.basename(archivo_python_vecino)[:-3] for archivo_python_vecino in archivos_python_vecinos(archivo)]
+
+
 def cargar_modulos_vecinos(modulo, archivo):
     _paquete = paquete(modulo)
 
-    for archivo_python_vecino in glob.glob(os.path.dirname(archivo) + '/*.py'):
-        if archivo_python_vecino != '__init__.py':
-            modulo_vecino = os.path.basename(archivo_python_vecino)[:-3]
+    for modulo_vecino in modulos_vecinos(archivo):
+        if modulo_vecino != '__init__':
             importlib.import_module(_paquete + modulo_vecino)
