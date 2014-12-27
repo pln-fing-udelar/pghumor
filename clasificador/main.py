@@ -100,10 +100,6 @@ if __name__ == "__main__":
     else:
         corpus = cargar_tweets(args.limite)
 
-        # if args.limite:
-        #    elegir_algunos = random.sample(range(len(corpus)), args.limite)
-        #    corpus = [corpus[i] for i in range(len(corpus)) if i in elegir_algunos]
-
         for tweet in corpus:
             tweet.preprocesar()
 
@@ -122,18 +118,11 @@ if __name__ == "__main__":
 
         corpus = filtrar_segun_votacion(corpus)
 
-        # print("Realizando método de aprendizaje automático")
         if args.evaluar:
             entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
             evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
         else:
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
-            # humor = [tweet for tweet in corpus if tweet.es_humor]
-            # nohumor = [tweet for tweet in corpus if not tweet.es_humor]
-            # if len(humor) > len(nohumor):
-            # corpus = nohumor + humor[:len(nohumor)]
-            # else:
-            # corpus = nohumor[:len(humor)] + humor
 
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
