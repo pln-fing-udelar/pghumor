@@ -8,12 +8,12 @@ from clasificador.features.dialogo import guiones_dialogo
 
 
 def guion_dialogo_re():
-    return r"(?:" + r"|".join(guiones_dialogo()) + r")"
+    return r'(?:' + r'|'.join(guiones_dialogo()) + r')'
 
 
 patron = re.compile(r"""
-                    \s* """ + guion_dialogo_re() + r"""? \s* ¿+ [^\?]+ \?+ # pregunta
-                    (?:[^¿\?]+ [^\s¿\?] [^¿\?]+) # respuesta
+                    ¿+ [^\?]+ \?+ # pregunta
+                    [^¿\?]* [\w\d] # respuesta
                     """, re.UNICODE | re.VERBOSE)
 
 
