@@ -54,6 +54,8 @@ class Freeling:
 
     @staticmethod
     def analyzer_client(texto):
+        # TODO: usar sockets en lugar de ir al sistema, ya que es lento
+        # https://docs.python.org/3/howto/sockets.html
         comando = "echo " + pipes.quote(texto) + " | analyzer_client 55555"
         resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
         while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' \
