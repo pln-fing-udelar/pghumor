@@ -8,14 +8,14 @@ from clasificador.realidad.tweet import Tweet
 
 
 class TestPalabrasMayusculas(unittest.TestCase):
-    def test_palabrasmayusculas_basico(self):
+    def test_palabrasmayusculas_basico_con_acento_y_numeros(self):
         tweet = Tweet()
         tweet.id = 58179039764021248
         tweet.texto = """Típico :
             –¿MAMÁ?
             –¿Qué?
             –Te amo
-            –¡YA TE DIJE QUE NO VAS A SALIR!"""
+            –¡YA TE DIJE 2 VECES QUE NO VAS A SALIR!"""
         tweet.texto_original = tweet.texto
         tweet.favoritos = 3
         tweet.retweets = 14
@@ -26,7 +26,7 @@ class TestPalabrasMayusculas(unittest.TestCase):
 
         tweet.features[palabrasmayusculas.nombre] = palabrasmayusculas.calcular_feature(tweet)
 
-        valor_esperado = 9 / 13
+        valor_esperado = 10 / 15
 
         self.assertEquals(valor_esperado, tweet.features[palabrasmayusculas.nombre],
                           "El tweet debería tener " + str(valor_esperado) + " en PalabrasMayusculas, no "
