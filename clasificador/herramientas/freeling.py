@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, unicode_literals
 
 import re
 import itertools
@@ -22,7 +22,11 @@ class Freeling:
 
     @staticmethod
     def procesar_texto(texto):
-        if re.search(r'^\s*$', texto):
+        # Se pasa a minúsculas, sino Freeling toma como entidades con nombre a cualquier secuencia de palabras con
+        # la primer letra en mayúsculas de cada una.
+        texto = texto.lower()
+
+        if re.match(r'^\s*$', texto):
             return []
 
         resultado = Freeling.analyzer_client(texto)
