@@ -9,6 +9,7 @@ class Feature:
     def __init__(self):
         self.nombre = ""
         self.descripcion = ""
+        self.incluir = True
 
     @abc.abstractmethod
     def calcular_feature(self, tweet):

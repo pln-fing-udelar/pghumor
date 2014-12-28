@@ -28,8 +28,9 @@ class Features:
             if clase_feature != clasificador.features.distanciacategoria.DistanciaCategoria \
                     and clase_feature != clasificador.features.npersona.NPersona:
                 objeto_feature = clase_feature()
-                self.features[objeto_feature.nombre] = objeto_feature
-                print('Cargada catacterística: ' + objeto_feature.nombre)
+                if objeto_feature.incluir:
+                    self.features[objeto_feature.nombre] = objeto_feature
+                    print('Cargada catacterística: ' + objeto_feature.nombre)
 
         categorias_chistes_dot_com = clasificador.herramientas.chistesdotcom.obtener_categorias()
 
