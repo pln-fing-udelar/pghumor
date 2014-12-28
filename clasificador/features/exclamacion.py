@@ -12,18 +12,19 @@ class Exclamacion(Feature):
         super(Exclamacion, self).__init__()
         self.nombre = "Exclamacion"
         self.descripcion = """
-            Mide la cantidad de signos de exclamación en el tweet.
+            Cuenta la cantidad de signos de exclamación en el tweet,
+            dividido la raíz de la cantidad de tokens del tweet.
         """
 
     def calcular_feature(self, tweet):
         freeling = Freeling(tweet)
 
-        feature = 0
+        exclamaciones = 0
         for token in freeling.tokens:
             if token.tag == 'Fat' or token.tag == 'Faa':
-                feature += 1
+                exclamaciones += 1
 
         if len(freeling.tokens) == 0:
             return 0
         else:
-            return feature / math.sqrt(len(freeling.tokens))
+            return exclamaciones / math.sqrt(len(freeling.tokens))

@@ -20,8 +20,8 @@ class DistanciaCategoria(Feature):
         super(DistanciaCategoria, self).__init__()
         self.nombre = "DistanciaCategoria: " + nombre_categoria
         self.descripcion = """
-            Mide la distancia utilizando Bag Of Words entre la categoria """ + nombre_categoria + """ de chistes.com.
-            y textos de no humor como son los encontrados en wikipedia
+            Mide la distancia utilizando Bag Of Words entre la categoria """ + nombre_categoria + """ de chistes.com
+            y textos de no humor como son los encontrados en wikipedia.
         """
         chistes = obtener_chistes_categoria(id_categoria)
 
