@@ -1,4 +1,4 @@
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, unicode_literals
 
 # Twitter API credentials
 consumer_key = "GoJjP7Xmj4kpxjttr8qJ9cLtC"
