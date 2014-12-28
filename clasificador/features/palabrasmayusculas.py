@@ -1,11 +1,12 @@
 # coding=utf-8
 from __future__ import absolute_import, division, unicode_literals
-import re
+
+import regex  # Soporta pedirle letras en mayúsculas unicode, mientras que re no.
 
 from clasificador.features.feature import Feature
-from clasificador.herramientas.freeling import Freeling
 
-patron_palabra = re.compile(r'\b\w+\b', re.UNICODE)
+patron_palabra_o_numero = regex.compile(r'\b\w+\b', regex.UNICODE)
+patron_palabra_mayuscula = regex.compile(r'\b\p{Lu}+\b', regex.UNICODE)
 
 
 class PalabrasMayusculas(Feature):
@@ -17,23 +18,10 @@ class PalabrasMayusculas(Feature):
         """
 
     def calcular_feature(self, tweet):
-        freeling = Freeling(tweet)
+        palabras_o_numeros = len(patron_palabra_o_numero.findall(tweet.texto))
+        palabras_en_mayusculas = len(patron_palabra_mayuscula.findall(tweet.texto))
 
-        tokens_no_puntuacion = 0
-
-        for token in freeling.tokens:
-            if token.tag[0] != 'F':
-                tokens_no_puntuacion += 1
-
-        palabras_en_mayusculas = 0
-        for palabra in patron_palabra.findall(tweet.texto):
-            if palabra == palabra.upper():
-                palabras_en_mayusculas += 1
-
-        if tokens_no_puntuacion == 0:
-            if palabras_en_mayusculas > 0:
-                print("ERROR: en el tweet \"" + tweet.texto + "\" no se encontraron tokens de no puntuación con"
-                                                              " Freeling, pero se encontraron palabras en mayúsculas con expresiones regulares.")
+        if palabras_o_numeros == 0:
             return 0
         else:
-            return palabras_en_mayusculas / tokens_no_puntuacion
+            return palabras_en_mayusculas / palabras_o_numeros
