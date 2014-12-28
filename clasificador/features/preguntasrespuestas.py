@@ -11,7 +11,7 @@ def guion_dialogo_re():
     return r'(?:' + r'|'.join(guiones_dialogo()) + r')'
 
 
-patron = re.compile(r"""
+patron_pregunta_respuesta = re.compile(r"""
                     ¿+ [^\?]+ \?+ # pregunta
                     [^¿\?]* [\w\d] # respuesta
                     """, re.UNICODE | re.VERBOSE)
@@ -32,4 +32,4 @@ class PreguntasRespuestas(Feature):
         # una pregunta cualquiera del texto; debería ser una pregunta al comienzo o al final tal vez.
 
     def calcular_feature(self, tweet):
-        return cantidad_de_capturas_no_solapadas(patron, tweet.texto)
+        return cantidad_de_capturas_no_solapadas(patron_pregunta_respuesta, tweet.texto)
