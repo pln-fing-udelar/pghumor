@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, unicode_literals
 
 from pkg_resources import resource_filename
 from sklearn.feature_extraction.text import TfidfVectorizer
