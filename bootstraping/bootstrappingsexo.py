@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from collections import defaultdict
 import csv
+from heapq import nlargest
 import os
 import sys
 import time
@@ -76,7 +77,7 @@ def cargar_diccionario(path):
 
 
 def imprimir_top(dicc, top):
-    for palabra in sorted(dicc, key=dicc.get, reverse=True)[:top]:
+    for palabra in nlargest(top, dicc, key=dicc.get):
         print(palabra, dicc[palabra])
 
 
