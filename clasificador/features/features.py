@@ -54,7 +54,7 @@ class Features:
         Features.repartir_en_threads(self.calcular_features_thread, tweets)
 
     def calcular_feature(self, tweets, nombre_feature):
-        Features.repartir_en_threads(self.calcular_features_faltantes_thread, tweets, nombre_feature)
+        Features.repartir_en_threads(self.calcular_feature_thread, tweets, nombre_feature)
 
     def calcular_features_faltantes(self, tweets):
         Features.repartir_en_threads(self.calcular_features_faltantes_thread, tweets)

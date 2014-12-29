@@ -100,7 +100,7 @@ def cargar_tweets(limite=None):
 
     cursor.execute(consulta)
 
-    bar = Bar("Cargando features\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+    bar = Bar("Cargando features\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     for (id_tweet, nombre_feature, valor_feature) in cursor:
