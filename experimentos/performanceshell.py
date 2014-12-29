@@ -10,12 +10,13 @@ from progress.bar import Bar
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 import clasificador.herramientas.utils
 
 if __name__ == "__main__":
     largo = 1000
 
-    bar = Bar('Calculando', max=largo, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    bar = Bar('Calculando', max=largo, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     for i in range(largo):
