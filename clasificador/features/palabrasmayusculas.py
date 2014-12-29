@@ -18,6 +18,9 @@ class PalabrasMayusculas(Feature):
         """
 
     def calcular_feature(self, tweet):
+        if tweet.id == 478331135445839873:
+            i = 1
+
         palabras_o_numeros = len(patron_palabra_o_numero.findall(tweet.texto))
         palabras_en_mayusculas = len(patron_palabra_mayuscula.findall(tweet.texto))
 

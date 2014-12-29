@@ -1,15 +1,14 @@
 # coding=utf-8
 from __future__ import absolute_import, division, unicode_literals
 
+from contextlib import closing
 import re
 import itertools
-import pipes
-
-import clasificador.herramientas.utils
+import socket
 
 
 patron_todo_espacios = re.compile(r'^\s*$', re.UNICODE)
-patron_linea_freeling = re.compile(r'^(.*)\s(.*)\s(.*)\s(.*)\n', re.UNICODE)
+patron_linea_freeling = re.compile(r'^(.*)\s(.*)\s(.*)\s(.*)', re.UNICODE)
 
 
 class Freeling:
@@ -37,7 +36,7 @@ class Freeling:
 
         oraciones = []
         oracion = []
-        for linea in resultado:
+        for linea in resultado.split('\n'):
             matcheo = patron_linea_freeling.match(linea)
             if matcheo:
                 detalle = TokenFL()
@@ -50,21 +49,28 @@ class Freeling:
                 oraciones.append(oracion)
                 oracion = []
 
+        oraciones.append(oracion)
+
         return oraciones
 
     @staticmethod
     def analyzer_client(texto):
-        # TODO: usar sockets en lugar de ir al sistema, ya que es lento
-        # https://docs.python.org/3/howto/sockets.html
-        comando = "echo " + pipes.quote(texto) + " | analyzer_client 55555"
-        resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
+        resultado = Freeling.respuesta_socket_freeling(texto)
         while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' \
                 or resultado[0] == 'Server not ready?\n':
             print(resultado)
             print(len(texto), texto)
             print("En este loop")
-            resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
+            resultado = Freeling.respuesta_socket_freeling(texto)
         return resultado
+
+    @staticmethod
+    def respuesta_socket_freeling(texto):
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+            s.connect(('127.0.0.1', 55555))
+            mensaje = (texto + '\0').encode('utf-8')
+            s.send(mensaje)
+            return s.recv(3000).decode('utf-8').strip()
 
     @staticmethod
     def get_tokens_de_oraciones(oraciones):
