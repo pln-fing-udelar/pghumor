@@ -17,8 +17,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from clasificador.realidad.tweet import Tweet
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
-from clasificador.herramientas.utilclasificacion import train_test_split_pro, features_clases_split, \
-    cross_validation_y_reportar
+from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, features_clases_split, \
+    train_test_split_pro
 
 
 def filtrar_segun_votacion(_corpus):
