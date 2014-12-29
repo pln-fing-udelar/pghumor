@@ -1,13 +1,13 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from clasificador.features.feature import Feature
 
 
 def guiones_dialogo():
+    """Devuelve una lista de símbolos de diálogo posibles. Parecen todos iguales, pero son
+    distintos (algunos son hyphen, otros dashes, otros minus sign, viñetas, etc.)"""
     return ['-', '—', '–', '―', '‒', '‐', '−', '­', '‑', '⁃', '֊', '˗', '⁻', '⏤', '─', '➖']
-    # Estos símbolos no son iguales; son distintos guiones (algunos son hyphen, otros dashes,
-    # otros minus sign, viñetas, etc.)
 
 
 class Dialogo(Feature):
@@ -21,5 +21,5 @@ class Dialogo(Feature):
     def calcular_feature(self, tweet):
         for guion in guiones_dialogo():
             if tweet.texto.startswith(guion):
-                return True
-        return False
+                return 1
+        return 0

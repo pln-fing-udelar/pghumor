@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import unittest
 
@@ -45,7 +45,7 @@ class TestPreprocesamiento(unittest.TestCase):
         tweet.cuenta = 174450359
 
         self.assertEqual(remover_links(tweet.texto),
-                         u'FOTO CURIOSA: ¿Será culpa del arquitecto? ¿Tu que opinas?  #fb',
+                         'FOTO CURIOSA: ¿Será culpa del arquitecto? ¿Tu que opinas?  #fb',
                          "El texto sin el link no es el esperado")
 
     def test_remover_dos_links(self):

@@ -1,11 +1,14 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
+from contextlib import closing
 import re
 import itertools
-import pipes
+import socket
 
-import clasificador.herramientas.utils
+
+patron_todo_espacios = re.compile(r'^\s*$', re.UNICODE)
+patron_linea_freeling = re.compile(r'^(.*)\s(.*)\s(.*)\s(.*)', re.UNICODE)
 
 
 class Freeling:
@@ -22,39 +25,52 @@ class Freeling:
 
     @staticmethod
     def procesar_texto(texto):
-        if re.search(r'^\s*$', texto):
+        # Se pasa a minúsculas, sino Freeling toma como entidades con nombre a cualquier secuencia de palabras con
+        # la primer letra en mayúsculas de cada una.
+        texto = texto.lower()
+
+        if patron_todo_espacios.match(texto):
             return []
 
         resultado = Freeling.analyzer_client(texto)
 
         oraciones = []
         oracion = []
-        for linea in resultado:
-            matcheo = re.search(r'^(.*)\s(.*)\s(.*)\s(.*)\n', linea)
+        for linea in resultado.split('\n'):
+            matcheo = patron_linea_freeling.match(linea)
             if matcheo:
                 detalle = TokenFL()
                 detalle.token = matcheo.group(1)
                 detalle.lemma = matcheo.group(2)
                 detalle.tag = matcheo.group(3)
                 detalle.probabilidad = matcheo.group(4)
-
                 oracion.append(detalle)
             elif linea == '\n':
                 oraciones.append(oracion)
                 oracion = []
+
+        oraciones.append(oracion)
+
         return oraciones
 
     @staticmethod
     def analyzer_client(texto):
-        comando = "echo " + pipes.quote(texto) + " | analyzer_client 55555"
-        resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
-        while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' or resultado[
-                0] == 'Server not ready?\n':
+        resultado = Freeling.respuesta_socket_freeling(texto)
+        while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' \
+                or resultado[0] == 'Server not ready?\n':
             print(resultado)
             print(len(texto), texto)
             print("En este loop")
-            resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
+            resultado = Freeling.respuesta_socket_freeling(texto)
         return resultado
+
+    @staticmethod
+    def respuesta_socket_freeling(texto):
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+            s.connect(('127.0.0.1', 55555))
+            mensaje = (texto + '\0').encode('utf-8')
+            s.send(mensaje)
+            return s.recv(3000).decode('utf-8').strip()
 
     @staticmethod
     def get_tokens_de_oraciones(oraciones):

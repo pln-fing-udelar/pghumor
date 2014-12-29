@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
 import HTMLParser  # import html.parser  # in python 3
@@ -66,3 +66,11 @@ class Tweet:
 
     def cantidad_hashtags(self):
         return len(re.findall(patron_hashtag, self.texto_original))
+
+    def features_ordenadas(self):
+        """Devuelve una lista de los nombres de las features ordenada según el nombre de las features."""
+        return sorted(self.features.keys())
+
+    def valores_features_ordenados(self):
+        """Devuelve una lista de los valores de las features ordenada según el nombre de las features."""
+        return [valor for (_, valor) in sorted(self.features.items())]

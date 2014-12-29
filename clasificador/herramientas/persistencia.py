@@ -1,12 +1,11 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import mysql.connector
 from progress.bar import Bar
 
-from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_NAME_CHISTES_DOT_COM
+from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME, SUFIJO_PROGRESS_BAR
 from clasificador.realidad.tweet import Tweet
-from clasificador.realidad.chiste import Chiste
 
 
 def cargar_tweets(limite=None):
@@ -19,8 +18,7 @@ def cargar_tweets(limite=None):
         consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
         cursor.execute(consulta)
 
-        bar = Bar('Eligiendo tweets aleatorios', max=cursor.rowcount,
-                  suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+        bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
         bar.next(0)
 
         ids = []
@@ -65,7 +63,7 @@ def cargar_tweets(limite=None):
 
     cursor.execute(consulta)
 
-    bar = Bar('Cargando tweets', max=cursor.rowcount, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    bar = Bar("Cargando tweets\t\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     resultado = {}
@@ -102,7 +100,7 @@ def cargar_tweets(limite=None):
 
     cursor.execute(consulta)
 
-    bar = Bar('Cargando features', max=cursor.rowcount, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    bar = Bar("Cargando features\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     for (id_tweet, nombre_feature, valor_feature) in cursor:
@@ -129,7 +127,7 @@ def guardar_features(tweets, **opciones):
     else:
         mensaje = 'Guardando features'
 
-    bar = Bar(mensaje, max=len(tweets), suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    bar = Bar(mensaje, max=len(tweets), suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     for tweet in tweets:
@@ -148,93 +146,3 @@ def guardar_features(tweets, **opciones):
     cursor.close()
     conexion.close()
     conexion.disconnect()
-
-# ##############################################################
-# ####   PRIMITIVAS PACA ACCEDER A CHISTES DE CHISTE.COM   #####
-# ##############################################################
-
-
-def cargar_chistes_pagina():
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
-    cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
-
-    consulta = """
-        SELECT id_chiste,
-               texto_chiste,
-               id_clasificacion,
-               nombre_clasificacion,
-               votacion,
-               cantidad_votantes
-        FROM   chistes
-        """
-
-    cursor.execute(consulta)
-
-    chistes = []
-    for (id_chiste, texto_chiste, id_clasificacion, nombre_clasificacion, votacion, cantidad_votantes) in cursor:
-        chiste = Chiste()
-        chiste.id_chiste = id_chiste
-        chiste.texto_chiste = texto_chiste
-        chiste.id_clasificacion = id_clasificacion
-        chiste.nombre_clasificacion = nombre_clasificacion
-        chiste.votacion = votacion
-        chiste.cantidad_votantes = cantidad_votantes
-        chistes.append(chiste)
-
-    return chistes
-
-
-def obtener_chistes_categoria(categoria):
-
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
-    cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
-
-    consulta = """
-        SELECT id_chiste,
-               texto_chiste,
-               id_clasificacion,
-               nombre_clasificacion,
-               votacion,
-               cantidad_votantes
-        FROM   chistes
-        WHERE id_clasificacion =
-        """
-
-    consulta += str(categoria)
-
-    cursor.execute(consulta)
-
-    chistes = []
-    for (id_chiste, texto_chiste, id_clasificacion, nombre_clasificacion, votacion, cantidad_votantes) in cursor:
-        chiste = Chiste()
-        chiste.id_chiste = id_chiste
-        chiste.texto_chiste = texto_chiste
-        chiste.id_clasificacion = id_clasificacion
-        chiste.nombre_clasificacion = nombre_clasificacion
-        chiste.votacion = votacion
-        chiste.cantidad_votantes = cantidad_votantes
-        chistes.append(chiste)
-
-    return chistes
-
-
-def obtener_categorias():
-
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
-    cursor = conexion.cursor()
-
-    consulta = """
-            SELECT id_clasificacion, nombre_clasificacion
-            FROM chistesdotcom.chistes
-            GROUP BY id_clasificacion, nombre_clasificacion
-            HAVING count(*) > 350;
-        """
-
-    cursor.execute(consulta)
-
-    categorias = []
-    for (id_clasificacion, nombre_clasificacion) in cursor:
-        categoria = {'id_clasificacion': id_clasificacion, 'nombre_clasificacion': nombre_clasificacion}
-        categorias.append(categoria)
-
-    return categorias
