@@ -24,10 +24,10 @@ def train_test_split_pro(corpus, **options):
 
 def features_clases_split(tweets):
     assert len(tweets) > 0, "Deben haber tweets para obtener las features y las clases"
-    largo_esperado_features = len(list(tweets[0].features.values()))
+    largo_esperado_features = len(tweets[0].valores_features_ordenados())
     features = []
     for tweet in tweets:
-        features_tweet = list(tweet.features.values())
+        features_tweet = tweet.valores_features_ordenados()
         assert len(features_tweet) == largo_esperado_features, "Los tweets tienen distinta cantidad de features"
         features.append(features_tweet)
     clases = numpy.array([tweet.es_humor for tweet in tweets], dtype=float)
