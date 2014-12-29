@@ -1,8 +1,8 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-import traceback
 import math
+import traceback
 
 from bs4 import BeautifulSoup
 import mechanize
@@ -14,9 +14,11 @@ from clasificador.realidad.tweet import *
 
 CARACTERES_ESPANOL = 255
 
+patron_todo_espacios = re.compile(r'^\s*$', re.UNICODE)
+
 
 def esta_en_diccionario(texto):
-    if re.search(r'^\s*$', texto):
+    if patron_todo_espacios.match(texto):
         return True
 
     resultado = Freeling.analyzer_client(texto)

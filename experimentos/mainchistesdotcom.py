@@ -1,92 +1,51 @@
-__author__ = 'matiascubero'
+#!/usr/bin/env python
+# coding=utf-8
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-from experimentos.persistencia import *
+import os
+import sys
 
-import numpy as np
-
-from scipy.stats import sem
-
-from sklearn import metrics
-from sklearn.cross_validation import cross_val_score, KFold
+from sklearn.cross_validation import train_test_split
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 
-import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from experimentos.persistencia import *
+from experimentos.util import get_stop_words
 
 
-def get_stop_words():
-    result = set()
-    for line in open('data/stopwords_en.txt', 'r').readlines():
-        result.add(line.strip())
-    return result
-
-
-def evaluate_cross_validation(clf, X, y, K):
-    # create a k-fold croos validation iterator of k=5 folds
-    cv = KFold(len(y), K, shuffle=True, random_state=0)
-    # by default the score used is the one returned by score method of the estimator (accuracy)
-    scores = cross_val_score(clf, X, y, cv=cv)
-    print(scores)
-    print("Mean score: {0:.3f} (+/-{1:.3f})").format(np.mean(scores), sem(scores))
-
-
-def train_and_evaluate(clf, X_train, X_test, y_train, y_test):
-    clf.fit(X_train, y_train)
-
-    print "Accuracy on training set:"
-    print clf.score(X_train, y_train)
-    print "Accuracy on testing set:"
-    print clf.score(X_test, y_test)
-
-    y_pred = clf.predict(X_test)
-
-    print "Classification Report:"
-    print metrics.classification_report(y_test, y_pred)
-    print "Confusion Matrix:"
-    print metrics.confusion_matrix(y_test, y_pred)
-
-
-def ejecutar_machine_learning():
+if __name__ == "__main__":
     chistes = cargar_chistes()
 
-    news = fetch_20newsgroups(subset='all')
-    SPLIT_PERC = 1
+    noticias = fetch_20newsgroups(subset='all')
 
-    split_size = int(len(chistes) * SPLIT_PERC)
-    X_train = [chistes[i].texto_chiste for i in range(len(chistes))][:split_size]
-    X_test = [chistes[i].texto_chiste for i in range(len(chistes))][split_size:]
-    Y_train = [chistes[i].nombre_clasificacion for i in range(len(chistes))][:split_size]
-    Y_test = [chistes[i].nombre_clasificacion for i in range(len(chistes))][split_size:]
-    stop_words = get_stop_words()
+    features = [chiste.texto for chiste in chistes]
+    clases = [chiste.es_humor for chiste in chistes]
 
-    clf_4 = Pipeline([
+    X_train, X_test, y_train, y_test = train_test_split(features, clases, test_size=0.0)
+
+    clasificador = Pipeline([
         ('vect', TfidfVectorizer(
-            stop_words=stop_words,
-            token_pattern=ur"\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b",
+            stop_words=get_stop_words(),
+            token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
         )),
         ('clf', MultinomialNB(alpha=0.01)),
     ])
 
-    clf_4.fit(X_train, Y_train)
-    # evaluate_cross_validation(clf_4, [chistes[i].texto_chiste for i in range(len(chistes))], [chistes[i].id_clasificacion for i in range(len(chistes))], 5)
-
-    # train_and_evaluate(clf_4, X_train, X_test, Y_train, Y_test)
+    clasificador.fit(X_train, y_train)
+    # cross_validation_y_reportar(clasificador, features, clases, 5)
+    # entrenar_y_evaluar(clasificador, X_train, X_test, y_train, y_test)
 
     tweets = cargar_tweets()
 
-    chistes_tweet = [chiste for chiste in tweets if chiste.es_humor]
-    nochistes = [chiste for chiste in tweets if not chiste.es_humor]
+    tweets_humor = [chiste for chiste in tweets if chiste.es_humor]
 
-    for tweet in chistes_tweet:
+    for tweet in tweets_humor:
         print(tweet.texto)
-        result = clf_4.predict([tweet.texto])
+        result = clasificador.predict([tweet.texto])
         print("El resultado es " + result[0])
-        # print(len(result))
-        # print("Las probabilidades " + clf_4.predict_proba([tweet.texto])[0])
         sys.stdin.readline()
-
-
-if __name__ == "__main__":
-    ejecutar_machine_learning()

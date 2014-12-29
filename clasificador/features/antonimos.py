@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import math
 
@@ -18,6 +18,7 @@ class Antonimos(Feature):
         self.descripcion = """
             Mide la cantidad de pares de antónimos presentes en el texto.
         """
+        self.thread_safe = False  # Tiene problemas de concurrencia: https://github.com/nltk/nltk/issues/803
         self.wncr = WordNetCorpusReader(resource_filename('clasificador.recursos', 'wordnet_spa'), None)
 
     def calcular_feature(self, tweet):
@@ -40,4 +41,4 @@ class Antonimos(Feature):
         if len(tokens) == 0:
             return 0
         else:
-            return cant_antonimos / math.sqrt(len(tokens)) / 2.0
+            return cant_antonimos / math.sqrt(len(tokens)) / 2.0  # divido entre 2 para contar una vez cada par
