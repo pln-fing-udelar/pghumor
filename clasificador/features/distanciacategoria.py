@@ -56,6 +56,6 @@ class DistanciaCategoria(Feature):
             if self.clasificador.steps[1][1].classes_[i] != 'wiki':
                 retorno = result[0][i]
             if self.verbose:
-                print self.clasificador.steps[1][1].classes_[i], ": ", result[0][i]
+                print(self.clasificador.steps[1][1].classes_[i], ": ", result[0][i])
 
         return retorno
