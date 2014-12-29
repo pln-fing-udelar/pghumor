@@ -69,7 +69,7 @@ class Tweet:
 
     def features_ordenadas(self):
         """Devuelve una lista de los nombres de las features ordenada según el nombre de las features."""
-        return sorted(self.features.items())
+        return sorted(self.features.keys())
 
     def valores_features_ordenados(self):
         """Devuelve una lista de los valores de las features ordenada según el nombre de las features."""

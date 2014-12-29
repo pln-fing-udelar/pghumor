@@ -10,6 +10,7 @@ from flask import Flask, request
 from flask_cors import cross_origin
 from sklearn import naive_bayes, svm
 from sklearn import metrics
+from sklearn.ensemble import ExtraTreesClassifier
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -89,6 +90,8 @@ if __name__ == "__main__":
                         help="para evaluar con el corpus de evaluación")
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
                         help='muestra las features disponibles y termina el programa')
+    parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
+                        help="reporta la importancia de cada feature")
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
@@ -132,6 +135,8 @@ if __name__ == "__main__":
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
+        features, clases = features_clases_split(corpus)
+
         features_entrenamiento, clases_entrenamiento = features_clases_split(entrenamiento)
         features_evaluacion, clases_evaluacion = features_clases_split(evaluacion)
 
@@ -142,8 +147,20 @@ if __name__ == "__main__":
         else:  # "SVM"
             clasificador_usado = svm.SVC()
 
+        if args.importancias_features:
+            clasificador = ExtraTreesClassifier()
+            clasificador.fit(features, clases)
+
+            importancias = {}
+            for i in range(len(clasificador.feature_importances_)):
+                importancias[corpus[0].features_ordenadas()[i]] = clasificador.feature_importances_[i]
+
+            print("Ranking de features:")
+
+            for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
+                print(nombre_feature, importancias[nombre_feature])
+
         if args.cross_validation and not args.evaluar:
-            features, clases = features_clases_split(corpus)
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 
         clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
