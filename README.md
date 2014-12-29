@@ -4,7 +4,7 @@ Poner la variable de entorno a donde se encuentre el entorno de Freeling y dejar
 
 ```bash
 FREELINGSHARE=/usr/local/share/freeling
-echo "export FREELINGSHARE=/usr/local/share/freeling" >> ~/.bashrc
+echo "export FREELINGSHARE=$FREELINGSHARE" >> ~/.bashrc
 ```
 
 # Ejecución
