@@ -9,7 +9,6 @@ import sys
 from flask import Flask, request
 from flask_cors import cross_origin
 from sklearn import naive_bayes, svm
-
 from sklearn import metrics
 
 
@@ -36,6 +35,43 @@ def filtrar_segun_votacion(_corpus):
         else:
             res.append(_tweet)
     return res
+
+
+def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_predecidas):
+    _verdaderos_positivos = [_evaluacion[i] for i in range(len(_evaluacion)) if
+                             _clases_predecidas[i] and _clases_evaluacion[i]]
+    _falsos_positivos = [_evaluacion[i] for i in range(len(_evaluacion)) if
+                         _clases_predecidas[i] and not _clases_evaluacion[i]]
+    _falsos_negativos = [_evaluacion[i] for i in range(len(_evaluacion)) if
+                         not _clases_predecidas[i] and _clases_evaluacion[i]]
+    _verdaderos_negativos = [_evaluacion[i] for i in range(len(_evaluacion)) if
+                             not _clases_predecidas[i] and not _clases_evaluacion[i]]
+
+    # Reporte de estadísticas
+
+    print(metrics.classification_report(_clases_evaluacion, _clases_predecidas, target_names=['N', 'P']))
+    print('')
+
+    print('Acierto: ' + str(metrics.accuracy_score(_clases_evaluacion, _clases_predecidas)))
+    print('')
+
+    matriz_de_confusion = metrics.confusion_matrix(_clases_evaluacion, _clases_predecidas, labels=[True, False])
+    # Con 'labels' pido el orden para la matriz
+
+    assert len(_verdaderos_positivos) == matriz_de_confusion[0][0]
+    assert len(_falsos_negativos) == matriz_de_confusion[0][1]
+    assert len(_falsos_positivos) == matriz_de_confusion[1][0]
+    assert len(_verdaderos_negativos) == matriz_de_confusion[1][1]
+
+    print('Matriz de confusión:')
+    print('')
+    print('\t\t(clasificados como)')
+    print('\t\tP\tN')
+    print('(son)\tP\t' + str(len(_verdaderos_positivos)) + '\t' + str(len(_falsos_negativos)))
+    print('(son)\tN\t' + str(len(_falsos_positivos)) + '\t' + str(len(_verdaderos_negativos)))
+    print('')
+
+    return _verdaderos_positivos, _falsos_negativos, _falsos_positivos, _verdaderos_negativos
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
 # Ver esto: https://stackoverflow.com/questions/8764066/preprocessing-400-million-tweets-in-python-faster
@@ -114,38 +150,8 @@ if __name__ == "__main__":
 
         clases_predecidas = clasificador_usado.predict(features_evaluacion)
 
-        verdaderos_positivos = [evaluacion[i] for i in range(len(evaluacion)) if
-                                clases_predecidas[i] and clases_evaluacion[i]]
-        falsos_positivos = [evaluacion[i] for i in range(len(evaluacion)) if
-                            clases_predecidas[i] and not clases_evaluacion[i]]
-        falsos_negativos = [evaluacion[i] for i in range(len(evaluacion)) if
-                            not clases_predecidas[i] and clases_evaluacion[i]]
-        verdaderos_negativos = [evaluacion[i] for i in range(len(evaluacion)) if
-                                not clases_predecidas[i] and not clases_evaluacion[i]]
-
-        # Reporte de estadísticas
-
-        print(metrics.classification_report(clases_evaluacion, clases_predecidas, target_names=['N', 'P']))
-        print('')
-
-        print('Acierto: ' + str(metrics.accuracy_score(clases_evaluacion, clases_predecidas)))
-        print('')
-
-        matriz_de_confusion = metrics.confusion_matrix(clases_evaluacion, clases_predecidas, labels=[True, False])
-        # Con 'labels' pido el orden para la matriz
-
-        assert len(verdaderos_positivos) == matriz_de_confusion[0][0]
-        assert len(falsos_negativos) == matriz_de_confusion[0][1]
-        assert len(falsos_positivos) == matriz_de_confusion[1][0]
-        assert len(verdaderos_negativos) == matriz_de_confusion[1][1]
-
-        print('Matriz de confusión:')
-        print('')
-        print('\t\t(clasificados como)')
-        print('\t\tP\tN')
-        print('(son)\tP\t' + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_negativos)))
-        print('(son)\tN\t' + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
-        print('')
+        verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
+            evaluacion, clases_evaluacion, clases_predecidas)
 
         if args.servidor:
             app = Flask(__name__)
