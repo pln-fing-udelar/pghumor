@@ -72,9 +72,9 @@ class Features:
             threads.append(thread)
 
         if nombre_feature:
-            args = (tweets[(CANTIDAD_THREADS - 1) * intervalo:], CANTIDAD_THREADS - 1)
-        else:
             args = (tweets[(CANTIDAD_THREADS - 1) * intervalo:], nombre_feature, CANTIDAD_THREADS - 1)
+        else:
+            args = (tweets[(CANTIDAD_THREADS - 1) * intervalo:], CANTIDAD_THREADS - 1)
         thread = Thread(target=funcion, args=args)
         threads.append(thread)
 

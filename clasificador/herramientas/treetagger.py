@@ -6,6 +6,9 @@ import re
 import clasificador.herramientas.utils
 
 
+patron_linea_freeling = re.compile(r'^(.*)\s(.*)\s(.*)\s(.*)', re.UNICODE)
+
+
 class TreeTagger:
     cache = {}
 
@@ -19,19 +22,17 @@ class TreeTagger:
 
     @staticmethod
     def procesar_texto(texto):
-        command = 'echo ' + pipes.quote(texto) + ' | tree-tagger-spanish'
-        resultado = clasificador.herramientas.utils.ejecutar_comando(command)
+        comando = 'echo ' + pipes.quote(texto) + ' | tree-tagger-spanish'
+        resultado = clasificador.herramientas.utils.ejecutar_comando(comando)
         tokens = []
-        for line in resultado:
-            matcheo = re.search(r'^(.*)\t(.*)\t(.*)\n', line)
+        for linea in resultado:
+            matcheo = patron_linea_freeling.match(linea)
             if matcheo:
                 detalle = TokenTT()
                 detalle.token = matcheo.group(1)
                 detalle.tag = matcheo.group(2)
                 detalle.lemma = matcheo.group(3)
-
                 tokens.append(detalle)
-
         return tokens
 
 
