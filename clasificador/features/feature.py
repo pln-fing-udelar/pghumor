@@ -10,6 +10,7 @@ class Feature:
         self.nombre = ""
         self.descripcion = ""
         self.incluir = True
+        self.thread_safe = True
 
     @abc.abstractmethod
     def calcular_feature(self, tweet):
