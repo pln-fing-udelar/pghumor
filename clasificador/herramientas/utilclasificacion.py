@@ -22,20 +22,29 @@ def train_test_split_pro(corpus, **options):
     return entrenamiento, evaluacion
 
 
-def features_clases_split(tweets):
+def get_features(tweets):
     assert len(tweets) > 0, "Deben haber tweets para obtener las features y las clases"
-    largo_esperado_features = len(tweets[0].valores_features_ordenados())
-    features = []
+
+    largo_esperado_features = len(tweets[0].array_features())  # .shape[1]
+
+    resultado = []
     for tweet in tweets:
-        features_tweet = tweet.valores_features_ordenados()
+        features_tweet = tweet.array_features()
         assert len(features_tweet) == largo_esperado_features, "Los tweets tienen distinta cantidad de features"
-        features.append(features_tweet)
-    clases = numpy.array([tweet.es_humor for tweet in tweets], dtype=float)
-    return features, clases
+        resultado.append(features_tweet)
+
+    return resultado  # vstack(resultado)
+
+
+def get_clases(tweets):
+    return numpy.array([tweet.es_humor for tweet in tweets], dtype=float)
 
 
 def cross_validation_y_reportar(clasificador, features, clases, numero_particiones):
+    print('Haciendo cross-validation...')
     puntajes = cross_validation.cross_val_score(clasificador, features, clases, cv=numero_particiones, verbose=True)
+    # puntajes2 = cross_validation.cross_val_score(clasificador, features, clases, cv=numero_particiones, verbose=True,
+    #                                             scoring=metrics.precision_recall_fscore_support)
     print('Cross-validation:')
     print('')
     print('Puntajes: ' + str(puntajes))

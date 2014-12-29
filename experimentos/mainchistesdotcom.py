@@ -6,7 +6,6 @@ import os
 import sys
 
 from sklearn.cross_validation import train_test_split
-from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
@@ -14,14 +13,13 @@ from sklearn.pipeline import Pipeline
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from experimentos.persistencia import *
-from experimentos.util import get_stop_words
+from clasificador.herramientas.chistesdotcom import cargar_chistes_pagina
+from clasificador.herramientas.persistencia import cargar_tweets
+from clasificador.herramientas.utils import get_stop_words
 
 
 if __name__ == "__main__":
-    chistes = cargar_chistes()
-
-    noticias = fetch_20newsgroups(subset='all')
+    chistes = cargar_chistes_pagina()
 
     features = [chiste.texto for chiste in chistes]
     clases = [chiste.es_humor for chiste in chistes]
@@ -40,7 +38,7 @@ if __name__ == "__main__":
     # cross_validation_y_reportar(clasificador, features, clases, 5)
     # entrenar_y_evaluar(clasificador, X_train, X_test, y_train, y_test)
 
-    tweets = cargar_tweets()
+    tweets = cargar_tweets(cargar_features=False)
 
     tweets_humor = [chiste for chiste in tweets if chiste.es_humor]
 

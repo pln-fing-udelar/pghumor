@@ -8,7 +8,7 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME,
 from clasificador.realidad.tweet import Tweet
 
 
-def cargar_tweets(limite=None):
+def cargar_tweets(limite=None, cargar_features=True):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
     y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego."""
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
@@ -90,27 +90,28 @@ def cargar_tweets(limite=None):
 
     bar.finish()
 
-    consulta = """
-    SELECT id_tweet,
-           nombre_feature,
-           valor_feature
-    FROM   features
-    {filtro_prueba}
-    """.format(filtro_prueba=consulta_prueba_features)
+    if cargar_features:
+        consulta = """
+        SELECT id_tweet,
+               nombre_feature,
+               valor_feature
+        FROM   features
+        {filtro_prueba}
+        """.format(filtro_prueba=consulta_prueba_features)
 
-    cursor.execute(consulta)
+        cursor.execute(consulta)
 
-    bar = Bar("Cargando features\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
-    bar.next(0)
+        bar = Bar("Cargando features\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+        bar.next(0)
 
-    for (id_tweet, nombre_feature, valor_feature) in cursor:
-        resultado[id_tweet].features[nombre_feature] = valor_feature
-        bar.next()
+        for (id_tweet, nombre_feature, valor_feature) in cursor:
+            resultado[id_tweet].features[nombre_feature] = valor_feature
+            bar.next()
 
-    bar.finish()
+        bar.finish()
 
-    cursor.close()
-    conexion.close()
+        cursor.close()
+        conexion.close()
 
     return list(resultado.values())
 

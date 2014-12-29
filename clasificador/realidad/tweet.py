@@ -1,8 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
 import HTMLParser  # import html.parser  # in python 3
+import re
 
 patron_retweet = re.compile(r'^RT @\w+: ', re.UNICODE)
 
@@ -54,6 +54,9 @@ class Tweet:
 
         self.features = {}
 
+        # self.count_vector = None
+        self.predict_proba = None
+
     def preprocesar(self):
         self.texto_original = self.texto
         self.texto = HTMLParser.HTMLParser().unescape(self.texto)
@@ -74,3 +77,8 @@ class Tweet:
     def valores_features_ordenados(self):
         """Devuelve una lista de los valores de las features ordenada según el nombre de las features."""
         return [valor for (_, valor) in sorted(self.features.items())]
+
+    def array_features(self):
+        # print(hstack([csr_matrix(self.valores_features_ordenados(), dtype=float), self.count_vector.astype(float)]))
+        #return hstack([csr_matrix(self.valores_features_ordenados(), dtype=float), self.count_vector.astype(float)])
+        return self.valores_features_ordenados() + [self.predict_proba]
