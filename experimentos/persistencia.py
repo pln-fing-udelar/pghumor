@@ -1,15 +1,24 @@
 # coding=utf-8
-__author__ = 'matiascubero'
+from __future__ import absolute_import, division, unicode_literals
 
 import mysql.connector
 
 
 def cargar_chistes():
-    query = "SELECT id_chiste, texto_chiste, id_clasificacion, nombre_clasificacion, votacion, cantidad_votantes FROM chistes;"
+    consulta = """
+    SELECT
+        id_chiste,
+        texto_chiste,
+        id_clasificacion,
+        nombre_clasificacion,
+        votacion,
+        cantidad_votantes
+    FROM chistes
+    """
     conexion = mysql.connector.connect(user="root", password="root", host="localhost", database="chistesdotcom")
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
-    cursor.execute(query)
+    cursor.execute(consulta)
 
     chistes = []
 
@@ -58,7 +67,7 @@ def cargar_tweets():
     {where}
     HAVING ( ( votos > 0
                AND votos_no_humor_u_omitido / votos <= 0.25 )
-              OR eschiste_tweet = 0 );
+              OR eschiste_tweet = 0 )
     """.format(where=where_cargar_evaluacion)
 
     cursor.execute(consulta)

@@ -4,14 +4,12 @@ from __future__ import absolute_import, division, unicode_literals
 
 import argparse
 import os
-import random
 import sys
 
 from flask import Flask, request
 from flask_cors import cross_origin
-import numpy
-from sklearn import cross_validation
 from sklearn import naive_bayes, svm
+
 from sklearn import metrics
 
 
@@ -20,33 +18,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from clasificador.realidad.tweet import Tweet
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
-
-
-def train_test_split_pro(_corpus, **options):
-    """Es como el de sklearn, pero como no deja saber qué tweets están en qué conjunto,
-    hicimos este.
-    # features_entrenamiento, features_evaluacion, clases_entrenamiento, clases_evaluacion
-    # = train_test_split(features, clases, test_size=fraccion_evaluacion)
-    """
-    fraccion_evaluacion = options.pop('test_size', 0.25)
-
-    elegir_fraccion = random.sample(range(len(_corpus)), int(len(_corpus) * fraccion_evaluacion))
-    _entrenamiento = [_corpus[j] for j in range(len(_corpus)) if j not in elegir_fraccion]
-    _evaluacion = [_corpus[j] for j in elegir_fraccion]
-
-    return _entrenamiento, _evaluacion
-
-
-def features_clases_split(tweets):
-    assert len(tweets) > 0, "Deben haber tweets para obtener las features y las clases"
-    largo_esperado_features = len(list(tweets[0].features.values()))
-    _features = []
-    for _tweet in tweets:
-        features_tweet = list(_tweet.features.values())
-        assert len(features_tweet) == largo_esperado_features, "Los tweets tienen distinta cantidad de features"
-        _features.append(features_tweet)
-    _clases = numpy.array([_tweet.es_humor for _tweet in tweets], dtype=float)
-    return _features, _clases
+from clasificador.herramientas.utilclasificacion import train_test_split_pro, features_clases_split, \
+    cross_validation_y_reportar
 
 
 def filtrar_segun_votacion(_corpus):
@@ -65,9 +38,7 @@ def filtrar_segun_votacion(_corpus):
     return res
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
-
 # Ver esto: https://stackoverflow.com/questions/8764066/preprocessing-400-million-tweets-in-python-faster
-
 # Ver esto: https://www.google.com.uy/search?q=preprocess+tweet+like+normal+text
 
 if __name__ == "__main__":
@@ -123,7 +94,6 @@ if __name__ == "__main__":
             evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
         else:
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
-
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
         features_entrenamiento, clases_entrenamiento = features_clases_split(entrenamiento)
@@ -138,14 +108,7 @@ if __name__ == "__main__":
 
         if args.cross_validation and not args.evaluar:
             features, clases = features_clases_split(corpus)
-
-            puntajes = cross_validation.cross_val_score(clasificador_usado, features, clases, cv=5, verbose=True)
-            print('Cross-validation:')
-            print('')
-            print('Puntajes: ' + str(puntajes))
-            print("Acierto: %0.4f (+/- %0.4f)" % (puntajes.mean(), puntajes.std() * 2))
-            print('')
-            print('')
+            cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 
         clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
 

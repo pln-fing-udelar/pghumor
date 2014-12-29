@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import unittest
 
-from clasificador.herramientas.utilreflection import paquete, subclases, modulos_vecinos
+from clasificador.herramientas.reflection import paquete, subclases, modulos_vecinos
 
 
 class TestUtilReflection(unittest.TestCase):
