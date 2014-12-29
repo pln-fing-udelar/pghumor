@@ -44,7 +44,7 @@ class Features:
         print('Fin cargar características')
 
     def calcular_features(self, tweets):
-        intervalo = len(tweets) / CANTIDAD_THREADS
+        intervalo = int(len(tweets) / CANTIDAD_THREADS)
         threads = []
         for i in range(CANTIDAD_THREADS - 1):
             t = Thread(target=self.calcular_features_thread, args=(tweets[i * intervalo: (i + 1) * intervalo], i))
@@ -61,7 +61,7 @@ class Features:
             hilo.join()
 
     def calcular_feature(self, tweets, nombre_feature):
-        intervalo = len(tweets) / CANTIDAD_THREADS
+        intervalo = int(len(tweets) / CANTIDAD_THREADS)
         threads = []
         for i in range(CANTIDAD_THREADS - 1):
             t = Thread(target=self.calcular_feature_thread,
@@ -79,7 +79,7 @@ class Features:
             hilo.join()
 
     def calcular_features_faltantes(self, tweets):
-        intervalo = len(tweets) / CANTIDAD_THREADS
+        intervalo = int(len(tweets) / CANTIDAD_THREADS)
         threads = []
         for i in range(CANTIDAD_THREADS - 1):
             t = Thread(target=self.calcular_features_faltantes_thread,
