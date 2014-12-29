@@ -1,8 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from pkg_resources import resource_filename
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
@@ -11,10 +9,6 @@ from clasificador.features.feature import Feature
 from clasificador.herramientas.chistesdotcom import obtener_chistes_categoria
 from clasificador.herramientas.utils import *
 from clasificador.herramientas.wikicorpus import obtener_sample_wikicorpus
-
-
-def get_stop_words():
-    return obtener_diccionario(resource_filename('clasificador.recursos.diccionarios', 'stop_words.txt'))
 
 
 class DistanciaCategoria(Feature):

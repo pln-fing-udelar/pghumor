@@ -1,13 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from pkg_resources import resource_filename
 from sklearn import metrics
-
-
-def get_stop_words():
-    with open(resource_filename('experimentos.data', 'stopwords_en.txt'), 'r') as archivo:
-        return {linea.strip() for linea in archivo}
 
 
 def entrenar_y_evaluar(clasificador, X_train, X_test, y_train, y_test):
