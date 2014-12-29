@@ -5,8 +5,6 @@ from threading import Thread
 
 from progress.bar import Bar
 
-from clasificador.features.antonimos import Antonimos
-
 import clasificador.features.distanciacategoria
 from clasificador.features.feature import Feature
 import clasificador.features.npersona
@@ -19,8 +17,7 @@ CANTIDAD_THREADS = 1
 
 
 def abortar_si_feature_no_es_thread_safe(feature):
-    # Antonimos tiene problemas de concurrencia: https://github.com/nltk/nltk/issues/803
-    assert CANTIDAD_THREADS == 1 or type(feature) != Antonimos, \
+    assert CANTIDAD_THREADS == 1 or feature.thread_safe, \
         "La feature " + feature.nombre + " no es thread-safe y hay más de un hilo corriendo"
 
 
@@ -28,6 +25,8 @@ class Features:
     def __init__(self):
         self.bar = ""
         self.features = {}
+
+        print("Comienzo de la carga de características")
 
         cargar_modulos_vecinos(__name__, __file__)
 
@@ -37,7 +36,7 @@ class Features:
                 objeto_feature = clase_feature()
                 if objeto_feature.incluir:
                     self.features[objeto_feature.nombre] = objeto_feature
-                    print("Cargada catacterística: " + objeto_feature.nombre)
+                    print(objeto_feature.nombre)
 
         categorias_chistes_dot_com = clasificador.herramientas.chistesdotcom.obtener_categorias()
 
@@ -45,10 +44,11 @@ class Features:
             feature = clasificador.features.distanciacategoria.DistanciaCategoria(categoria['id_clasificacion'],
                                                                                   categoria['nombre_clasificacion'],
                                                                                   False)
-            self.features[feature.nombre] = feature
-            print("Cargada catacterística: " + feature.nombre)
+            if feature.incluir:
+                self.features[feature.nombre] = feature
+                print(feature.nombre)
 
-        print("Fin cargar características")
+        print("Fin de la carga de características")
 
     def calcular_features(self, tweets):
         Features.repartir_en_threads(self.calcular_features_thread, tweets)

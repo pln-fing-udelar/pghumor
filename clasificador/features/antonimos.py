@@ -18,6 +18,7 @@ class Antonimos(Feature):
         self.descripcion = """
             Mide la cantidad de pares de antónimos presentes en el texto.
         """
+        self.thread_safe = False  # Tiene problemas de concurrencia: https://github.com/nltk/nltk/issues/803
         self.wncr = WordNetCorpusReader(resource_filename('clasificador.recursos', 'wordnet_spa'), None)
 
     def calcular_feature(self, tweet):
