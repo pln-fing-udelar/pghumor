@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 from __future__ import absolute_import, division, unicode_literals
+
 from collections import defaultdict
 import csv
 import os
@@ -9,6 +10,7 @@ import time
 
 from pkg_resources import resource_filename
 import tweepy
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
