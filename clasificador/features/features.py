@@ -10,7 +10,7 @@ from clasificador.features.feature import Feature
 import clasificador.features.npersona
 import clasificador.herramientas.chistesdotcom
 import clasificador.herramientas.persistencia
-from clasificador.herramientas.utilreflection import cargar_modulos_vecinos, subclases
+from clasificador.herramientas.reflection import cargar_modulos_vecinos, subclases
 
 # Cuidado que Antonimos tiene problemas de concurrencia
 # https://github.com/nltk/nltk/issues/803

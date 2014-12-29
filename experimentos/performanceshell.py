@@ -12,14 +12,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import clasificador.herramientas.utils
 
+if __name__ == "__main__":
+    largo = 1000
 
-largo = 1000
+    bar = Bar('Calculando', max=largo, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
+    bar.next(0)
 
-bar = Bar('Calculando', max=largo, suffix='%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds')
-bar.next(0)
+    for i in range(largo):
+        clasificador.herramientas.utils.ejecutar_comando("echo 1")
+        bar.next()
 
-for i in range(largo):
-    clasificador.herramientas.utils.ejecutar_comando("echo 1")
-    bar.next()
-
-bar.finish()
+    bar.finish()
