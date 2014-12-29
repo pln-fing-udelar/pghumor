@@ -21,5 +21,5 @@ class Dialogo(Feature):
     def calcular_feature(self, tweet):
         for guion in guiones_dialogo():
             if tweet.texto.startswith(guion):
-                return True
-        return False
+                return 1
+        return 0
