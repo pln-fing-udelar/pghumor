@@ -20,11 +20,6 @@ from clasificador.herramientas.tokenizacion import *
 import clasificador.herramientas.utils
 
 
-def main():
-    dicc_palabras = bootstrapping()
-    guardar_diccionario(dicc_palabras)
-
-
 def bootstrapping():
     global tweets
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
@@ -35,7 +30,7 @@ def bootstrapping():
     palabras_sexuales = clasificador.herramientas.utils.obtener_diccionario(
         resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'))
 
-    dicc_palabras = defaultdict(0)
+    _dicc_palabras = defaultdict(int)
     for palabra1 in palabras_sexuales:
         for palabra2 in palabras_sexuales:
             if palabra1 != palabra2:
@@ -57,12 +52,12 @@ def bootstrapping():
                     for oracion in tokenizar(tweet.text):
                         for palabra in oracion:
                             if palabra.lower() not in palabras_sexuales:
-                                dicc_palabras[palabra] += 1
-    return dicc_palabras
+                                _dicc_palabras[palabra] += 1
+    return _dicc_palabras
 
 
 def guardar_diccionario(dicc):
-    with open('diccSexo.csv', 'w') as archivo:
+    with open(resource_filename('bootstrapping', 'diccSexo.csv'), 'w') as archivo:
         writer = csv.writer(archivo)
         for clave, valor in dicc.viewitems():
             writer.writerow([clave.encode('utf-8'), valor])
@@ -102,3 +97,8 @@ def clasificar(dicc):
 def guardar_dicc_para_feature(palabras_sexuales):
     with open(resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'), 'a') as archivo:
         archivo.writelines(palabras_sexuales)
+
+
+if __name__ == "__main__":
+    dicc_palabras = bootstrapping()
+    guardar_diccionario(dicc_palabras)
