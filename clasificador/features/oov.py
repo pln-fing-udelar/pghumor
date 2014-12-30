@@ -21,7 +21,7 @@ def esta_en_diccionario(texto):
     if patron_todo_espacios.match(texto):
         return True
 
-    resultado = Freeling.analyzer_client(texto)
+    resultado = Freeling.analyzer_client_morfo(texto)
 
     if len(resultado) == 0:
         return True
