@@ -54,20 +54,24 @@ class Freeling:
         return oraciones
 
     @staticmethod
-    def analyzer_client(texto):
-        resultado = Freeling.respuesta_socket_freeling(texto)
-        while len(resultado) == 0 or resultado[0] == '/bin/sh: fork: Resource temporarily unavailable\n' \
-                or resultado[0] == 'Server not ready?\n':
+    def analyzer_client_morfo(texto):
+        return Freeling.analyzer_client(texto, puerto=11111)
+
+    @staticmethod
+    def analyzer_client(texto, puerto=55555):
+        resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
+        while len(resultado) == 0 or resultado[0] == "/bin/sh: fork: Resource temporarily unavailable\n" \
+                or resultado[0] == "Server not ready?\n":
             print(resultado)
             print(len(texto), texto)
             print("En este loop")
-            resultado = Freeling.respuesta_socket_freeling(texto)
+            resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
         return resultado
 
     @staticmethod
-    def respuesta_socket_freeling(texto):
+    def respuesta_socket_freeling(texto, puerto):
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-            s.connect(('127.0.0.1', 55555))
+            s.connect(('127.0.0.1', puerto))
             mensaje = (texto + '\0').encode('utf-8')
             s.send(mensaje)
             return s.recv(3000).decode('utf-8').strip()
