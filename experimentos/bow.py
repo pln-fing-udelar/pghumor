@@ -41,6 +41,8 @@ if __name__ == "__main__":
 
     clasificador = Pipeline([
         ('vect', CountVectorizer(
+            # max_features=10000,
+            strip_accents='ascii',
             stop_words=get_stop_words(),
             token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
         )),
@@ -54,6 +56,7 @@ if __name__ == "__main__":
 
     print("Entrenando clasificador...")
     clasificador.fit(X_train, y_train)
+
     print("Evaluando clasificador...")
     y_pred = clasificador.predict(X_test)
     print('')
