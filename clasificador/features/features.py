@@ -13,7 +13,7 @@ from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 import clasificador.herramientas.persistencia
 from clasificador.herramientas.reflection import cargar_modulos_vecinos, subclases
 
-CANTIDAD_THREADS = 1
+CANTIDAD_THREADS = 4
 
 
 def abortar_si_feature_no_es_thread_safe(feature):
