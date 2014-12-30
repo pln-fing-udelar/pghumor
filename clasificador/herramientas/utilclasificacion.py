@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import random
+import math
 
 import numpy
 from sklearn import cross_validation, metrics
@@ -41,14 +42,17 @@ def get_clases(tweets):
 
 
 def cross_validation_y_reportar(clasificador, features, clases, numero_particiones):
-    print('Haciendo cross-validation...')
+    print("Haciendo cross-validation...")
     puntajes = cross_validation.cross_val_score(clasificador, features, clases, cv=numero_particiones, verbose=True)
     # puntajes2 = cross_validation.cross_val_score(clasificador, features, clases, cv=numero_particiones, verbose=True,
     #                                             scoring=metrics.precision_recall_fscore_support)
-    print('Cross-validation:')
+    # print('Cross-validation:')
     print('')
-    print('Puntajes: ' + str(puntajes))
-    print("Acierto: %0.4f (+/- %0.4f)" % (puntajes.mean(), puntajes.std() * 2))
+    print("Acierto de cada partición:\t" + str(puntajes))
+    promedio = puntajes.mean()
+    delta = puntajes.std() * 1.96 / math.sqrt(numero_particiones)
+    print("Intervalo de confianza 95%:\t{promedio:0.4f} (+/- {delta:0.4f}) --- [{inf:0.4f}, {sup:0.4f}]".format(
+        promedio=promedio, delta=delta, inf=promedio - delta, sup=promedio + delta))
     print('')
     print('')
 
@@ -66,9 +70,8 @@ def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_pred
     # Reporte de estadísticas
 
     print(metrics.classification_report(_clases_evaluacion, _clases_predecidas, target_names=['N', 'P']))
-    print('')
 
-    print('Acierto: ' + str(metrics.accuracy_score(_clases_evaluacion, _clases_predecidas)))
+    print("Acierto: " + str(metrics.accuracy_score(_clases_evaluacion, _clases_predecidas)))
     print('')
 
     matriz_de_confusion = metrics.confusion_matrix(_clases_evaluacion, _clases_predecidas, labels=[True, False])
@@ -79,12 +82,12 @@ def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_pred
     assert len(_falsos_positivos) == matriz_de_confusion[1][0]
     assert len(_verdaderos_negativos) == matriz_de_confusion[1][1]
 
-    print('Matriz de confusión:')
+    print("Matriz de confusión:")
     print('')
-    print('\t\t(clasificados como)')
-    print('\t\tP\tN')
-    print('(son)\tP\t' + str(len(_verdaderos_positivos)) + '\t' + str(len(_falsos_negativos)))
-    print('(son)\tN\t' + str(len(_falsos_positivos)) + '\t' + str(len(_verdaderos_negativos)))
+    print("\t\t(clasificados como)")
+    print("\t\tP\tN")
+    print("(son)\tP\t" + str(len(_verdaderos_positivos)) + '\t' + str(len(_falsos_negativos)))
+    print("(son)\tN\t" + str(len(_falsos_positivos)) + '\t' + str(len(_verdaderos_negativos)))
     print('')
 
     return _verdaderos_positivos, _falsos_negativos, _falsos_positivos, _verdaderos_negativos

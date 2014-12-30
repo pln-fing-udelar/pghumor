@@ -146,17 +146,11 @@ if __name__ == "__main__":
         if args.cross_validation and not args.evaluar:
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 
-        print('')
         print("Entrenando clasificador...")
-        print('')
-
         clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
-
-        print('')
         print("Evaluando clasificador...")
-        print('')
-
         clases_predecidas = clasificador_usado.predict(features_evaluacion)
+        print('')
 
         verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
             evaluacion, clases_evaluacion, clases_predecidas)
