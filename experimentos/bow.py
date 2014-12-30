@@ -8,7 +8,7 @@ import sys
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
-
+from experimentos.TweetToText import TweetToText
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -17,6 +17,7 @@ from clasificador.herramientas.utilclasificacion import cross_validation_y_repor
     matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utils import filtrar_segun_votacion, get_stop_words
 
+c = CountVectorizer()
 
 if __name__ == "__main__":
     corpus = cargar_tweets(cargar_features=False)
@@ -30,22 +31,24 @@ if __name__ == "__main__":
     entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
     print("Separando tweets en features y clases...")
-    X = [tweet.texto for tweet in corpus]
+    X = [tweet for tweet in corpus]
     y = get_clases(corpus)
 
-    X_train = [tweet.texto for tweet in entrenamiento]
-    X_test = [tweet.texto for tweet in evaluacion]
+    X_train = [tweet for tweet in entrenamiento]
+    X_test = [tweet for tweet in evaluacion]
 
     y_train = get_clases(entrenamiento)
     y_test = get_clases(evaluacion)
 
     clasificador = Pipeline([
-        ('vect', CountVectorizer(
-            # max_features=10000,
-            strip_accents='ascii',
-            stop_words=get_stop_words(),
-            token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
-        )),
+        ('vect', Pipeline([
+            ('tweet_to_text', TweetToText()),
+            ('vectorizer', CountVectorizer(
+                strip_accents='ascii',
+                stop_words=get_stop_words(),
+                token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
+            ))])
+        ),
         ('clf', MultinomialNB(alpha=0.01)),
     ])
 
