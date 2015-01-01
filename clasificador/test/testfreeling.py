@@ -22,6 +22,16 @@ class TestFreeling(unittest.TestCase):
         freeling = Freeling(tweet)
         self.assertNotEqual(freeling.tokens, [], "Error de tokens vacíos")
 
+    def test_freeling_esta_en_diccionario_palabra_comun(self):
+        texto = "reja"
+        self.assertTrue(Freeling.esta_en_diccionario(texto),
+                        "Debería estar en el diccionario el texto \"" + texto + "\"")
+
+    def test_freeling_esta_en_diccionario_palabra_inexistente(self):
+        texto = "wkalskjv"
+        self.assertFalse(Freeling.esta_en_diccionario(texto),
+                         "No debería estar en el diccionario el texto \"" + texto + "\"")
+
 
 if __name__ == '__main__':
     unittest.main()

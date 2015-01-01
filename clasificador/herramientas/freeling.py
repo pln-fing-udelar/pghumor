@@ -1,9 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from contextlib import closing
-import re
 import itertools
+import re
 import socket
 
 
@@ -45,7 +44,7 @@ class Freeling:
                 detalle.tag = matcheo.group(3)
                 detalle.probabilidad = matcheo.group(4)
                 oracion.append(detalle)
-            elif linea == '\n':
+            elif linea == '\n':  # FIXME: no está separando bien en oraciones.
                 oraciones.append(oracion)
                 oracion = []
 
@@ -70,15 +69,21 @@ class Freeling:
 
     @staticmethod
     def respuesta_socket_freeling(texto, puerto):
-        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-            s.connect(('127.0.0.1', puerto))
-            mensaje = (texto + '\0').encode('utf-8')
-            s.send(mensaje)
-            return s.recv(3000).decode('utf-8').strip()
+        with AnalyzerClient() as client:
+            client.connect(('127.0.0.1', puerto))
+            client.send(texto)
+            return client.recv(len(texto) * 10)
 
     @staticmethod
     def get_tokens_de_oraciones(oraciones):
         return list(itertools.chain(*oraciones))
+
+    @staticmethod
+    def esta_en_diccionario(texto):
+        if patron_todo_espacios.match(texto):
+            return True
+        resultado = Freeling.analyzer_client_morfo(texto)
+        return len(resultado) == 0 or resultado != texto
 
 
 # DataType
@@ -88,3 +93,40 @@ class TokenFL:
         self.tag = ""
         self.lemma = ""
         self.probabilidad = ""
+
+
+MSG_FLUSH_BUFFER = 'FLUSH_BUFFER'
+MSG_RESET_STATS = 'RESET_STATS'
+MSG_SERVER_READY = 'FL-SERVER-READY'
+
+
+class AnalyzerClient:
+    def __init__(self):
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def __asegurar_servidor_pronto(self):
+        assert self.recv(50) == MSG_SERVER_READY, "El servidor de Freeling debería haber respondido que está pronto"
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def close(self):
+        self.send(MSG_FLUSH_BUFFER)
+        self.__asegurar_servidor_pronto()
+        self._socket.close()
+
+    def connect(self, address):
+        self._socket.connect(address)
+        self.send(MSG_RESET_STATS)
+        self.__asegurar_servidor_pronto()
+
+    def recv(self, tam_buffer):
+        resultado = self._socket.recv(tam_buffer).decode('utf-8')
+        assert resultado.endswith('\0'), "El mensaje recibido del servidor de Freeling debería terminar en \\0"
+        return resultado[:-1].strip()
+
+    def send(self, mensaje):
+        return self._socket.send((mensaje + '\0').encode('utf-8'))
