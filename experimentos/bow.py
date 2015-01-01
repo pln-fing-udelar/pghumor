@@ -8,7 +8,9 @@ import sys
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
-from experimentos.TweetToText import TweetToText
+
+from experimentos.tweettotext import TweetToText
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -16,8 +18,6 @@ from clasificador.herramientas.persistencia import cargar_tweets
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, get_clases, \
     matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utils import filtrar_segun_votacion, get_stop_words
-
-c = CountVectorizer()
 
 if __name__ == "__main__":
     corpus = cargar_tweets(cargar_features=False)
@@ -47,8 +47,8 @@ if __name__ == "__main__":
                 strip_accents='ascii',
                 stop_words=get_stop_words(),
                 token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
-            ))])
-        ),
+            ))
+        ])),
         ('clf', MultinomialNB(alpha=0.01)),
     ])
 
