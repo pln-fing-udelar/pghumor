@@ -7,7 +7,7 @@ import socket
 
 
 patron_todo_espacios = re.compile(r'^\s*$', re.UNICODE)
-patron_linea_freeling = re.compile(r'^(.*)\s(.*)\s(.*)\s(.*)', re.UNICODE)
+patron_linea_freeling = re.compile(r'^(.+)\s(.+)\s(.+)\s(.+)$', re.UNICODE)
 
 
 class Freeling:
@@ -38,17 +38,18 @@ class Freeling:
         for linea in resultado.split('\n'):
             matcheo = patron_linea_freeling.match(linea)
             if matcheo:
-                detalle = TokenFL()
-                detalle.token = matcheo.group(1)
-                detalle.lemma = matcheo.group(2)
-                detalle.tag = matcheo.group(3)
-                detalle.probabilidad = matcheo.group(4)
-                oracion.append(detalle)
-            elif linea == '\n':  # FIXME: no está separando bien en oraciones.
+                token_freeling = TokenFL()
+                token_freeling.token = matcheo.group(1)
+                token_freeling.lemma = matcheo.group(2)
+                token_freeling.tag = matcheo.group(3)
+                token_freeling.probabilidad = matcheo.group(4)
+                oracion.append(token_freeling)
+            elif linea == '':  # FIXME: no está separando bien en oraciones.
                 oraciones.append(oracion)
                 oracion = []
 
-        oraciones.append(oracion)
+        if len(oracion) > 0:
+            oraciones.append(oracion)
 
         return oraciones
 
@@ -72,7 +73,7 @@ class Freeling:
         with AnalyzerClient() as client:
             client.connect(('127.0.0.1', puerto))
             client.send(texto)
-            return client.recv(len(texto) * 10)
+            return client.recv((len(texto) + 7) * 10)
 
     @staticmethod
     def get_tokens_de_oraciones(oraciones):
@@ -88,11 +89,18 @@ class Freeling:
 
 # DataType
 class TokenFL:
-    def __init__(self):
-        self.token = ""
-        self.tag = ""
-        self.lemma = ""
-        self.probabilidad = ""
+    def __init__(self, token="", lemma="", tag="", probabilidad=""):
+        self.token = token
+        self.tag = tag
+        self.lemma = lemma
+        self.probabilidad = probabilidad
+
+    def __eq__(self, other):
+        return isinstance(other, TokenFL) and self.token == other.token and self.tag == other.tag \
+               and self.lemma == other.lemma and self.probabilidad == other.probabilidad
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 MSG_FLUSH_BUFFER = 'FLUSH_BUFFER'

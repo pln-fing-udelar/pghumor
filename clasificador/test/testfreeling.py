@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from clasificador.herramientas.freeling import Freeling
+from clasificador.herramientas.freeling import Freeling, TokenFL
 from clasificador.realidad.tweet import Tweet
 
 
@@ -31,6 +31,22 @@ class TestFreeling(unittest.TestCase):
         texto = "wkalskjv"
         self.assertFalse(Freeling.esta_en_diccionario(texto),
                          "No debería estar en el diccionario el texto \"" + texto + "\"")
+
+    def test_freeling_procesar_texto_una_oracion(self):
+        texto = "Hola, ¿cómo andás?"
+        resultado = Freeling.procesar_texto(texto)
+        esperado = [
+            [
+                TokenFL('hola', 'hola', 'I', '1'),
+                TokenFL(',', ',', 'Fc', '1'),
+                TokenFL('¿', '¿', 'Fia', '1'),
+                TokenFL('cómo', 'cómo', 'PT000000', '0.993927'),
+                TokenFL('andás', 'andás', 'VMIF2S0', '0.00938678'),
+                TokenFL('?', '?', 'Fit', '1'),
+            ]
+        ]
+        self.assertEquals(esperado, resultado,
+                          "El parseo del texto \"" + texto + "\" no coincide con el esperado")
 
 
 if __name__ == '__main__':
