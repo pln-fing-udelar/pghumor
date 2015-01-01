@@ -3,9 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from clasificador.realidad.tweet import Tweet, remover_retweet_si_hay, remover_links, \
-    remover_espacios_multiples_y_strip, \
-    remover_hashtags, remover_usuarios
+from clasificador.realidad.tweet import remover_espacios_multiples_y_strip, remover_hashtags, remover_links, \
+    remover_retweet_si_hay, remover_usuarios, Tweet
 
 
 class TestPreprocesamiento(unittest.TestCase):
