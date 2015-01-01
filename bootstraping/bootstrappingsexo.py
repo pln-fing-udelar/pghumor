@@ -43,7 +43,9 @@ def bootstrapping():
                     try:
                         tweets = api.search(q=query)
                         exito = True
-                    except:
+                    except KeyboardInterrupt:
+                        raise
+                    except Exception:
                         time.sleep(60)
                         reintentos += 1
                         print("Ocurrió un error haciendo el intento número " + str(reintentos) + ".")
