@@ -31,7 +31,7 @@ def esta_en_google(texto):
         htmltext = browser.open('https://www.google.com.uy/search?' + urllib.urlencode({'q': texto}))
         soup = BeautifulSoup(htmltext)
         result = soup.findAll('body')
-        return '<div id="_FQd" ' not in str(result[0])  # FIXME: esto no está funcionando
+        return '<div id="_FQd" ' not in result[0]  # FIXME: esto no está funcionando
     except KeyboardInterrupt:
         raise
     except Exception:
@@ -39,7 +39,7 @@ def esta_en_google(texto):
         return False
 
 
-def eliminar_underscore(texto):
+def eliminar_underscores(texto):
     return texto.replace('_', ' ')
 
 
@@ -63,7 +63,7 @@ class OOV(Feature):
 
         cant_palabras_oov = 0
         for token_freeling in tokens:
-            token = eliminar_underscore(token_freeling.token)
+            token = eliminar_underscores(token_freeling.token)
             if (len(token) > 3 and contiene_caracteres_no_espanoles(token)) \
                     or (not Freeling.esta_en_diccionario(token) and not esta_en_google(token)):
                 cant_palabras_oov += 1

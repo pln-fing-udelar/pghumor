@@ -8,7 +8,7 @@ from clasificador.realidad.tweet import Tweet
 
 
 class TestFreeling(unittest.TestCase):
-    def test_freeling_escapar(self):
+    def test_escapar(self):
         tweet = Tweet()
         tweet.id = 58179039764021248
         tweet.texto = "3 Cosas que he aprendi en la escuela: Enviar WhatsApp's sin mirar. Dormir sin que me vean." \
@@ -22,17 +22,17 @@ class TestFreeling(unittest.TestCase):
         freeling = Freeling(tweet)
         self.assertNotEqual(freeling.tokens, [], "Error de tokens vacíos")
 
-    def test_freeling_esta_en_diccionario_palabra_comun(self):
+    def test_esta_en_diccionario_palabra_comun(self):
         texto = "reja"
         self.assertTrue(Freeling.esta_en_diccionario(texto),
                         "Debería estar en el diccionario el texto \"" + texto + "\"")
 
-    def test_freeling_esta_en_diccionario_palabra_inexistente(self):
+    def test_esta_en_diccionario_palabra_inexistente(self):
         texto = "wkalskjv"
         self.assertFalse(Freeling.esta_en_diccionario(texto),
                          "No debería estar en el diccionario el texto \"" + texto + "\"")
 
-    def test_freeling_procesar_texto_una_oracion(self):
+    def test_procesar_texto_una_oracion(self):
         texto = "Hola, ¿cómo andás?"
         resultado = Freeling.procesar_texto(texto)
         esperado = [
@@ -48,7 +48,7 @@ class TestFreeling(unittest.TestCase):
         self.assertEquals(esperado, resultado,
                           "El parseo del texto \"" + texto + "\" no coincide con el esperado")
 
-    def test_freeling_procesar_texto_dos_oraciones(self):  # TODO: agregar test de tres oraciones
+    def test_procesar_texto_dos_oraciones(self):  # TODO: agregar test de tres oraciones
         texto = "Hola. ¿Cómo andás?"
         resultado = Freeling.procesar_texto(texto)
         esperado = [
