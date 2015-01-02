@@ -31,7 +31,7 @@ def esta_en_google(texto):
         htmltext = browser.open('https://www.google.com.uy/search?' + urllib.urlencode({'q': texto}))
         soup = BeautifulSoup(htmltext)
         result = soup.findAll('body')
-        return '<div id="_FQd" ' not in str(result[0])
+        return '<div id="_FQd" ' not in str(result[0])  # FIXME: esto no está funcionando
     except KeyboardInterrupt:
         raise
     except Exception:
