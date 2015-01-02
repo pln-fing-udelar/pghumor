@@ -85,7 +85,7 @@ class Freeling:
         if patron_todo_espacios.match(texto):
             return True
         resultado = Freeling.analyzer_client_morfo(texto)
-        return len(resultado) == 0 or resultado != texto
+        return len(resultado) == 0 or resultado != texto  # TODO: si pongo en minúsculas lo otro, debo comparar bien acá
 
 
 # DataType
