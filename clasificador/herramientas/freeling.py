@@ -24,8 +24,9 @@ class Freeling:
 
     @staticmethod
     def procesar_texto(texto):
-        # Se pasa a minúsculas, sino Freeling toma como entidades con nombre a cualquier secuencia de palabras con
-        # la primer letra en mayúsculas de cada una.
+        """Devuelve el resultado de analizar el texto con Freeling, pasando a minúsculas, sino Freeling toma como
+        entidades con nombre a cualquier secuencia de palabras con la primer letra en mayúsculas de cada una,
+        y los tweets en general tienen errores en las mayúsculas y minúsculas."""
         texto = texto.lower()
 
         if patron_todo_espacios.match(texto):
@@ -44,7 +45,7 @@ class Freeling:
                 token_freeling.tag = matcheo.group(3)
                 token_freeling.probabilidad = matcheo.group(4)
                 oracion.append(token_freeling)
-            elif linea == '':  # FIXME: no está separando bien en oraciones.
+            elif linea == '':
                 oraciones.append(oracion)
                 oracion = []
 
@@ -54,11 +55,7 @@ class Freeling:
         return oraciones
 
     @staticmethod
-    def analyzer_client_morfo(texto):
-        return Freeling.analyzer_client(texto, puerto=11111)
-
-    @staticmethod
-    def analyzer_client(texto, puerto=55555):
+    def analyzer_client(texto, puerto=55555):  # FIXME: no es pasado por minúsculas esta parte
         resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
         while len(resultado) == 0 or resultado[0] == "/bin/sh: fork: Resource temporarily unavailable\n" \
                 or resultado[0] == "Server not ready?\n":
@@ -67,6 +64,10 @@ class Freeling:
             print("En este loop")
             resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
         return resultado
+
+    @staticmethod
+    def analyzer_client_morfo(texto):
+        return Freeling.analyzer_client(texto, puerto=11111)
 
     @staticmethod
     def respuesta_socket_freeling(texto, puerto):

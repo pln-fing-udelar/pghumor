@@ -43,7 +43,25 @@ class TestFreeling(unittest.TestCase):
                 TokenFL('cómo', 'cómo', 'PT000000', '0.993927'),
                 TokenFL('andás', 'andás', 'VMIF2S0', '0.00938678'),
                 TokenFL('?', '?', 'Fit', '1'),
-            ]
+            ],
+        ]
+        self.assertEquals(esperado, resultado,
+                          "El parseo del texto \"" + texto + "\" no coincide con el esperado")
+
+    def test_freeling_procesar_texto_dos_oraciones(self):  # TODO: agregar test de tres oraciones
+        texto = "Hola. ¿Cómo andás?"
+        resultado = Freeling.procesar_texto(texto)
+        esperado = [
+            [
+                TokenFL('hola', 'hola', 'I', '1'),
+                TokenFL('.', '.', 'Fp', '1'),
+            ],
+            [
+                TokenFL('¿', '¿', 'Fia', '1'),
+                TokenFL('cómo', 'cómo', 'PT000000', '0.993927'),
+                TokenFL('andás', 'andás', 'VMIF2S0', '0.00938678'),
+                TokenFL('?', '?', 'Fit', '1'),
+            ],
         ]
         self.assertEquals(esperado, resultado,
                           "El parseo del texto \"" + texto + "\" no coincide con el esperado")
