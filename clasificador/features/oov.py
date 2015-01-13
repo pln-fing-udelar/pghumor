@@ -6,8 +6,8 @@ import math
 import traceback
 import urllib
 
-from bs4 import BeautifulSoup
-import mechanize
+from lxml import html
+import requests
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
@@ -25,13 +25,13 @@ def contiene_caracteres_no_espanoles(texto):
 
 def esta_en_google(texto):
     try:
-        browser = mechanize.Browser()
-        browser.set_handle_robots(False)
-        browser.addheaders = [('User-agent', 'Mozilla')]
-        htmltext = browser.open('https://www.google.com.uy/search?' + urllib.urlencode({'q': texto}))
-        soup = BeautifulSoup(htmltext)
-        result = soup.findAll('body')
-        return '<div id="_FQd" ' not in result[0]  # FIXME: esto no está funcionando
+        respuesta = requests.get('https://www.google.com.uy/search?' + urllib.urlencode({'q': texto.encode('utf-8')}))
+        assert respuesta.status_code == 200, "El código de estado de la respuesta de google debería ser 200"
+        arbol_html = html.fromstring(respuesta.text)
+        correccion_gramatical_automatica = arbol_html.xpath('//span[@class="spell"]/text()')
+        correccion_gramatical_sugerida = arbol_html.xpath('//span[@class="spell ng"]/text()')
+        # TODO: falta fijarse si hay resultados en la consulta a google
+        return not correccion_gramatical_automatica and not correccion_gramatical_sugerida
     except KeyboardInterrupt:
         raise
     except Exception:
