@@ -7,8 +7,11 @@ import sys
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.svm import SVC
+from sklearn import preprocessing
 from experimentos.TweetToText import TweetToText
+from experimentos.TweetsToFeatures import TweetsToFeatures
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -20,7 +23,7 @@ from clasificador.herramientas.utils import filtrar_segun_votacion, get_stop_wor
 c = CountVectorizer()
 
 if __name__ == "__main__":
-    corpus = cargar_tweets(cargar_features=False)
+    corpus = cargar_tweets(cargar_features=True)
     print('')
     print('')
 
@@ -40,8 +43,8 @@ if __name__ == "__main__":
     y_train = get_clases(entrenamiento)
     y_test = get_clases(evaluacion)
 
-    clasificador = Pipeline([
-        ('vect', Pipeline([
+    feature_union = FeatureUnion([
+        ('vectorizer_bow', Pipeline([
             ('tweet_to_text', TweetToText()),
             ('vectorizer', CountVectorizer(
                 strip_accents='ascii',
@@ -49,13 +52,21 @@ if __name__ == "__main__":
                 token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
             ))])
         ),
-        ('clf', MultinomialNB(alpha=0.01)),
+        ('features_tweets', TweetsToFeatures())
+
+    ])
+
+    clasificador = Pipeline([
+        # ('features', feature_union),
+        # ('scaler', preprocessing.StandardScaler()),
+        ('features_tweets', TweetsToFeatures()),
+        ('clf', MultinomialNB(alpha=0.01)),  # alpha=0.01
     ])
 
     print('')
     print('')
 
-    cross_validation_y_reportar(clasificador, X, y, 5)
+    # cross_validation_y_reportar(clasificador, X, y, 5)
 
     print("Entrenando clasificador...")
     clasificador.fit(X_train, y_train)
