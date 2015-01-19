@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import unittest
 
@@ -11,7 +11,7 @@ class TestHashtags(unittest.TestCase):
     def test_hashtags_basico(self):
         tweet = Tweet()
         tweet.id = 58179039764021248
-        tweet.texto = '#cuatro Tweet #uno #doña que #tres #asdfAsfsdañaáéáuasdfasd hola'
+        tweet.texto = "#cuatro Tweet #uno #doña que #tres #asdfAsfsdañaáéáuasdfasd hola"
         tweet.texto_original = tweet.texto
         tweet.favoritos = 3
         tweet.retweets = 14
@@ -22,7 +22,7 @@ class TestHashtags(unittest.TestCase):
 
         tweet.features[hashtags.nombre] = hashtags.calcular_feature(tweet)
         self.assertEquals(5, tweet.features[hashtags.nombre],
-                          'El tweet debería tener 5 hashtags, no ' + str(tweet.features[hashtags.nombre]))
+                          "El tweet debería tener 5 hashtags, no " + str(tweet.features[hashtags.nombre]))
 
 
 if __name__ == '__main__':

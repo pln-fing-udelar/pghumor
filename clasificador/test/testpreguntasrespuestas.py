@@ -22,7 +22,7 @@ class TestPreguntasRespuestas(unittest.TestCase):
 
         tweet.features[preguntasrespuestas.nombre] = preguntasrespuestas.calcular_feature(tweet)
         self.assertEquals(1, tweet.features[preguntasrespuestas.nombre],
-                          'El tweet debería tener 1 en preguntas-respuestas, no ' + str(tweet.features[
+                          "El tweet debería tener 1 en preguntas-respuestas, no " + str(tweet.features[
                               preguntasrespuestas.nombre]))
 
     def test_preguntasrespuestas_basico2(self):
@@ -40,7 +40,7 @@ class TestPreguntasRespuestas(unittest.TestCase):
 
         tweet.features[preguntasrespuestas.nombre] = preguntasrespuestas.calcular_feature(tweet)
         self.assertEquals(2, tweet.features[preguntasrespuestas.nombre],
-                          'El tweet debería tener 2 preguntas-respuestas, no ' + str(tweet.features[
+                          "El tweet debería tener 2 preguntas-respuestas, no " + str(tweet.features[
                               preguntasrespuestas.nombre]))
 
     def test_preguntasrespuestas_basico3(self):
@@ -58,7 +58,7 @@ class TestPreguntasRespuestas(unittest.TestCase):
 
         tweet.features[preguntasrespuestas.nombre] = preguntasrespuestas.calcular_feature(tweet)
         self.assertEquals(2, tweet.features[preguntasrespuestas.nombre],
-                          'El tweet debería tener 2 preguntas-respuestas, no ' + str(tweet.features[
+                          "El tweet debería tener 2 preguntas-respuestas, no " + str(tweet.features[
                               preguntasrespuestas.nombre]))
 
 
