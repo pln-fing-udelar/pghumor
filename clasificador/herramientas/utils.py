@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 
 def obtener_diccionario(filename):
     with open(filename) as archivo:
-        return [linea.decode('utf-8').rstrip('\n') for linea in archivo]
+        return {linea.decode('utf-8').rstrip('\n') for linea in archivo if linea.decode('utf-8').rstrip('\n')}
 
 
 def ejecutar_comando(command):
