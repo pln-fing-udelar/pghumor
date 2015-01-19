@@ -1,9 +1,9 @@
 # coding=utf-8
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import unittest
 
-from clasificador.herramientas.reflection import paquete, subclases, modulos_vecinos
+from clasificador.herramientas.reflection import modulos_vecinos, paquete, subclases
 
 
 class TestUtilReflection(unittest.TestCase):

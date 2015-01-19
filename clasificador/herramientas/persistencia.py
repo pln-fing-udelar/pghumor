@@ -146,4 +146,3 @@ def guardar_features(tweets, **opciones):
 
     cursor.close()
     conexion.close()
-    conexion.disconnect()
