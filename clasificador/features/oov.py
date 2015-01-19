@@ -30,8 +30,8 @@ def esta_en_google(texto):
         arbol_html = html.fromstring(respuesta.text)
         correccion_gramatical_automatica = arbol_html.xpath('//span[@class="spell"]/text()')
         correccion_gramatical_sugerida = arbol_html.xpath('//span[@class="spell ng"]/text()')
-        # TODO: falta fijarse si hay resultados en la consulta a google
-        return not correccion_gramatical_automatica and not correccion_gramatical_sugerida
+        hay_resultados = respuesta.text.find("No se han encontrado resultados") == -1
+        return hay_resultados and not correccion_gramatical_automatica and not correccion_gramatical_sugerida
     except KeyboardInterrupt:
         raise
     except Exception:
