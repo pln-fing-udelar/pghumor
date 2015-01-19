@@ -90,19 +90,6 @@ if __name__ == "__main__":
         clases_entrenamiento = get_clases(entrenamiento)
         clases_evaluacion = get_clases(evaluacion)
 
-        # TODO: poner en una clase
-        features_texto_entrenamiento = [tweet.texto for tweet in entrenamiento]
-        bow = Pipeline([
-            ('vect', CountVectorizer(
-                stop_words=get_stop_words(),
-                token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
-            )),
-            ('clf', naive_bayes.MultinomialNB(alpha=0.01)),
-        ])
-        bow = bow.fit(features_texto_entrenamiento, clases_entrenamiento)
-        for tweet in corpus:
-            tweet.predict_proba = bow.predict_proba([tweet.texto])[0][0]
-
         features = get_features(corpus)
         features_entrenamiento = get_features(entrenamiento)
         features_evaluacion = get_features(evaluacion)

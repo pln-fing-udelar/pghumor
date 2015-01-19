@@ -57,9 +57,9 @@ if __name__ == "__main__":
     ])
 
     clasificador = Pipeline([
-        # ('features', feature_union),
+        ('features', feature_union),
         # ('scaler', preprocessing.StandardScaler()),
-        ('features_tweets', TweetsToFeatures()),
+        # ('features_tweets', TweetsToFeatures()),
         ('clf', MultinomialNB(alpha=0.01)),  # alpha=0.01
     ])
 

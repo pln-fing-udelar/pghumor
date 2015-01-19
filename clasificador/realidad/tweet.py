@@ -79,6 +79,4 @@ class Tweet:
         return [valor for (_, valor) in sorted(self.features.items())]
 
     def array_features(self):
-        # print(hstack([csr_matrix(self.valores_features_ordenados(), dtype=float), self.count_vector.astype(float)]))
-        #return hstack([csr_matrix(self.valores_features_ordenados(), dtype=float), self.count_vector.astype(float)])
-        return self.valores_features_ordenados() + [self.predict_proba]
+        return self.valores_features_ordenados()
