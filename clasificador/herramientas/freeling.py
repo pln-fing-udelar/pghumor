@@ -55,7 +55,9 @@ class Freeling:
         return oraciones
 
     @staticmethod
-    def analyzer_client(texto, puerto=55555):  # FIXME: no es pasado por minúsculas esta parte
+    # TODO: no es pasado por minúsculas esta parte, aunque no es necesario,
+    # ya que todas las funciones que llaman a esta dejan todo en minúsculas antes.
+    def analyzer_client(texto, puerto=55555):
         return Freeling.respuesta_socket_freeling(texto, puerto=puerto)
 
     @staticmethod
