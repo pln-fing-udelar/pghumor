@@ -56,14 +56,7 @@ class Freeling:
 
     @staticmethod
     def analyzer_client(texto, puerto=55555):  # FIXME: no es pasado por minúsculas esta parte
-        resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
-        while len(resultado) == 0 or resultado[0] == "/bin/sh: fork: Resource temporarily unavailable\n" \
-                or resultado[0] == "Server not ready?\n":
-            print(resultado)
-            print(len(texto), texto)
-            print("En este loop")
-            resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
-        return resultado
+        return Freeling.respuesta_socket_freeling(texto, puerto=puerto)
 
     @staticmethod
     def analyzer_client_morfo(texto):
