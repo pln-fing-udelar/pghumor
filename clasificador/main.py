@@ -123,8 +123,6 @@ if __name__ == "__main__":
             for i in range(len(features_ordenadas)):
                 importancias[features_ordenadas[i]] = clf.feature_importances_[i]
 
-            importancias["BOW"] = clf.feature_importances_[len(features_ordenadas)]
-
             print("Ranking de features:")
 
             for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):

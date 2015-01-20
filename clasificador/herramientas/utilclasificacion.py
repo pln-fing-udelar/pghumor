@@ -24,7 +24,7 @@ def train_test_split_pro(corpus, **options):
 
 
 def get_features(tweets):
-    assert len(tweets) > 0, "Deben haber tweets para obtener las features y las clases"
+    assert len(tweets) > 0, "Deberían haber tweets para obtener las features y las clases"
 
     largo_esperado_features = len(tweets[0].array_features())  # .shape[1]
 

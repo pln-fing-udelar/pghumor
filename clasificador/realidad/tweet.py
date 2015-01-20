@@ -54,9 +54,6 @@ class Tweet:
 
         self.features = {}
 
-        # self.count_vector = None
-        self.predict_proba = None
-
     def preprocesar(self):
         self.texto_original = self.texto
         self.texto = HTMLParser.HTMLParser().unescape(self.texto)
