@@ -2,6 +2,7 @@
 
 if [ "$#" -ne 1 ]; then
     echo "Número de parámetros incorrecto"
+    exit 1
 fi
 
 if [ $1 = "start" ]; then
