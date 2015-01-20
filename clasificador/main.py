@@ -10,8 +10,6 @@ from flask import Flask, request
 from flask_cors import cross_origin
 from sklearn import linear_model, naive_bayes, preprocessing, svm, tree
 from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.pipeline import Pipeline
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -21,7 +19,7 @@ from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
-from clasificador.herramientas.utils import filtrar_segun_votacion, get_stop_words
+from clasificador.herramientas.utils import filtrar_segun_votacion
 
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
@@ -29,7 +27,7 @@ from clasificador.herramientas.utils import filtrar_segun_votacion, get_stop_wor
 # Ver esto: https://www.google.com.uy/search?q=preprocess+tweet+like+normal+text
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Clasifica humor de los tweets almacenados en MySQL.')
+    parser = argparse.ArgumentParser(description='Clasifica humor de los tweets almacenados en la base de datos.')
     parser.add_argument('-a', '--calcular-features-faltantes', action='store_true', default=False,
                         help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
     parser.add_argument('-c', '--clasificador', type=str, default="SVM",
@@ -50,11 +48,13 @@ if __name__ == "__main__":
                         help="recalcula el valor de una feature")
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
                         help="levanta el servidor para responder a clasificaciones")
+    parser.add_argument('-t', '--threads', type=int,
+                        help="establece la cantidad de threads a usar al recalcular las features", default=1)
 
     args = parser.parse_args()
 
     if args.explicar_features:
-        features_obj = Features()
+        features_obj = Features(args.threads)
         for feature in sorted(list(features_obj.features.values()), key=lambda x: x.nombre):
             print(feature.nombre + ":")
             print(feature.descripcion)
@@ -65,15 +65,15 @@ if __name__ == "__main__":
             tweet.preprocesar()
 
         if args.recalcular_features:
-            features_obj = Features()
+            features_obj = Features(args.threads)
             features_obj.calcular_features(corpus)
             guardar_features(corpus)
         elif args.recalcular_feature:
-            features_obj = Features()
+            features_obj = Features(args.threads)
             features_obj.calcular_feature(corpus, args.recalcular_feature)
             guardar_features(corpus, nombre_feature=args.recalcular_feature)
         elif args.calcular_features_faltantes:
-            features_obj = Features()
+            features_obj = Features(args.threads)
             features_obj.calcular_features_faltantes(corpus)
             guardar_features(corpus)
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
                 _tweet = Tweet()
                 _tweet.texto = request.form['texto']
                 _tweet.preprocesar()
-                _features_obj = Features()
+                _features_obj = Features(args.threads)
                 _features_obj.calcular_features([_tweet])
                 _features = [list(_tweet.features.values())]
                 return str(int(clasificador_usado.predict(_features)[0]))
