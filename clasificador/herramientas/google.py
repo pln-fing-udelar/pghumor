@@ -43,7 +43,7 @@ class Google(object):
         while True:
             respuesta = requests.get('https://www.google.com.uy/search?'
                                      + urllib.urlencode({'q': palabra.encode('utf-8')}))
-            time.sleep(10)
+            time.sleep(5)
             if respuesta.status_code == 200:
                 break
             else:
