@@ -4,10 +4,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import random
 import math
 
-from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 import numpy
 from progress.bar import Bar
 from sklearn import cross_validation, metrics
+
+from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 
 
 def train_test_split_pro(corpus, **options):
@@ -53,13 +54,15 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
     f1score_positivo_cross_validation = []
     f1score_negativo_cross_validation = []
     accuracy_cross_validation = []
-    diccionario_array_medidas = {'Recall positivo': recall_positivo_cross_validation,
-                                 'Recall negativo': recall_negativo_cross_validation,
-                                 'Precision positivo': precision_positivo_cross_validation,
-                                 'Precision negativo': precision_negativo_cross_validation,
-                                 'F1-score positivo': f1score_positivo_cross_validation,
-                                 'F1-score negativo': f1score_negativo_cross_validation,
-                                 'Acierto': accuracy_cross_validation}
+    diccionario_array_medidas = {
+        'Recall positivo': recall_positivo_cross_validation,
+        'Recall negativo': recall_negativo_cross_validation,
+        'Precision positivo': precision_positivo_cross_validation,
+        'Precision negativo': precision_negativo_cross_validation,
+        'F1-score positivo': f1score_positivo_cross_validation,
+        'F1-score negativo': f1score_negativo_cross_validation,
+        'Acierto': accuracy_cross_validation,
+    }
     bar = Bar("Realizando cross-validation", max=numero_particiones, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
     for i, (train, test) in enumerate(skf):
@@ -102,20 +105,26 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
     print("avg / total       {ap:0.2f}      {ar:0.2f}      {af:0.2f}".format(
         ap=(mean['Precision positivo'] + mean['Precision negativo']) / 2,
         ar=(mean['Recall positivo'] + mean['Recall negativo']) / 2,
-        af=(mean['F1-score positivo'] + mean['F1-score negativo']) / 2))
+        af=(mean['F1-score positivo'] + mean['F1-score negativo']) / 2),
+    )
 
     print('')
     print('')
 
 
 def calcular_medidas(tn, fp, fn, tp):
-    """Computes effectiveness measures given a confusion matrix."""
-    metricas = {'precision_positivo': tp / (fp + tp), 'precision_negativo': tn / (fn + tn),
-                'recall_negativo': tn / (tn + fp), 'recall_positivo': tp / (tp + fn),
-                'accuracy': (tp + tn) / (tp + fp + tn + fn)}
+    """Dada la matriz de confusión desglozada, calcula todas las medidas."""
+    metricas = {
+        'precision_positivo': tp / (fp + tp),
+        'precision_negativo': tn / (fn + tn),
+        'recall_negativo': tn / (tn + fp),
+        'recall_positivo': tp / (tp + fn),
+        'accuracy': (tp + tn) / (tp + fp + tn + fn),
+    }
 
     metricas['f1score_positivo'] = 2 * metricas['precision_positivo'] * metricas['recall_positivo'] / (
         metricas['precision_positivo'] + metricas['recall_positivo'])
+
     metricas['f1score_negativo'] = 2 * metricas['precision_negativo'] * metricas['recall_negativo'] / (
         metricas['precision_negativo'] + metricas['recall_negativo'])
 
