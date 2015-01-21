@@ -55,15 +55,10 @@ class Freeling:
         return oraciones
 
     @staticmethod
-    def analyzer_client(texto, puerto=55555):  # FIXME: no es pasado por minúsculas esta parte
-        resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
-        while len(resultado) == 0 or resultado[0] == "/bin/sh: fork: Resource temporarily unavailable\n" \
-                or resultado[0] == "Server not ready?\n":
-            print(resultado)
-            print(len(texto), texto)
-            print("En este loop")
-            resultado = Freeling.respuesta_socket_freeling(texto, puerto=puerto)
-        return resultado
+    # TODO: no es pasado por minúsculas esta parte, aunque no es necesario,
+    # ya que todas las funciones que llaman a esta dejan todo en minúsculas antes.
+    def analyzer_client(texto, puerto=55555):
+        return Freeling.respuesta_socket_freeling(texto, puerto=puerto)
 
     @staticmethod
     def analyzer_client_morfo(texto):
@@ -74,7 +69,7 @@ class Freeling:
         with AnalyzerClient() as client:
             client.connect(('127.0.0.1', puerto))
             client.send(texto)
-            return client.recv((len(texto) + 7) * 10)
+            return client.recv()
 
     @staticmethod
     def get_tokens_de_oraciones(oraciones):
@@ -114,7 +109,7 @@ class AnalyzerClient:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def __asegurar_servidor_pronto(self):
-        assert self.recv(50) == MSG_SERVER_READY, "El servidor de Freeling debería haber respondido que está pronto"
+        assert self.recv() == MSG_SERVER_READY, "El servidor de Freeling debería haber respondido que está pronto"
 
     def __enter__(self):
         return self
@@ -132,9 +127,12 @@ class AnalyzerClient:
         self.send(MSG_RESET_STATS)
         self.__asegurar_servidor_pronto()
 
-    def recv(self, tam_buffer):
-        resultado = self._socket.recv(tam_buffer).decode('utf-8')
-        assert resultado.endswith('\0'), "El mensaje recibido del servidor de Freeling debería terminar en \\0"
+    def recv(self):
+        resultado = ""
+        while True:
+            resultado += self._socket.recv(4096).decode('utf-8')
+            if resultado.endswith('\0'):
+                break
         return resultado[:-1].strip()
 
     def send(self, mensaje):
