@@ -1,12 +1,12 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
-from urllib2 import HTTPError
+
 import time
 import urllib
 
 from lxml import html
-import mechanize
 from pkg_resources import resource_filename
+import requests
 
 import clasificador.herramientas.utils
 
@@ -39,33 +39,19 @@ class Google(object):
 
     @staticmethod
     def esta_en_google_consulta(palabra):
-        browser = mechanize.Browser()
-        browser.set_handle_robots(False)
-        browser.addheaders = [('User-agent',
-                               'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)'
-                               + ' Chrome/39.0.2171.95 Safari/537.36')]
+        respuesta = ""
+        while True:
+            respuesta = requests.get('https://www.google.com.uy/search?'
+                                     + urllib.urlencode({'q': palabra.encode('utf-8')}))
+            time.sleep(10)
+            if respuesta.status_code == 200:
+                break
+            else:
+                print(respuesta.status_code)
 
-        respuesta_consulta = ""
-        salir = False
-        while not salir:
-            try:
-                respuesta_consulta = browser.open("https://www.google.com.uy/search?"
-                                                  + urllib.urlencode({'q': palabra.encode('utf-8')}))
-                salir = True
-            except KeyboardInterrupt:
-                raise
-            except HTTPError as e:
-                print(unicode(e))
-                time.sleep(15)
-                # respuesta_consulta = requests.get(
-                # 'https://www.google.com.uy/search?' + urllib.urlencode({'q': palabra.encode('utf-8')}))
-                # salir = respuesta_consulta.status_code == 200
-        # assert respuesta_consulta.status_code == 200,
-        # "El código de estado de la respuesta_consulta de google debería ser 200"
-        texto_html = unicode(respuesta_consulta)
-        hay_resultados_consulta = texto_html.find("No se han encontrado resultados") == -1
-        arbol_html = html.fromstring(texto_html)
+        hay_resultados = respuesta.text.find("No se han encontrado resultados") == -1
+        arbol_html = html.fromstring(respuesta.text)
         correccion_gramatical_automatica = arbol_html.xpath('//span[@class="spell"]/text()')
         correccion_gramatical_sugerida = arbol_html.xpath('//span[@class="spell ng"]/text()')
-        hay_correccion_gramatical = correccion_gramatical_automatica or correccion_gramatical_sugerida
-        return hay_resultados_consulta and not hay_correccion_gramatical
+        hay_correccion_gramatical = bool(correccion_gramatical_automatica) or bool(correccion_gramatical_sugerida)
+        return hay_resultados and not hay_correccion_gramatical
