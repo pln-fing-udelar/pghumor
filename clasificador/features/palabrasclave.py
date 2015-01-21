@@ -18,7 +18,7 @@ class PalabrasClave(Feature):
             Mide la cantidad de palabras clave mencionadas en el texto.
         """
         self.palabrasAnimales = clasificador.herramientas.utils.obtener_diccionario(
-            resource_filename('clasificador.recursos.diccionarios', 'DiccionarioFrecuentes.txt'))
+            resource_filename('clasificador.recursos.diccionarios', 'frecuentes.dic'))
 
     def calcular_feature(self, tweet):
         tf = Freeling(tweet)

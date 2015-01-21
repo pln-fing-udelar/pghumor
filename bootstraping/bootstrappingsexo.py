@@ -28,7 +28,7 @@ def bootstrapping():
     api = tweepy.API(auth)
 
     palabras_sexuales = clasificador.herramientas.utils.obtener_diccionario(
-        resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'))
+        resource_filename('clasificador.recursos.diccionarios', 'sexual.dic'))
 
     _dicc_palabras = defaultdict(int)
     for palabra1 in palabras_sexuales:
@@ -97,7 +97,7 @@ def clasificar(dicc):
 
 
 def guardar_dicc_para_feature(palabras_sexuales):
-    with open(resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'), 'a') as archivo:
+    with open(resource_filename('clasificador.recursos.diccionarios', 'sexual.dic'), 'a') as archivo:
         archivo.writelines(palabras_sexuales)
 
 

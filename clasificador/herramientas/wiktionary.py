@@ -12,9 +12,9 @@ import clasificador.herramientas.utils
 
 class Wiktionary(object):
     diccionario_positivo = clasificador.herramientas.utils.obtener_diccionario(
-        resource_filename('clasificador.recursos.diccionarios', 'Wiktionary.dic'))
+        resource_filename('clasificador.recursos.diccionarios', 'wiktionary.dic'))
     diccionario_negativo = clasificador.herramientas.utils.obtener_diccionario(
-        resource_filename('clasificador.recursos.diccionarios', 'NoWiktionary.dic'))
+        resource_filename('clasificador.recursos.diccionarios', 'nowiktionary.dic'))
 
     @staticmethod
     def pertenece(palabra):
@@ -26,11 +26,11 @@ class Wiktionary(object):
             pertenece_palabra = Wiktionary.pertenece_consulta(palabra)
             if pertenece_palabra:
                 Wiktionary.diccionario_positivo.add(palabra)
-                with open(resource_filename('clasificador.recursos.diccionarios', 'Wiktionary.dic'), 'a') as archivo:
+                with open(resource_filename('clasificador.recursos.diccionarios', 'wiktionary.dic'), 'a') as archivo:
                     archivo.write((palabra + '\n').encode('utf-8'))
             else:
                 Wiktionary.diccionario_negativo.add(palabra)
-                with open(resource_filename('clasificador.recursos.diccionarios', 'NoWiktionary.dic'), 'a') as archivo:
+                with open(resource_filename('clasificador.recursos.diccionarios', 'nowiktionary.dic'), 'a') as archivo:
                     archivo.write((palabra + '\n').encode('utf-8'))
             return pertenece_palabra
 

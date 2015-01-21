@@ -18,7 +18,7 @@ class PresenciaAnimales(Feature):
             Mide la cantidad de animales mencionados en el texto.
         """
         self.palabrasAnimales = clasificador.herramientas.utils.obtener_diccionario(
-            resource_filename('clasificador.recursos.diccionarios', 'DiccionarioAnimales.txt'))
+            resource_filename('clasificador.recursos.diccionarios', 'animales.dic'))
 
     def calcular_feature(self, tweet):
         tf = Freeling(tweet)
