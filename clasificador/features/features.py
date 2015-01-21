@@ -13,16 +13,10 @@ from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 import clasificador.herramientas.persistencia
 from clasificador.herramientas.reflection import cargar_modulos_vecinos, subclases
 
-CANTIDAD_THREADS = 4
-
-
-def abortar_si_feature_no_es_thread_safe(feature):
-    assert CANTIDAD_THREADS == 1 or feature.thread_safe, \
-        "La feature " + feature.nombre + " no es thread-safe y hay más de un hilo corriendo"
-
 
 class Features:
-    def __init__(self):
+    def __init__(self, cantidad_threads):
+        self.cantidad_threads = cantidad_threads
         self.bar = ""
         self.features = {}
 
@@ -50,20 +44,23 @@ class Features:
 
         print("Fin de la carga de características")
 
+    def abortar_si_feature_no_es_thread_safe(self, feature):
+        assert self.cantidad_threads == 1 or feature.thread_safe, \
+            "La feature " + feature.nombre + " no es thread-safe y hay más de un hilo corriendo"
+
     def calcular_features(self, tweets):
-        Features.repartir_en_threads(self.calcular_features_thread, tweets)
+        self.repartir_en_threads(self.calcular_features_thread, tweets)
 
     def calcular_feature(self, tweets, nombre_feature):
-        Features.repartir_en_threads(self.calcular_feature_thread, tweets, nombre_feature)
+        self.repartir_en_threads(self.calcular_feature_thread, tweets, nombre_feature)
 
     def calcular_features_faltantes(self, tweets):
-        Features.repartir_en_threads(self.calcular_features_faltantes_thread, tweets)
+        self.repartir_en_threads(self.calcular_features_faltantes_thread, tweets)
 
-    @staticmethod
-    def repartir_en_threads(funcion, tweets, nombre_feature=None):
-        intervalo = int(len(tweets) / CANTIDAD_THREADS)
+    def repartir_en_threads(self, funcion, tweets, nombre_feature=None):
+        intervalo = int(len(tweets) / self.cantidad_threads)
         threads = []
-        for i in range(CANTIDAD_THREADS - 1):
+        for i in range(self.cantidad_threads - 1):
             if nombre_feature:
                 args = (tweets[i * intervalo: (i + 1) * intervalo], nombre_feature, i)
             else:
@@ -72,9 +69,9 @@ class Features:
             threads.append(thread)
 
         if nombre_feature:
-            args = (tweets[(CANTIDAD_THREADS - 1) * intervalo:], nombre_feature, CANTIDAD_THREADS - 1)
+            args = (tweets[(self.cantidad_threads - 1) * intervalo:], nombre_feature, self.cantidad_threads - 1)
         else:
-            args = (tweets[(CANTIDAD_THREADS - 1) * intervalo:], CANTIDAD_THREADS - 1)
+            args = (tweets[(self.cantidad_threads - 1) * intervalo:], self.cantidad_threads - 1)
         thread = Thread(target=funcion, args=args)
         threads.append(thread)
 
@@ -91,7 +88,7 @@ class Features:
             bar.next(0)
             for tweet in tweets:
                 for feature in list(self.features.values()):
-                    abortar_si_feature_no_es_thread_safe(feature)
+                    self.abortar_si_feature_no_es_thread_safe(feature)
                     tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                     bar.next()
             bar.finish()
@@ -102,7 +99,7 @@ class Features:
                       suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
             feature = self.features[nombre_feature]
-            abortar_si_feature_no_es_thread_safe(feature)
+            self.abortar_si_feature_no_es_thread_safe(feature)
             for tweet in tweets:
                 tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                 bar.next()
@@ -115,7 +112,7 @@ class Features:
             bar.next(0)
             for tweet in tweets:
                 for feature in list(self.features.values()):
-                    abortar_si_feature_no_es_thread_safe(feature)
+                    self.abortar_si_feature_no_es_thread_safe(feature)
                     if feature.nombre not in tweet.features:
                         tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                     bar.next()
