@@ -6,21 +6,14 @@ import subprocess
 from pkg_resources import resource_filename
 
 
-def obtener_diccionario(filename):
-    with open(filename) as archivo:
-        return {linea.decode('utf-8').rstrip('\n') for linea in archivo if linea.decode('utf-8').rstrip('\n')}
-
-
 def ejecutar_comando(command):
-    while True:
-        try:
-            p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            p.wait()
-            return [linea.decode('utf-8') for linea in p.stdout.readlines()]
-        except KeyboardInterrupt:
-            raise
-        except Exception:
-            pass
+    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p.wait()
+    return [linea.decode('utf-8') for linea in p.stdout.readlines()]
+
+
+def eliminar_underscores(texto):
+    return texto.replace('_', ' ')
 
 
 def filtrar_segun_votacion(corpus):
@@ -42,3 +35,8 @@ def filtrar_segun_votacion(corpus):
 def get_stop_words():
     with open(resource_filename('clasificador.recursos.diccionarios', 'stopwords.dic')) as archivo:
         return {linea.strip() for linea in archivo}
+
+
+def obtener_diccionario(filename):
+    with open(filename) as archivo:
+        return {linea.decode('utf-8').rstrip('\n') for linea in archivo if linea.decode('utf-8').rstrip('\n')}
