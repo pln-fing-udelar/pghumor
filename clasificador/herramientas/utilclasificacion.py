@@ -4,7 +4,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import random
 import math
 
+from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 import numpy
+from progress.bar import Bar
 from sklearn import cross_validation, metrics
 
 
@@ -42,19 +44,82 @@ def get_clases(tweets):
 
 
 def cross_validation_y_reportar(clasificador, features, clases, numero_particiones):
-    print("Haciendo cross-validation...")
-    puntajes = cross_validation.cross_val_score(clasificador, features, clases, cv=numero_particiones, verbose=True)
-    # puntajes2 = cross_validation.cross_val_score(clasificador, features, clases, cv=numero_particiones, verbose=True,
-    #                                             scoring=metrics.precision_recall_fscore_support)
-    # print('Cross-validation:')
+    skf = cross_validation.StratifiedKFold(clases, n_folds=numero_particiones)
+    matrices = []
+    precision_positivo_cross_validation = []
+    precision_negativo_cross_validation = []
+    recall_positivo_cross_validation = []
+    recall_negativo_cross_validation = []
+    f1score_positivo_cross_validation = []
+    f1score_negativo_cross_validation = []
+    accuracy_cross_validation = []
+    diccionario_array_medidas = {'Recall positivo': recall_positivo_cross_validation,
+                                 'Recall negativo': recall_negativo_cross_validation,
+                                 'Precision positivo': precision_positivo_cross_validation,
+                                 'Precision negativo': precision_negativo_cross_validation,
+                                 'F1-score positivo': f1score_positivo_cross_validation,
+                                 'F1-score negativo': f1score_negativo_cross_validation,
+                                 'Acierto': accuracy_cross_validation}
+    bar = Bar("Realizando cross-validation", max=numero_particiones, suffix=SUFIJO_PROGRESS_BAR)
+    bar.next(0)
+    for i, (train, test) in enumerate(skf):
+        clasificador.fit(features[train], clases[train])
+        y_pred = clasificador.predict(features[test])
+        cm = metrics.confusion_matrix(clases[test], y_pred).flatten()
+        matrices.append(cm)
+        metricas = calcular_medidas(*cm)
+        recall_positivo_cross_validation.append(metricas['recall_positivo'])
+        recall_negativo_cross_validation.append(metricas['recall_negativo'])
+        precision_positivo_cross_validation.append(metricas['precision_positivo'])
+        precision_negativo_cross_validation.append(metricas['precision_negativo'])
+        f1score_positivo_cross_validation.append(metricas['f1score_positivo'])
+        f1score_negativo_cross_validation.append(metricas['f1score_negativo'])
+        accuracy_cross_validation.append(metricas['accuracy'])
+        bar.next()
+
+    bar.finish()
+
+    print("Resultados de cross-validation:")
     print('')
-    print("Acierto de cada partición:\t" + str(puntajes))
-    promedio = puntajes.mean()
-    delta = puntajes.std() * 1.96 / math.sqrt(numero_particiones)
-    print("Intervalo de confianza 95%:\t{promedio:0.4f} (+/- {delta:0.4f}) --- [{inf:0.4f}, {sup:0.4f}]".format(
-        promedio=promedio, delta=delta, inf=promedio - delta, sup=promedio + delta))
+    mean = {}
+    for key, puntajes in diccionario_array_medidas.iteritems():
+        print(key + ":\t" + str(puntajes))
+        promedio = numpy.mean(puntajes)
+        mean[key] = promedio
+        delta = numpy.std(puntajes) * 1.96 / math.sqrt(numero_particiones)
+        print("Intervalo de confianza 95%:\t{promedio:0.4f} (+/- {delta:0.4f}) --- [{inf:0.4f}, {sup:0.4f}]".format(
+            promedio=promedio, delta=delta, inf=promedio - delta, sup=promedio + delta))
+        print('')
+
+    # Matriz de cross-validation
+    print("             precision    recall  f1-score\n")
+    print("          N       {pn:0.2f}      {rn:0.2f}      {fn:0.2f}".format(pn=mean['Precision negativo'],
+                                                                             rn=mean['Recall negativo'],
+                                                                             fn=mean['F1-score negativo']))
+    print("          P       {pp:0.2f}      {rp:0.2f}      {fp:0.2f}\n".format(pp=mean['Precision positivo'],
+                                                                               rp=mean['Recall positivo'],
+                                                                               fp=mean['F1-score positivo']))
+    print("avg / total       {ap:0.2f}      {ar:0.2f}      {af:0.2f}".format(
+        ap=(mean['Precision positivo'] + mean['Precision negativo']) / 2,
+        ar=(mean['Recall positivo'] + mean['Recall negativo']) / 2,
+        af=(mean['F1-score positivo'] + mean['F1-score negativo']) / 2))
+
     print('')
     print('')
+
+
+def calcular_medidas(tn, fp, fn, tp):
+    """Computes effectiveness measures given a confusion matrix."""
+    metricas = {'precision_positivo': tp / (fp + tp), 'precision_negativo': tn / (fn + tn),
+                'recall_negativo': tn / (tn + fp), 'recall_positivo': tp / (tp + fn),
+                'accuracy': (tp + tn) / (tp + fp + tn + fn)}
+
+    metricas['f1score_positivo'] = 2 * metricas['precision_positivo'] * metricas['recall_positivo'] / (
+        metricas['precision_positivo'] + metricas['recall_positivo'])
+    metricas['f1score_negativo'] = 2 * metricas['precision_negativo'] * metricas['recall_negativo'] / (
+        metricas['precision_negativo'] + metricas['recall_negativo'])
+
+    return metricas
 
 
 def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_predecidas):
