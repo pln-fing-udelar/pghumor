@@ -7,6 +7,7 @@ import math
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
 from clasificador.herramientas.google import Google
+from clasificador.herramientas.utils import eliminar_underscores
 from clasificador.realidad.tweet import *
 
 
@@ -17,10 +18,6 @@ patron_todo_espacios = re.compile(r'^\s*$', re.UNICODE)
 
 def contiene_caracteres_no_espanoles(texto):
     return any(ord(c) > CARACTERES_ESPANOL for c in texto)
-
-
-def eliminar_underscores(texto):
-    return texto.replace('_', ' ')
 
 
 class OOV(Feature):
