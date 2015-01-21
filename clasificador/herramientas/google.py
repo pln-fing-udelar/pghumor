@@ -13,9 +13,9 @@ import clasificador.herramientas.utils
 
 class Google(object):
     diccionario_positivo = clasificador.herramientas.utils.obtener_diccionario(
-        resource_filename('clasificador.recursos.diccionarios', 'DiccionarioGoogle.txt'))
+        resource_filename('clasificador.recursos.diccionarios', 'google.dic'))
     diccionario_negativo = clasificador.herramientas.utils.obtener_diccionario(
-        resource_filename('clasificador.recursos.diccionarios', 'DiccionarioNoGoogle.txt'))
+        resource_filename('clasificador.recursos.diccionarios', 'nogoogle.dic'))
 
     @staticmethod
     def esta_en_google(palabra):
@@ -27,12 +27,12 @@ class Google(object):
             esta_en_google_palabra = Google.esta_en_google_consulta(palabra)
             if esta_en_google_palabra:
                 Google.diccionario_positivo.add(palabra)
-                with open(resource_filename('clasificador.recursos.diccionarios', 'DiccionarioGoogle.txt'),
+                with open(resource_filename('clasificador.recursos.diccionarios', 'google.dic'),
                           'a') as archivo:
                     archivo.write((palabra + '\n').encode('utf-8'))
             else:
                 Google.diccionario_negativo.add(palabra)
-                with open(resource_filename('clasificador.recursos.diccionarios', 'DiccionarioNoGoogle.txt'),
+                with open(resource_filename('clasificador.recursos.diccionarios', 'nogoogle.dic'),
                           'a') as archivo:
                     archivo.write((palabra + '\n').encode('utf-8'))
             return esta_en_google_palabra

@@ -19,7 +19,7 @@ class JergaSexual(Feature):
             Mide la cantidad de jerga sexual que contiene el texto.
         """
         self.palabrasSexuales = clasificador.herramientas.utils.obtener_diccionario(
-            resource_filename('clasificador.recursos.diccionarios', 'DiccionarioSexual.txt'))
+            resource_filename('clasificador.recursos.diccionarios', 'sexual.dic'))
 
     def calcular_feature(self, tweet):
         tf = Freeling(tweet)

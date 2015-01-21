@@ -40,5 +40,5 @@ def filtrar_segun_votacion(corpus):
 
 
 def get_stop_words():
-    with open(resource_filename('clasificador.recursos.diccionarios', 'stop_words.txt')) as archivo:
+    with open(resource_filename('clasificador.recursos.diccionarios', 'stopwords.dic')) as archivo:
         return {linea.strip() for linea in archivo}
