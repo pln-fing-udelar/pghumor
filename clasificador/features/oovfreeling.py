@@ -27,9 +27,12 @@ class OOVFreeling(Feature):
 
         cant_palabras_oov = 0
         for token_freeling in tokens:
-            token = eliminar_underscores(token_freeling.token)
-            if not Freeling.esta_en_diccionario(token):
-                cant_palabras_oov += 1
+            if not token_freeling.tag.startswith('F') \
+                    and not token_freeling.tag.startswith('Z') \
+                    and not token_freeling.tag.startswith('W'):
+                token = eliminar_underscores(token_freeling.token)
+                if not Freeling.esta_en_diccionario(token):
+                    cant_palabras_oov += 1
 
         if len(tokens) == 0:
             return 0
