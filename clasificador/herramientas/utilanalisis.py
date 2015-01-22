@@ -31,11 +31,11 @@ def chi2_feature_selection(features, clases, nombres_features_ordenadas):
     print("Realizando chi2 feature selection")
     chi2_results = feature_selection.chi2(features, clases)
 
-    imprimir_importancias(chi2_results, "chi2", nombres_features_ordenadas)
+    imprimir_importancias(chi2_results[0], "chi2", nombres_features_ordenadas)
 
 
 def f_score_feature_selection(features, clases, nombres_features_ordenadas):
     print("Realizando f-score feature selection")
     f_score = feature_selection.f_classif(features, clases)
 
-    imprimir_importancias(f_score, "f-score", nombres_features_ordenadas)
+    imprimir_importancias(f_score[0], "f-score", nombres_features_ordenadas)
