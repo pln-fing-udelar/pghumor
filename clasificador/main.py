@@ -121,7 +121,6 @@ if __name__ == "__main__":
         else:  # "SVM"
             clasificador_usado = svm.SVC()
 
-
         if args.cross_validation and not args.evaluar:
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 

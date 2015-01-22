@@ -16,10 +16,13 @@ def tree_based_feature_selection(features, clases, corpus):
     for i in range(len(features_ordenadas)):
         importancias[features_ordenadas[i]] = clf.feature_importances_[i]
 
-    print("Ranking de features (Tree-based feature selection):")
+    print("Ranking de features (Tree-based feature selection):\n")
 
     for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
         print(nombre_feature, importancias[nombre_feature])
+
+    print("")
+    print("")
 
 
 def chi2_feature_selection(features, clases, features_ordenadas):
@@ -30,10 +33,13 @@ def chi2_feature_selection(features, clases, features_ordenadas):
     for i in range(len(features_ordenadas)):
         importancias[features_ordenadas[i]] = chi2_results[0][i]
 
-    print("Ranking de features (chi2):")
+    print("Ranking de features (chi2):\n")
 
     for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
         print(nombre_feature, importancias[nombre_feature])
+
+    print("")
+    print("")
 
 
 def f_score_feature_selection(features, clases, features_ordenadas):
@@ -44,7 +50,10 @@ def f_score_feature_selection(features, clases, features_ordenadas):
     for i in range(len(features_ordenadas)):
         importancias[features_ordenadas[i]] = f_score[0][i]
 
-    print("Ranking de features (f-score):")
+    print("Ranking de features (f-score):\n")
 
     for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
         print(nombre_feature, importancias[nombre_feature])
+
+    print("")
+    print("")
