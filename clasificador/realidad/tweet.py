@@ -67,7 +67,7 @@ class Tweet:
     def cantidad_hashtags(self):
         return len(re.findall(patron_hashtag, self.texto_original))
 
-    def features_ordenadas(self):
+    def nombres_features_ordenadas(self):
         """Devuelve una lista de los nombres de las features ordenada según el nombre de las features."""
         return sorted(self.features.keys())
 

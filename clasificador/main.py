@@ -8,7 +8,8 @@ import sys
 
 from flask import Flask, request
 from flask_cors import cross_origin
-from sklearn import linear_model, naive_bayes, preprocessing, svm, tree
+from sklearn import linear_model, naive_bayes, preprocessing, svm, tree, neighbors
+from sklearn.feature_selection import RFECV
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -18,8 +19,8 @@ from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
-from clasificador.herramientas.utilanalisis import tree_based_feature_selection, \
-    chi2_feature_selection, f_score_feature_selection
+from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
+    f_score_feature_selection, imprimir_importancias, tree_based_feature_selection
 from clasificador.herramientas.utils import filtrar_segun_votacion
 
 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--calcular-features-faltantes', action='store_true', default=False,
                         help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
     parser.add_argument('-c', '--clasificador', type=str, default="SVM",
-                        choices=["DT", "GNB", "LinearSVM", "MNB", "SGD", "SVM"],
+                        choices=["DT", "GNB", "kNN", "LinearSVM", "MNB", "SGD", "SVM"],
                         help="establece qué tipo de clasificador será usado, que por defecto es SVM")
     parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
                         help="para hacer cross-validation")
@@ -47,6 +48,8 @@ if __name__ == "__main__":
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
                         help="recalcula el valor de una feature")
+    parser.add_argument('-d', '--rfe', action='store_true', default=False,
+                        help="habilita el uso de Recursive Feature Elimination antes de clasificar")
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-t', '--threads', type=int,
@@ -97,10 +100,10 @@ if __name__ == "__main__":
 
         # Se tiene que hacer antes del scaler
         if args.importancias_features:
-
-            tree_based_feature_selection(features, clases, corpus)
-            chi2_feature_selection(features, clases, corpus[0].features_ordenadas())
-            f_score_feature_selection(features, clases, corpus[0].features_ordenadas())
+            nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
+            tree_based_feature_selection(features, clases, nombres_features_ordenadas)
+            chi2_feature_selection(features, clases, nombres_features_ordenadas)
+            f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
         # TODO: poner en pipeline
         scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
@@ -108,10 +111,21 @@ if __name__ == "__main__":
         features_entrenamiento = scaler.transform(features_entrenamiento)
         features_evaluacion = scaler.transform(features_evaluacion)
 
+        if args.rfe:
+            rfecv = RFECV(estimator=svm.SVC(kernel=str('linear')), cv=5, scoring='accuracy', verbose=3)
+            rfecv.fit(features_entrenamiento, clases_entrenamiento)
+
+            print("Número óptimo de featues: %d" % rfecv.n_features_)
+
+            nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
+            imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
+
         if args.clasificador == "DT":
             clasificador_usado = tree.DecisionTreeClassifier()
         elif args.clasificador == "GNB":
             clasificador_usado = naive_bayes.GaussianNB()
+        elif args.clasificador == "kNN":
+            clasificador_usado = neighbors.NearestNeighbors()
         elif args.clasificador == "LinearSVM":
             clasificador_usado = svm.LinearSVC()
         elif args.clasificador == "MNB":
