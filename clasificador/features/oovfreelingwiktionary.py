@@ -6,22 +6,19 @@ import math
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
-from clasificador.herramientas.google import Google
 from clasificador.herramientas.utils import eliminar_underscores
+from clasificador.herramientas.wiktionary import Wiktionary
 from clasificador.realidad.tweet import *
 
 
 class OOV(Feature):
     def __init__(self):
         super(OOV, self).__init__()
-        self.nombre = "OOV"
+        self.nombre = "OOV Freeling Wiktionary"
         self.descripcion = """
-            Mide la cantidad de palabras fuera del vocabulario que contiene el texto.
-            Tiene en cuenta falta de ortografía, palabras no comunes, cosas como "holaaaaaa", etc.
-            Éstas indican menos seriedad en el tweet. Por ejemplo, en una cuenta de CNN no ocurren este
-            tipo de cosas. Por lo tanto, no interesa corregir las faltas para detectar la palabra verdadera.
+            Mide la cantidad de palabras fuera del vocabulario que contiene el texto según el diccionario
+            de Freeling y Wiktionary.
         """
-        self.thread_safe = False  # Sino Google bloquea las búsquedas.
 
     def calcular_feature(self, tweet):
         texto = tweet.texto
@@ -36,7 +33,7 @@ class OOV(Feature):
                     and not token_freeling.tag.startswith('Z') \
                     and not token_freeling.tag.startswith('W'):
                 token = eliminar_underscores(token_freeling.token)
-                if not Freeling.esta_en_diccionario(token) and not Google.esta_en_google(token):
+                if not Freeling.esta_en_diccionario(token) and not Wiktionary.pertenece(token):
                     cant_palabras_oov += 1
 
         if len(tokens) == 0:
