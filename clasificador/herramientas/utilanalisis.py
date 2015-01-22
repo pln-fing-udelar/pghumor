@@ -5,55 +5,37 @@ from sklearn.ensemble import ExtraTreesClassifier
 import sklearn.feature_selection as feature_selection
 
 
-def tree_based_feature_selection(features, clases, corpus):
+def imprimir_importancias(feature_importances, nombre_metodo, nombres_features_ordenadas):
+    importancias = {}
+    for i in range(len(nombres_features_ordenadas)):
+        importancias[nombres_features_ordenadas[i]] = feature_importances[i]
+
+    print("Ranking de features ({nombre_metodo}):\n".format(nombre_metodo=nombre_metodo))
+
+    for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
+        print(nombre_feature, importancias[nombre_feature])
+
+    print("")
+    print("")
+
+
+def tree_based_feature_selection(features, clases, nombres_features_ordenadas):
     print("Realizando tree-based feature selection")
     clf = ExtraTreesClassifier()
     clf.fit(features, clases)
 
-    features_ordenadas = corpus[0].features_ordenadas()
-
-    importancias = {}
-    for i in range(len(features_ordenadas)):
-        importancias[features_ordenadas[i]] = clf.feature_importances_[i]
-
-    print("Ranking de features (Tree-based feature selection):\n")
-
-    for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
-        print(nombre_feature, importancias[nombre_feature])
-
-    print("")
-    print("")
+    imprimir_importancias(clf.feature_importances_, "Tree-based feature selection", nombres_features_ordenadas)
 
 
-def chi2_feature_selection(features, clases, features_ordenadas):
+def chi2_feature_selection(features, clases, nombres_features_ordenadas):
     print("Realizando chi2 feature selection")
     chi2_results = feature_selection.chi2(features, clases)
 
-    importancias = {}
-    for i in range(len(features_ordenadas)):
-        importancias[features_ordenadas[i]] = chi2_results[0][i]
-
-    print("Ranking de features (chi2):\n")
-
-    for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
-        print(nombre_feature, importancias[nombre_feature])
-
-    print("")
-    print("")
+    imprimir_importancias(chi2_results, "chi2", nombres_features_ordenadas)
 
 
-def f_score_feature_selection(features, clases, features_ordenadas):
+def f_score_feature_selection(features, clases, nombres_features_ordenadas):
     print("Realizando f-score feature selection")
-    f_score = feature_selection.univariate_selection.f_classif(features, clases)
+    f_score = feature_selection.f_classif(features, clases)
 
-    importancias = {}
-    for i in range(len(features_ordenadas)):
-        importancias[features_ordenadas[i]] = f_score[0][i]
-
-    print("Ranking de features (f-score):\n")
-
-    for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
-        print(nombre_feature, importancias[nombre_feature])
-
-    print("")
-    print("")
+    imprimir_importancias(f_score, "f-score", nombres_features_ordenadas)
