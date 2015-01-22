@@ -9,7 +9,6 @@ import sys
 from flask import Flask, request
 from flask_cors import cross_origin
 from sklearn import linear_model, naive_bayes, preprocessing, svm, tree
-from sklearn.ensemble import ExtraTreesClassifier
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -19,6 +18,8 @@ from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
+from clasificador.herramientas.utilanalisis import tree_based_feature_selection, \
+    chi2_feature_selection, f_score_feature_selection
 from clasificador.herramientas.utils import filtrar_segun_votacion
 
 
@@ -94,6 +95,13 @@ if __name__ == "__main__":
         features_entrenamiento = get_features(entrenamiento)
         features_evaluacion = get_features(evaluacion)
 
+        # Se tiene que hacer antes del scaler
+        if args.importancias_features:
+
+            tree_based_feature_selection(features, clases, corpus)
+            chi2_feature_selection(features, clases, corpus[0].features_ordenadas())
+            f_score_feature_selection(features, clases, corpus[0].features_ordenadas())
+
         # TODO: poner en pipeline
         scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
         features = scaler.transform(features)
@@ -113,20 +121,6 @@ if __name__ == "__main__":
         else:  # "SVM"
             clasificador_usado = svm.SVC()
 
-        if args.importancias_features:
-            clf = ExtraTreesClassifier()
-            clf.fit(features, clases)
-
-            features_ordenadas = corpus[0].features_ordenadas()
-
-            importancias = {}
-            for i in range(len(features_ordenadas)):
-                importancias[features_ordenadas[i]] = clf.feature_importances_[i]
-
-            print("Ranking de features:")
-
-            for nombre_feature in sorted(importancias, key=importancias.get, reverse=True):
-                print(nombre_feature, importancias[nombre_feature])
 
         if args.cross_validation and not args.evaluar:
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
