@@ -83,7 +83,7 @@ class Features:
 
     def calcular_features_thread(self, tweets, identificador):
         if len(tweets) > 0:
-            bar = Bar("Calculando features - " + str(identificador), max=len(tweets) * len(self.features),
+            bar = Bar("Calculando features - " + unicode(identificador), max=len(tweets) * len(self.features),
                       suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
             for tweet in tweets:
@@ -95,7 +95,8 @@ class Features:
 
     def calcular_feature_thread(self, tweets, nombre_feature, identificador):
         if len(tweets) > 0:
-            bar = Bar("Calculando feature " + nombre_feature + ' - ' + str(identificador), max=len(tweets),
+            bar = Bar("Calculando feature " + nombre_feature.decode('utf-8') + ' - ' + unicode(identificador),
+                      max=len(tweets),
                       suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
             feature = self.features[nombre_feature]
@@ -107,7 +108,7 @@ class Features:
 
     def calcular_features_faltantes_thread(self, tweets, identificador):
         if len(tweets) > 0:
-            bar = Bar("Calculando features - " + str(identificador), max=len(tweets) * len(self.features),
+            bar = Bar("Calculando features - " + unicode(identificador), max=len(tweets) * len(self.features),
                       suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
             for tweet in tweets:
