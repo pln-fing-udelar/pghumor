@@ -95,7 +95,7 @@ class Features:
 
     def calcular_feature_thread(self, tweets, nombre_feature, identificador):
         if len(tweets) > 0:
-            bar = Bar("Calculando feature " + nombre_feature.decode('utf-8') + ' - ' + unicode(identificador),
+            bar = Bar("Calculando feature " + nombre_feature + ' - ' + unicode(identificador),
                       max=len(tweets),
                       suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)

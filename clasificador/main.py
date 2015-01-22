@@ -70,8 +70,8 @@ if __name__ == "__main__":
             guardar_features(corpus)
         elif args.recalcular_feature:
             features_obj = Features(args.threads)
-            features_obj.calcular_feature(corpus, args.recalcular_feature)
-            guardar_features(corpus, nombre_feature=args.recalcular_feature)
+            features_obj.calcular_feature(corpus, args.recalcular_feature.decode('utf-8'))
+            guardar_features(corpus, nombre_feature=args.recalcular_feature.decode('utf-8'))
         elif args.calcular_features_faltantes:
             features_obj = Features(args.threads)
             features_obj.calcular_features_faltantes(corpus)
