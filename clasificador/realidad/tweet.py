@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import HTMLParser  # import html.parser  # in python 3
+import random
 import re
 
 patron_retweet = re.compile(r'^RT @\w+: ', re.UNICODE)
@@ -52,7 +53,7 @@ class Tweet:
         self.votos = 0
         self.votos_humor = 0
 
-        self.features = {}
+        self.features = {'RANDOM': random.randint(0, 1)}
 
     def preprocesar(self):
         self.texto_original = self.texto
