@@ -4,10 +4,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import random
 import math
 
-import numpy
+import numpy as np
 from progress.bar import Bar
 from sklearn import cross_validation, metrics
-from numpy import array
 
 from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 
@@ -42,13 +41,13 @@ def get_features(tweets):
 
 
 def get_clases(tweets):
-    return numpy.array([tweet.es_humor for tweet in tweets], dtype=float)
+    return np.array([tweet.es_humor for tweet in tweets], dtype=float)
 
 
 def cross_validation_y_reportar(clasificador, features, clases, numero_particiones):
     skf = cross_validation.StratifiedKFold(clases, n_folds=numero_particiones)
-    features = array(features)
-    clases = array(clases)
+    features = np.array(features)
+    clases = np.array(clases)
     matrices = []
     precision_positivo_cross_validation = []
     precision_negativo_cross_validation = []
@@ -90,9 +89,9 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
     mean = {}
     for key, puntajes in diccionario_array_medidas.iteritems():
         print(key + ":\t" + str(puntajes))
-        promedio = numpy.mean(puntajes)
+        promedio = np.mean(puntajes)
         mean[key] = promedio
-        delta = numpy.std(puntajes) * 1.96 / math.sqrt(numero_particiones)
+        delta = np.std(puntajes) * 1.96 / math.sqrt(numero_particiones)
         print("Intervalo de confianza 95%:\t{promedio:0.4f} (+/- {delta:0.4f}) --- [{inf:0.4f}, {sup:0.4f}]".format(
             promedio=promedio, delta=delta, inf=promedio - delta, sup=promedio + delta))
         print('')
