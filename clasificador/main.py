@@ -104,7 +104,7 @@ if __name__ == "__main__":
         features_entrenamiento = get_features(entrenamiento)
         features_evaluacion = get_features(evaluacion)
 
-        # Se tiene que hacer antes del scaler
+        # Se tiene que hacer antes del scaler (las features no puden tomar valores negativos)
         if args.importancias_features:
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             tree_based_feature_selection(features, clases, nombres_features_ordenadas)
@@ -126,7 +126,7 @@ if __name__ == "__main__":
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
 
-        parameters_grid_search = []
+        parameters_grid_search = {}
         if args.clasificador == "DT":
             clasificador_usado = tree.DecisionTreeClassifier()
             parameters_grid_search = parameters_dt
@@ -148,11 +148,10 @@ if __name__ == "__main__":
             parameters_grid_search = parameters_svm
 
         if args.grid_search:
-            grid_search = GridSearchCV(clasificador_usado, parameters_grid_search, cv=5, verbose=1, n_jobs=4)
+            grid_search = GridSearchCV(clasificador_usado, parameters_grid_search, cv=5, verbose=2, n_jobs=8)
 
             grid_search.fit(features, clases)
-            print("Mejores parámetros encontrados para Árboles de Decisión:")
-            print(grid_search.best_params_)
+            print("Mejores parámetros encontrados para " + args.clasificador + ":")
             print("Acierto: " + str(grid_search.best_score_))
             grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
             clasificador_usado = grid_search.best_estimator_
