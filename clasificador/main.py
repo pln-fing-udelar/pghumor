@@ -105,11 +105,11 @@ if __name__ == "__main__":
             chi2_feature_selection(features, clases, nombres_features_ordenadas)
             f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
-        # TODO: poner en pipeline
-        scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
-        features = scaler.transform(features)
-        features_entrenamiento = scaler.transform(features_entrenamiento)
-        features_evaluacion = scaler.transform(features_evaluacion)
+        if args.clasificador != "MNB":
+            scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
+            features = scaler.transform(features)
+            features_entrenamiento = scaler.transform(features_entrenamiento)
+            features_evaluacion = scaler.transform(features_evaluacion)
 
         if args.rfe:
             rfecv = RFECV(estimator=svm.SVC(kernel=str('linear')), cv=5, scoring='accuracy', verbose=3)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
         elif args.clasificador == "GNB":
             clasificador_usado = naive_bayes.GaussianNB()
         elif args.clasificador == "kNN":
-            clasificador_usado = neighbors.NearestNeighbors()
+            clasificador_usado = neighbors.KNeighborsClassifier()
         elif args.clasificador == "LinearSVM":
             clasificador_usado = svm.LinearSVC()
         elif args.clasificador == "MNB":

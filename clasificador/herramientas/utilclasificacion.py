@@ -7,6 +7,7 @@ import math
 import numpy
 from progress.bar import Bar
 from sklearn import cross_validation, metrics
+from numpy import array
 
 from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 
@@ -46,6 +47,8 @@ def get_clases(tweets):
 
 def cross_validation_y_reportar(clasificador, features, clases, numero_particiones):
     skf = cross_validation.StratifiedKFold(clases, n_folds=numero_particiones)
+    features = array(features)
+    clases = array(clases)
     matrices = []
     precision_positivo_cross_validation = []
     precision_negativo_cross_validation = []
@@ -65,7 +68,7 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
     }
     bar = Bar("Realizando cross-validation", max=numero_particiones, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
-    for i, (train, test) in enumerate(skf):
+    for train, test in skf:
         clasificador.fit(features[train], clases[train])
         y_pred = clasificador.predict(features[test])
         cm = metrics.confusion_matrix(clases[test], y_pred).flatten()
