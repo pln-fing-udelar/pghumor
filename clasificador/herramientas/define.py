@@ -19,13 +19,9 @@ SUFIJO_PROGRESS_BAR = '%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds'
 # Parametros para cada clasificador al realizar Grid Search
 
 parameters_svm = {
-    'criterion': ['gini', 'entropy'],
-    'splitter': ['best', 'random'],
-    'max_features': [None] + range(20, 25),
-    'max_depth': [None] + range(25, 30),
-    'min_samples_split': range(1, 5),
-    'min_samples_leaf': range(1, 4),
-    'max_leaf_nodes': [None] + range(49, 52),
+    'C': [0.9, 1.0],
+    'kernel': ['rbf', 'sigmoid'], #'poly', 'linear'
+    'tol': [1e-3, 1e-4]
 }
 
 parameters_dt = {
@@ -39,13 +35,7 @@ parameters_dt = {
 }
 
 parameters_gnb = {
-    'criterion': ['gini', 'entropy'],
-    'splitter': ['best', 'random'],
-    'max_features': [None] + range(20, 25),
-    'max_depth': [None] + range(25, 30),
-    'min_samples_split': range(1, 5),
-    'min_samples_leaf': range(1, 4),
-    'max_leaf_nodes': [None] + range(49, 52),
+
 }
 
 parameters_mnb = {
