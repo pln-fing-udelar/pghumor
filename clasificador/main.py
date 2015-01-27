@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import argparse
 import os
+import random
 import sys
 
 from flask import Flask, request
@@ -100,6 +101,9 @@ if __name__ == "__main__":
 
         # Se tiene que hacer antes del scaler
         if args.importancias_features:
+            for tweet in corpus:
+                tweet.features['RANDOM'] = random.randint(0, 1)
+                tweet.features['CLASE'] = tweet.es_humor
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             tree_based_feature_selection(features, clases, nombres_features_ordenadas)
             chi2_feature_selection(features, clases, nombres_features_ordenadas)
