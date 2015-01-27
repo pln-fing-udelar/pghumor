@@ -155,7 +155,7 @@ if __name__ == "__main__":
             print(grid_search.best_params_)
             print("Acierto: " + str(grid_search.best_score_))
             grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
-            cross_validation_y_reportar(grid_search.best_estimator_, features, clases, 5)
+            clasificador_usado = grid_search.best_estimator_
             print("")
 
         if args.parametros_clasificador:
