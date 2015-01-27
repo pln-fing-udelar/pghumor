@@ -9,12 +9,15 @@ import sys
 from flask import Flask, request
 from flask_cors import cross_origin
 from sklearn import linear_model, naive_bayes, preprocessing, svm, tree, neighbors
+
 from sklearn.feature_selection import RFECV
+from sklearn.grid_search import GridSearchCV
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from clasificador.realidad.tweet import Tweet
+from clasificador.herramientas.define import parameters_svm, parameters_dt, \
+    parameters_gnb, parameters_mnb, parameters_knn
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
@@ -22,7 +25,7 @@ from clasificador.herramientas.utilclasificacion import cross_validation_y_repor
 from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
     f_score_feature_selection, imprimir_importancias, tree_based_feature_selection
 from clasificador.herramientas.utils import filtrar_segun_votacion
-
+from clasificador.realidad.tweet import Tweet
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
 # Ver esto: https://stackoverflow.com/questions/8764066/preprocessing-400-million-tweets-in-python-faster
@@ -54,7 +57,10 @@ if __name__ == "__main__":
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
-
+    parser.add_argument('-p', '--parametros_clasificador', action='store_true', default=False,
+                        help="lista los parametros posibles para un clasificador")
+    parser.add_argument('-g', '--grid_search', action='store_true', default=False,
+                        help="realiza el algoritmo grid search para el tuning de hyperparametros")
     args = parser.parse_args()
 
     if args.explicar_features:
@@ -120,20 +126,44 @@ if __name__ == "__main__":
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
 
+        parameters_grid_search = []
         if args.clasificador == "DT":
             clasificador_usado = tree.DecisionTreeClassifier()
+            parameters_grid_search = parameters_dt
         elif args.clasificador == "GNB":
             clasificador_usado = naive_bayes.GaussianNB()
+            parameters_grid_search = parameters_gnb
         elif args.clasificador == "kNN":
             clasificador_usado = neighbors.KNeighborsClassifier()
+            parameters_grid_search = parameters_knn
         elif args.clasificador == "LinearSVM":
             clasificador_usado = svm.LinearSVC()
         elif args.clasificador == "MNB":
             clasificador_usado = naive_bayes.MultinomialNB()
+            parameters_grid_search = parameters_mnb
         elif args.clasificador == "SGD":
             clasificador_usado = linear_model.SGDClassifier(shuffle=True)
         else:  # "SVM"
             clasificador_usado = svm.SVC()
+            parameters_grid_search = parameters_svm
+
+        if args.grid_search:
+            grid_search = GridSearchCV(clasificador_usado, parameters_grid_search, cv=5, verbose=1, n_jobs=4)
+
+            grid_search.fit(features, clases)
+            print("Mejores parámetros encontrados para Árboles de Decisión:")
+            print(grid_search.best_params_)
+            print("Acierto: " + str(grid_search.best_score_))
+            grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
+            cross_validation_y_reportar(grid_search.best_estimator_, features, clases, 5)
+            print("")
+
+        if args.parametros_clasificador:
+            print("")
+            print("Parametros del clasificador:")
+            for key, value in clasificador_usado.get_params().items():
+                print("\t" + str(key) + ": " + str(value))
+            print("")
 
         if args.cross_validation and not args.evaluar:
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
