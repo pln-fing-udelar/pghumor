@@ -97,14 +97,14 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
         print('')
 
     # Matriz de cross-validation
-    print("             precision    recall  f1-score\n")
-    print("          N       {pn:0.2f}      {rn:0.2f}      {fn:0.2f}".format(pn=mean['Precision negativo'],
+    print("               precision      recall    f1-score\n")
+    print("          N       {pn:0.4f}      {rn:0.4f}      {fn:0.4f}".format(pn=mean['Precision negativo'],
                                                                              rn=mean['Recall negativo'],
                                                                              fn=mean['F1-score negativo']))
-    print("          P       {pp:0.2f}      {rp:0.2f}      {fp:0.2f}\n".format(pp=mean['Precision positivo'],
+    print("          P       {pp:0.4f}      {rp:0.4f}      {fp:0.4f}\n".format(pp=mean['Precision positivo'],
                                                                                rp=mean['Recall positivo'],
                                                                                fp=mean['F1-score positivo']))
-    print("avg / total       {ap:0.2f}      {ar:0.2f}      {af:0.2f}".format(
+    print("avg / total       {ap:0.4f}      {ar:0.4f}      {af:0.4f}".format(
         ap=(mean['Precision positivo'] + mean['Precision negativo']) / 2,
         ar=(mean['Recall positivo'] + mean['Recall negativo']) / 2,
         af=(mean['F1-score positivo'] + mean['F1-score negativo']) / 2),
