@@ -103,7 +103,7 @@ if __name__ == "__main__":
         if args.feature_aleatoria or args.feature_clase:
             for tweet in corpus:
                 if args.feature_aleatoria:
-                    tweet.features['RANDOM'] = random.uniform(0, 1)
+                    tweet.features['ALEATORIA'] = random.uniform(0, 1)
                 if args.feature_clase:
                     tweet.features['CLASE'] = tweet.es_humor
 
