@@ -9,7 +9,7 @@ import sys
 
 from flask import Flask, request
 from flask_cors import cross_origin
-from sklearn import linear_model, naive_bayes, svm, tree, neighbors
+from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
 from sklearn.feature_selection import RFECV
 from sklearn.grid_search import GridSearchCV
 
@@ -122,11 +122,11 @@ if __name__ == "__main__":
             chi2_feature_selection(features, clases, nombres_features_ordenadas)
             f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
-        # if args.clasificador != "MNB":
-        # scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
-        #     features = scaler.transform(features)
-        #     features_entrenamiento = scaler.transform(features_entrenamiento)
-        #     features_evaluacion = scaler.transform(features_evaluacion)
+        if args.clasificador != "MNB":
+            scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
+            features = scaler.transform(features)
+            features_entrenamiento = scaler.transform(features_entrenamiento)
+            features_evaluacion = scaler.transform(features_evaluacion)
 
         if args.rfe:
             rfecv = RFECV(estimator=svm.SVC(kernel=str('linear')), cv=5, scoring='accuracy', verbose=3)
