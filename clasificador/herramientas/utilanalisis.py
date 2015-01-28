@@ -33,7 +33,7 @@ def imprimir_importancias(feature_importances, nombre_metodo, nombres_features_o
 
 def tree_based_feature_selection(features, clases, nombres_features_ordenadas):
     print("Realizando tree-based feature selection")
-    clf = ExtraTreesClassifier(n_estimators=100)
+    clf = ExtraTreesClassifier(n_estimators=1000)
     clf.fit(features, clases)
 
     imprimir_importancias(clf.feature_importances_, "Tree-based feature selection", nombres_features_ordenadas)
