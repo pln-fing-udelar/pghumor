@@ -9,8 +9,7 @@ import sys
 
 from flask import Flask, request
 from flask_cors import cross_origin
-from sklearn import linear_model, naive_bayes, preprocessing, svm, tree, neighbors
-
+from sklearn import linear_model, naive_bayes, svm, tree, neighbors
 from sklearn.feature_selection import RFECV
 from sklearn.grid_search import GridSearchCV
 
@@ -45,9 +44,17 @@ if __name__ == "__main__":
                         help="para evaluar con el corpus de evaluación")
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
                         help='muestra las features disponibles y termina el programa')
+    parser.add_argument('-j', '--feature-aleatoria', action='store_true', default=False,
+                        help='agrega una feature con un valor binario aleatorio')
+    parser.add_argument('-k', '--feature-clase', action='store_true', default=False,
+                        help='agrega una feature cuyo valor es igual a la clase objetivo')
+    parser.add_argument('-g', '--grid-search', action='store_true', default=False,
+                        help="realiza el algoritmo grid search para el tuning de hyperparametros")
     parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
                         help="reporta la importancia de cada feature")
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
+    parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
+                        help="lista los parametros posibles para un clasificador")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
@@ -58,10 +65,6 @@ if __name__ == "__main__":
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
-    parser.add_argument('-p', '--parametros_clasificador', action='store_true', default=False,
-                        help="lista los parametros posibles para un clasificador")
-    parser.add_argument('-g', '--grid_search', action='store_true', default=False,
-                        help="realiza el algoritmo grid search para el tuning de hyperparametros")
     args = parser.parse_args()
 
     if args.explicar_features:
@@ -97,6 +100,13 @@ if __name__ == "__main__":
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
+        if args.feature_aleatoria or args.feature_clase:
+            for tweet in corpus:
+                if args.feature_aleatoria:
+                    tweet.features['RANDOM'] = random.randint(0, 1)
+                if args.feature_clase:
+                    tweet.features['CLASE'] = tweet.es_humor
+
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
         clases_evaluacion = get_clases(evaluacion)
@@ -107,19 +117,16 @@ if __name__ == "__main__":
 
         # Se tiene que hacer antes del scaler (las features no puden tomar valores negativos)
         if args.importancias_features:
-            for tweet in corpus:
-                tweet.features['RANDOM'] = random.randint(0, 1)
-                tweet.features['CLASE'] = tweet.es_humor
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             tree_based_feature_selection(features, clases, nombres_features_ordenadas)
             chi2_feature_selection(features, clases, nombres_features_ordenadas)
             f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
-        if args.clasificador != "MNB":
-            scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
-            features = scaler.transform(features)
-            features_entrenamiento = scaler.transform(features_entrenamiento)
-            features_evaluacion = scaler.transform(features_evaluacion)
+        # if args.clasificador != "MNB":
+        # scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
+        #     features = scaler.transform(features)
+        #     features_entrenamiento = scaler.transform(features_entrenamiento)
+        #     features_evaluacion = scaler.transform(features_evaluacion)
 
         if args.rfe:
             rfecv = RFECV(estimator=svm.SVC(kernel=str('linear')), cv=5, scoring='accuracy', verbose=3)
