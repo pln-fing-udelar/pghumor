@@ -27,9 +27,9 @@ parameters_svm = {
 }
 
 parameters_dt = {
-    'criterion': ['gini', 'entropy'],
-    'splitter': ['best', 'random'],
-    'max_features': [None] + range(20, 25),
+    'criterion': [str('gini'), str('entropy')],
+    'splitter': [str('best'), str('random')],
+    'max_features': [None] + range(17, 21),
     'max_depth': [None] + range(25, 30),
     'min_samples_split': range(1, 5),
     'min_samples_leaf': range(1, 4),
