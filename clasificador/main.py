@@ -103,9 +103,13 @@ if __name__ == "__main__":
         if args.feature_aleatoria or args.feature_clase:
             for tweet in corpus:
                 if args.feature_aleatoria:
-                    tweet.features['ALEATORIA'] = random.uniform(0, 1)
+                    tweet.features["ALEATORIA"] = random.uniform(0, 1)
                 if args.feature_clase:
-                    tweet.features['CLASE'] = tweet.es_humor
+                    tweet.features["CLASE"] = tweet.es_humor
+
+        # for tweet in corpus:
+        # del tweet.features["Palabras no españolas"]
+        #     del tweet.features["Negacion"]
 
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
@@ -136,6 +140,8 @@ if __name__ == "__main__":
 
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
+
+            # Esto saca "Palabras no españolas" y "Negación".
 
         parameters_grid_search = {}
         if args.clasificador == "DT":
