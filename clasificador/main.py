@@ -163,6 +163,9 @@ if __name__ == "__main__":
 
             grid_search.fit(features, clases)
             print("Mejores parámetros encontrados para " + args.clasificador + ":")
+            for key, value in clasificador_usado.get_params().items():
+                print("\t" + str(key) + ": " + str(value))
+            print("")
             print("Acierto: " + str(grid_search.best_score_))
             grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
             clasificador_usado = grid_search.best_estimator_

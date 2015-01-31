@@ -22,14 +22,14 @@ parameters_svm = {
     'C': [0.9, 1.0],
     'kernel': [str('rbf'), str('sigmoid'), str('poly'), str('linear')],
     'degree': [3, 4, 5],
-    'gamma': [0.0, 0.5, 0.6, 0.7],
+    # 'gamma': [0.0, 0.5, 0.6, 0.7],
     'tol': [1e-3, 1e-4]
 }
 
 parameters_dt = {
     'criterion': ['gini', 'entropy'],
     'splitter': ['best', 'random'],
-    'max_features': [None] + range(20, 25),
+    'max_features': [None] + range(17, 21),
     'max_depth': [None] + range(25, 30),
     'min_samples_split': range(1, 5),
     'min_samples_leaf': range(1, 4),
