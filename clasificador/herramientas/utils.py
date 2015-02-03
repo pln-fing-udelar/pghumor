@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import math
 import subprocess
 
 from pkg_resources import resource_filename
@@ -40,3 +41,11 @@ def get_stop_words():
 def obtener_diccionario(filename):
     with open(filename) as archivo:
         return {linea.decode('utf-8').rstrip('\n') for linea in archivo if linea.decode('utf-8').rstrip('\n')}
+
+
+def entropia(p):
+    """Entropía de una Bernoulli de parámetro p."""
+    if p == 0 or p == 1:
+        return 0
+    else:
+        return - p * math.log(p, 2) - (1 - p) * math.log(1 - p, 2)
