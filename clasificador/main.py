@@ -122,8 +122,11 @@ if __name__ == "__main__":
                 tweet.tokens = list(itertools.chain(*tweet.oraciones))
                 bar.next()
 
+            bar = Bar("Buscando en tweets", max=len(corpus) * len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
             for tweet1 in corpus:
                 for tweet2 in corpus:
+                    bar.next()
                     if tweet1.id < tweet2.id and tweet1.es_humor != tweet2.es_humor \
                             and distancia_edicion(tweet1.tokens, tweet2.tokens) \
                                     <= max(len(tweet1.tokens), len(tweet2.tokens)) / 10:
@@ -135,8 +138,11 @@ if __name__ == "__main__":
 
         if args.mismas_features_distinto_humor:
             print("Buscando tweets con mismos valores de features pero distinto de humor...")
+            bar = Bar("Buscando en tweets", max=len(corpus) * len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
             for tweet1 in corpus:
                 for tweet2 in corpus:
+                    bar.next()
                     if tweet1.id < tweet2.id and tweet1.features == tweet2.features \
                             and tweet1.es_humor != tweet2.es_humor:
                         if tweet1.texto_original == tweet2.texto_original:
