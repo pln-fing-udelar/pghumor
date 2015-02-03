@@ -170,25 +170,31 @@ if __name__ == "__main__":
             grid_search.fit(features, clases)
             print("Mejores parámetros encontrados para " + args.clasificador + ":")
             for key, value in clasificador_usado.get_params().items():
-                print("\t" + str(key) + ": " + str(value))
-            print("")
-            print("Acierto: " + str(grid_search.best_score_))
+                print("\t" + unicode(key) + ": " + unicode(value))
+            print('')
+            print("Acierto: " + unicode(grid_search.best_score_))
             grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
             clasificador_usado = grid_search.best_estimator_
-            print("")
+            print('')
 
         if args.parametros_clasificador:
-            print("")
+            print('')
             print("Parametros del clasificador:")
             for key, value in clasificador_usado.get_params().items():
-                print("\t" + str(key) + ": " + str(value))
-            print("")
+                print("\t" + unicode(key) + ": " + unicode(value))
+            print('')
 
         if args.cross_validation and not args.evaluar:
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 
         print("Entrenando clasificador...")
         clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
+
+        print("Evaluando clasificador con conjunto de entrenamiento...")
+        clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
+        matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento)
+        print('')
+
         print("Evaluando clasificador...")
         clases_predecidas = clasificador_usado.predict(features_evaluacion)
         print('')
