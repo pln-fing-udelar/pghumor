@@ -43,21 +43,24 @@ if __name__ == "__main__":
     parser.add_argument('-e', '--evaluar', action='store_true', default=False,
                         help="para evaluar con el corpus de evaluación")
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
-                        help='muestra las features disponibles y termina el programa')
+                        help="muestra las features disponibles y termina el programa")
     parser.add_argument('-j', '--feature-aleatoria', action='store_true', default=False,
-                        help='agrega una feature con un valor binario aleatorio')
+                        help="agrega una feature con un valor binario aleatorio")
     parser.add_argument('-k', '--feature-clase', action='store_true', default=False,
-                        help='agrega una feature cuyo valor es igual a la clase objetivo')
+                        help="agrega una feature cuyo valor es igual a la clase objetivo")
     parser.add_argument('-g', '--grid-search', action='store_true', default=False,
                         help="realiza el algoritmo grid search para el tuning de hyperparametros")
     parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
                         help="reporta la importancia de cada feature")
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
+    parser.add_argument('-m', '--mismas-features-distinto-humor', action='store_true', default=False,
+                        help="Imprime los tweets que tienen los mismos valores de features"
+                             + " pero distinto valor de humor")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parametros posibles para un clasificador")
-    parser.add_argument('-m', '--ponderar-segun-votos', action='store_true', default=False,
-                        help="en la clasificación pondera los tweets según la concordancia en la votación."
-                             + " Funciona sólo para SVM.")
+    parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
+                        help="en la clasificación pondera los tweets según la concordancia en la votación"
+                             + " Funciona sólo para SVM")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
@@ -103,6 +106,25 @@ if __name__ == "__main__":
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
+        if args.mismas_features_distinto_humor:
+            print("Procesando tweets con mismos valores de features pero distinto de humor...")
+            for tweet1 in corpus:
+                for tweet2 in corpus:
+                    if tweet1.features == tweet2.features and tweet1.es_humor != tweet2.es_humor:
+                        if tweet1.texto == tweet2.texto:
+                            print("----------SON IGUALES----------")
+                        if tweet1.id == tweet2.id:
+                            print("-----------MISMO ID------------")
+                        if tweet1.cuenta == tweet2.cuenta:
+                            print("----------MISMA CUENTA---------")
+                        print(tweet1.id)
+                        print(tweet1.texto)
+                        print("------------")
+                        print(tweet2.id)
+                        print(tweet2.texto)
+                        print("------------")
+                        print('')
+
         if args.feature_aleatoria or args.feature_clase:
             for tweet in corpus:
                 if args.feature_aleatoria:
@@ -110,6 +132,7 @@ if __name__ == "__main__":
                 if args.feature_clase:
                     tweet.features["CLASE"] = tweet.es_humor
 
+        # Features que remueve RFE:
         # for tweet in corpus:
         # del tweet.features["Palabras no españolas"]
         # del tweet.features["Negacion"]
