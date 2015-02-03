@@ -24,7 +24,7 @@ from clasificador.herramientas.utilclasificacion import cross_validation_y_repor
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
     f_score_feature_selection, imprimir_importancias, tree_based_feature_selection
-from clasificador.herramientas.utils import filtrar_segun_votacion
+from clasificador.herramientas.utils import entropia, filtrar_segun_votacion
 from clasificador.realidad.tweet import Tweet
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
@@ -55,6 +55,9 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parametros posibles para un clasificador")
+    parser.add_argument('-m', '--ponderar-segun-votos', action='store_true', default=False,
+                        help="en la clasificación pondera los tweets según la concordancia en la votación."
+                             + " Funciona sólo para SVM.")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
@@ -109,7 +112,7 @@ if __name__ == "__main__":
 
         # for tweet in corpus:
         # del tweet.features["Palabras no españolas"]
-        #     del tweet.features["Negacion"]
+        # del tweet.features["Negacion"]
 
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
@@ -188,7 +191,12 @@ if __name__ == "__main__":
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 
         print("Entrenando clasificador...")
-        clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
+        if args.ponderar_segun_votacion:
+            sample_weights = [5 * (1 - entropia(tweet.votos_humor / float(tweet.votos))) if tweet.votos > 0 else 1
+                              for tweet in entrenamiento]
+            clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+        else:
+            clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
 
         print("Evaluando clasificador con conjunto de entrenamiento...")
         clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
