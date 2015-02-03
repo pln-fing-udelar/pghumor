@@ -191,7 +191,7 @@ if __name__ == "__main__":
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 
         print("Entrenando clasificador...")
-        if args.ponderar_segun_votacion:
+        if args.ponderar_segun_votos:
             sample_weights = [5 * (1 - entropia(tweet.votos_humor / float(tweet.votos))) if tweet.votos > 0 else 1
                               for tweet in entrenamiento]
             clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
