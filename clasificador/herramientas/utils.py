@@ -49,3 +49,23 @@ def entropia(p):
         return 0
     else:
         return - p * math.log(p, 2) - (1 - p) * math.log(1 - p, 2)
+
+
+def distancia_edicion(s1, s2):
+    if len(s1) < len(s2):
+        return distancia_edicion(s2, s1)
+
+    if len(s2) == 0:
+        return len(s1)
+
+    fila_anterior = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        fila_actual = [i + 1]
+        for j, c2 in enumerate(s2):
+            inserciones = fila_anterior[j + 1] + 1
+            eliminaciones = fila_actual[j] + 1
+            sustituciones = fila_anterior[j] + (c1 != c2)
+            fila_actual.append(min(inserciones, eliminaciones, sustituciones))
+        fila_anterior = fila_actual
+
+    return fila_anterior[-1]

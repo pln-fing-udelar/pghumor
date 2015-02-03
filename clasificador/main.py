@@ -6,25 +6,29 @@ import argparse
 import os
 import random
 import sys
+import itertools
 
 from flask import Flask, request
 from flask_cors import cross_origin
+from progress.bar import Bar
 from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
 from sklearn.feature_selection import RFECV
 from sklearn.grid_search import GridSearchCV
+
+from clasificador.herramientas.freeling import Freeling
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from clasificador.herramientas.define import parameters_svm, parameters_dt, \
-    parameters_gnb, parameters_mnb, parameters_knn
+    parameters_gnb, parameters_mnb, parameters_knn, SUFIJO_PROGRESS_BAR
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
     f_score_feature_selection, imprimir_importancias, tree_based_feature_selection
-from clasificador.herramientas.utils import entropia, filtrar_segun_votacion
+from clasificador.herramientas.utils import entropia, filtrar_segun_votacion, distancia_edicion
 from clasificador.realidad.tweet import Tweet
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
@@ -71,6 +75,8 @@ if __name__ == "__main__":
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
+    parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
+                        help="Imprime los tweets que son parecidos pero distinto valor de humor")
     args = parser.parse_args()
 
     if args.explicar_features:
@@ -106,13 +112,37 @@ if __name__ == "__main__":
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
-        if args.mismas_features_distinto_humor:
-            print("Procesando tweets con mismos valores de features pero distinto de humor...")
+        if args.tweets_parecidos_distinto_humor:
+            print("Buscando tweets muy parecidos pero con distinto valor de humor...")
+
+            bar = Bar("Tokenizando", max=len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+            for tweet in corpus:
+                tweet.oraciones = Freeling.procesar_texto(tweet.texto_original)
+                tweet.tokens = list(itertools.chain(*tweet.oraciones))
+                bar.next()
+
             for tweet1 in corpus:
                 for tweet2 in corpus:
-                    if tweet1.features == tweet2.features and tweet1.es_humor != tweet2.es_humor:
+                    if tweet1.id < tweet2.id and tweet1.es_humor != tweet2.es_humor \
+                            and distancia_edicion(tweet1.tokens, tweet2.tokens) \
+                                    <= max(len(tweet1.tokens), len(tweet2.tokens)) / 10:
+                        print(tweet1.texto_original)
+                        print("------------")
+                        print(tweet2.texto_original)
+                        print("------------")
+                        print('')
+
+        if args.mismas_features_distinto_humor:
+            print("Buscando tweets con mismos valores de features pero distinto de humor...")
+            for tweet1 in corpus:
+                for tweet2 in corpus:
+                    if tweet1.id < tweet2.id and tweet1.features == tweet2.features \
+                            and tweet1.es_humor != tweet2.es_humor:
+                        if tweet1.texto_original == tweet2.texto_original:
+                            print("-----MISMO TEXTO ORIGINAL------")
                         if tweet1.texto == tweet2.texto:
-                            print("----------SON IGUALES----------")
+                            print("----------MISMO TEXTO----------")
                         if tweet1.id == tweet2.id:
                             print("-----------MISMO ID------------")
                         if tweet1.cuenta == tweet2.cuenta:
