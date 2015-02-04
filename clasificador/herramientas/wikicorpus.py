@@ -21,13 +21,12 @@ def read_wiki_corpus():
                     if linea.startswith("<doc"):
                         documento = ""
                         estado = 1
-                else:
-                    if estado == 1:
-                        if linea.startswith("</doc>"):
-                            estado = 0
-                            documentos.append(documento)
-                        else:
-                            documento += linea.decode('latin-1')
+                elif estado == 1:
+                    if linea.startswith("</doc>"):
+                        estado = 0
+                        documentos.append(documento)
+                    else:
+                        documento += linea.decode('latin-1')
     return documentos
 
 
