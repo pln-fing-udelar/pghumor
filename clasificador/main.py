@@ -138,8 +138,10 @@ if __name__ == "__main__":
                                         <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
                             parecidos_con_distinto_humor.add(tweet1)
                             parecidos_con_distinto_humor.add(tweet2)
+                            print(tweet1.id)
                             print(tweet1.texto_original)
                             print("------------")
+                            print(tweet2.id)
                             print(tweet2.texto_original)
                             print("------------")
                             print('')
