@@ -29,7 +29,7 @@ def cargar_tweets(limite=None, cargar_features=True):
 
         bar.finish()
 
-        str_ids = "(" + str(ids).strip("[]") + ")"
+        str_ids = "(" + unicode(ids).strip("[]L") + ")"
 
         consulta_prueba_tweets = "WHERE T.id_tweet IN {ids}".format(ids=str_ids)
         consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)

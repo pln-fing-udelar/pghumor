@@ -6,25 +6,29 @@ import argparse
 import os
 import random
 import sys
+import itertools
 
 from flask import Flask, request
 from flask_cors import cross_origin
+from progress.bar import Bar
 from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
 from sklearn.feature_selection import RFECV
 from sklearn.grid_search import GridSearchCV
+
+from clasificador.herramientas.freeling import Freeling
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from clasificador.herramientas.define import parameters_svm, parameters_dt, \
-    parameters_gnb, parameters_mnb, parameters_knn
+    parameters_gnb, parameters_mnb, parameters_knn, SUFIJO_PROGRESS_BAR
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
     f_score_feature_selection, imprimir_importancias, tree_based_feature_selection
-from clasificador.herramientas.utils import filtrar_segun_votacion
+from clasificador.herramientas.utils import entropia, filtrar_segun_votacion, distancia_edicion
 from clasificador.realidad.tweet import Tweet
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
@@ -43,18 +47,24 @@ if __name__ == "__main__":
     parser.add_argument('-e', '--evaluar', action='store_true', default=False,
                         help="para evaluar con el corpus de evaluación")
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
-                        help='muestra las features disponibles y termina el programa')
+                        help="muestra las features disponibles y termina el programa")
     parser.add_argument('-j', '--feature-aleatoria', action='store_true', default=False,
-                        help='agrega una feature con un valor binario aleatorio')
+                        help="agrega una feature con un valor binario aleatorio")
     parser.add_argument('-k', '--feature-clase', action='store_true', default=False,
-                        help='agrega una feature cuyo valor es igual a la clase objetivo')
+                        help="agrega una feature cuyo valor es igual a la clase objetivo")
     parser.add_argument('-g', '--grid-search', action='store_true', default=False,
                         help="realiza el algoritmo grid search para el tuning de hyperparametros")
     parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
                         help="reporta la importancia de cada feature")
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
+    parser.add_argument('-m', '--mismas-features-distinto-humor', action='store_true', default=False,
+                        help="Imprime los tweets que tienen los mismos valores de features"
+                             + " pero distinto valor de humor")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parametros posibles para un clasificador")
+    parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
+                        help="en la clasificación pondera los tweets según la concordancia en la votación"
+                             + " Funciona sólo para SVM")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
@@ -65,6 +75,8 @@ if __name__ == "__main__":
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
+    parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
+                        help="Imprime los tweets que son parecidos pero distinto valor de humor")
     args = parser.parse_args()
 
     if args.explicar_features:
@@ -100,6 +112,71 @@ if __name__ == "__main__":
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
+        if args.tweets_parecidos_distinto_humor:
+            print("Buscando tweets muy parecidos pero con distinto valor de humor...")
+
+            bar = Bar("Tokenizando", max=len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+            for tweet in corpus:
+                tweet.oraciones = Freeling.procesar_texto(tweet.texto_original)
+                tweet.tokens = list(itertools.chain(*tweet.oraciones))
+                bar.next()
+
+            bar.finish()
+
+            bar = Bar("Buscando en tweets", max=len(corpus) * (len(corpus) - 1) / 2, suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+
+            parecidos_con_distinto_humor = set()
+
+            for tweet1 in corpus:
+                for tweet2 in corpus:
+                    if tweet1.id < tweet2.id:
+                        bar.next()
+                        if tweet1.es_humor != tweet2.es_humor \
+                                and distancia_edicion(tweet1.tokens, tweet2.tokens) \
+                                        <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
+                            parecidos_con_distinto_humor.add(tweet1)
+                            parecidos_con_distinto_humor.add(tweet2)
+                            print(tweet1.id)
+                            print(tweet1.texto_original)
+                            print("------------")
+                            print(tweet2.id)
+                            print(tweet2.texto_original)
+                            print("------------")
+                            print('')
+
+            bar.finish()
+
+            corpus = [tweet for tweet in corpus if tweet not in parecidos_con_distinto_humor]
+
+        if args.mismas_features_distinto_humor:
+            print("Buscando tweets con mismos valores de features pero distinto de humor...")
+            bar = Bar("Buscando en tweets", max=len(corpus) * len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+            for tweet1 in corpus:
+                for tweet2 in corpus:
+                    bar.next()
+                    if tweet1.id < tweet2.id and tweet1.features == tweet2.features \
+                            and tweet1.es_humor != tweet2.es_humor:
+                        if tweet1.texto_original == tweet2.texto_original:
+                            print("-----MISMO TEXTO ORIGINAL------")
+                        if tweet1.texto == tweet2.texto:
+                            print("----------MISMO TEXTO----------")
+                        if tweet1.id == tweet2.id:
+                            print("-----------MISMO ID------------")
+                        if tweet1.cuenta == tweet2.cuenta:
+                            print("----------MISMA CUENTA---------")
+                        print(tweet1.id)
+                        print(tweet1.texto)
+                        print("------------")
+                        print(tweet2.id)
+                        print(tweet2.texto)
+                        print("------------")
+                        print('')
+
+            bar.finish()
+
         if args.feature_aleatoria or args.feature_clase:
             for tweet in corpus:
                 if args.feature_aleatoria:
@@ -107,9 +184,10 @@ if __name__ == "__main__":
                 if args.feature_clase:
                     tweet.features["CLASE"] = tweet.es_humor
 
+        # Features que remueve RFE:
         # for tweet in corpus:
         # del tweet.features["Palabras no españolas"]
-        #     del tweet.features["Negacion"]
+        # del tweet.features["Negacion"]
 
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
@@ -170,25 +248,36 @@ if __name__ == "__main__":
             grid_search.fit(features, clases)
             print("Mejores parámetros encontrados para " + args.clasificador + ":")
             for key, value in clasificador_usado.get_params().items():
-                print("\t" + str(key) + ": " + str(value))
-            print("")
-            print("Acierto: " + str(grid_search.best_score_))
+                print("\t" + unicode(key) + ": " + unicode(value))
+            print('')
+            print("Acierto: " + unicode(grid_search.best_score_))
             grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
             clasificador_usado = grid_search.best_estimator_
-            print("")
+            print('')
 
         if args.parametros_clasificador:
-            print("")
+            print('')
             print("Parametros del clasificador:")
             for key, value in clasificador_usado.get_params().items():
-                print("\t" + str(key) + ": " + str(value))
-            print("")
+                print("\t" + unicode(key) + ": " + unicode(value))
+            print('')
 
         if args.cross_validation and not args.evaluar:
             cross_validation_y_reportar(clasificador_usado, features, clases, 5)
 
         print("Entrenando clasificador...")
-        clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
+        if args.ponderar_segun_votos:
+            sample_weights = [5 * (1 - entropia(tweet.votos_humor / float(tweet.votos))) if tweet.votos > 0 else 1
+                              for tweet in entrenamiento]
+            clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+        else:
+            clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
+
+        print("Evaluando clasificador con conjunto de entrenamiento...")
+        clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
+        matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento)
+        print('')
+
         print("Evaluando clasificador...")
         clases_predecidas = clasificador_usado.predict(features_evaluacion)
         print('')
