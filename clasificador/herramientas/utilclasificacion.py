@@ -145,13 +145,33 @@ def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_pred
 
     # Reporte de estadísticas
 
-    print(metrics.classification_report(_clases_evaluacion, _clases_predecidas, target_names=['N', 'P']))
-
     print("Acierto: " + str(metrics.accuracy_score(_clases_evaluacion, _clases_predecidas)))
     print('')
+    tn = len(_verdaderos_negativos)
+    fp = len(_falsos_positivos)
+    fn = len(_falsos_negativos)
+    tp = len(_verdaderos_positivos)
 
+    # Matriz de cross-validation
+    mean = calcular_medidas(tn, fp, fn, tp)
+    print("               precision      recall    f1-score    support\n")
+    print("          N       {pn:0.4f}      {rn:0.4f}      {fn:0.4f}      {sn}".format(pn=mean['precision_negativo'],
+                                                                                       rn=mean['recall_negativo'],
+                                                                                       fn=mean['f1score_negativo'],
+                                                                                       sn=tn + fp))
+    print("          P       {pp:0.4f}      {rp:0.4f}      {fp:0.4f}      {sp}\n".format(pp=mean['precision_positivo'],
+                                                                                         rp=mean['recall_positivo'],
+                                                                                         fp=mean['f1score_positivo'],
+                                                                                         sp=tp + fn))
+    print("avg / total       {ap:0.4f}      {ar:0.4f}      {af:0.4f}      {su}".format(
+        ap=(mean['precision_positivo'] + mean['precision_negativo']) / 2,
+        ar=(mean['recall_positivo'] + mean['recall_negativo']) / 2,
+        af=(mean['f1score_positivo'] + mean['f1score_negativo']) / 2,
+        su=tp + fp + tn + fn)
+    )
     matriz_de_confusion = metrics.confusion_matrix(_clases_evaluacion, _clases_predecidas, labels=[True, False])
     # Con 'labels' pido el orden para la matriz
+
 
     assert len(_verdaderos_positivos) == matriz_de_confusion[0][0]
     assert len(_falsos_negativos) == matriz_de_confusion[0][1]
