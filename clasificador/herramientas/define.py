@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import numpy as np
+
 # Twitter API credentials
 CONSUMER_KEY = 'GoJjP7Xmj4kpxjttr8qJ9cLtC'
 CONSUMER_SECRET = 'PnbLJGXnJjsE9M97yhHXY2Oyj7ojcrcVulDGM2yQfS05NQjoNK'
@@ -22,14 +24,14 @@ parameters_svm = {
     'C': [0.9, 1.0],
     'kernel': [str('rbf'), str('sigmoid'), str('poly'), str('linear')],
     'degree': [3, 4, 5],
-    # 'gamma': [0.0, 0.5, 0.6, 0.7],
-    'tol': [1e-3, 1e-4]
+    'gamma': [0.0, 0.03, 0.04, 0.05, 0.06],
+    'coef0': [0.0, -1.0, 1.0]
 }
 
 parameters_dt = {
     'criterion': ['gini', 'entropy'],
     'splitter': ['best', 'random'],
-    'max_features': [None] + range(17, 21),
+    'max_features': range(17, 21),
     'max_depth': [None] + range(25, 30),
     'min_samples_split': range(1, 5),
     'min_samples_leaf': range(1, 4),
@@ -49,5 +51,5 @@ parameters_mnb = {
 parameters_knn = {
     'n_neighbors': [4, 5, 6, 7, 8],
     'weights': ['uniform', 'distance'],
-    'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute']
+    'p': [1, 2, np.inf]
 }
