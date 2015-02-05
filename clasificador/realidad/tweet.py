@@ -54,6 +54,9 @@ class Tweet:
 
         self.features = {}
 
+        self.oraciones = None
+        self.tokens = None
+
     def preprocesar(self):
         self.texto_original = self.texto
         self.texto = HTMLParser.HTMLParser().unescape(self.texto)
