@@ -122,19 +122,31 @@ if __name__ == "__main__":
                 tweet.tokens = list(itertools.chain(*tweet.oraciones))
                 bar.next()
 
-            bar = Bar("Buscando en tweets", max=len(corpus) * len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar.finish()
+
+            bar = Bar("Buscando en tweets", max=len(corpus) * (len(corpus) - 1) / 2, suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
+
+            parecidos_con_distinto_humor = set()
+
             for tweet1 in corpus:
                 for tweet2 in corpus:
-                    bar.next()
-                    if tweet1.id < tweet2.id and tweet1.es_humor != tweet2.es_humor \
-                            and distancia_edicion(tweet1.tokens, tweet2.tokens) \
-                                    <= max(len(tweet1.tokens), len(tweet2.tokens)) / 10:
-                        print(tweet1.texto_original)
-                        print("------------")
-                        print(tweet2.texto_original)
-                        print("------------")
-                        print('')
+                    if tweet1.id < tweet2.id:
+                        bar.next()
+                        if tweet1.es_humor != tweet2.es_humor \
+                                and distancia_edicion(tweet1.tokens, tweet2.tokens) \
+                                        <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
+                            parecidos_con_distinto_humor.add(tweet1)
+                            parecidos_con_distinto_humor.add(tweet2)
+                            print(tweet1.texto_original)
+                            print("------------")
+                            print(tweet2.texto_original)
+                            print("------------")
+                            print('')
+
+            bar.finish()
+
+            corpus = [tweet for tweet in corpus if tweet not in parecidos_con_distinto_humor]
 
         if args.mismas_features_distinto_humor:
             print("Buscando tweets con mismos valores de features pero distinto de humor...")
@@ -160,6 +172,8 @@ if __name__ == "__main__":
                         print(tweet2.texto)
                         print("------------")
                         print('')
+
+            bar.finish()
 
         if args.feature_aleatoria or args.feature_clase:
             for tweet in corpus:
