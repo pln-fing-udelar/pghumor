@@ -82,7 +82,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
-                        help="Imprime los tweets que son parecidos pero distinto valor de humor")
+                        help="Imprime los tweets que son parecidos pero tienen distinto valor de humor")
     args = parser.parse_args()
 
     if args.explicar_features:
