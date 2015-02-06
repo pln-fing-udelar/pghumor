@@ -56,6 +56,8 @@ if __name__ == "__main__":
                         help="realiza el algoritmo grid search para el tuning de hyperparametros")
     parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
                         help="reporta la importancia de cada feature")
+    parser.add_argument('-z', '--incluir-chistes-sexuales', action='store_true', default=False,
+                        help="Incluye en el entrenamiento y en la evaluación los chistes con contenido sexual")
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
     parser.add_argument('-m', '--mismas-features-distinto-humor', action='store_true', default=False,
                         help="Imprime los tweets que tienen los mismos valores de features"
@@ -85,7 +87,7 @@ if __name__ == "__main__":
             print(feature.nombre + ":")
             print(feature.descripcion)
     else:
-        corpus = cargar_tweets(args.limite)
+        corpus = cargar_tweets(args.limite, args.incluir_chistes_sexuales)
 
         for tweet in corpus:
             tweet.preprocesar()

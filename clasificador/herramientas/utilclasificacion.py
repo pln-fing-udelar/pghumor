@@ -172,7 +172,6 @@ def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_pred
     matriz_de_confusion = metrics.confusion_matrix(_clases_evaluacion, _clases_predecidas, labels=[True, False])
     # Con 'labels' pido el orden para la matriz
 
-
     assert len(_verdaderos_positivos) == matriz_de_confusion[0][0]
     assert len(_falsos_negativos) == matriz_de_confusion[0][1]
     assert len(_falsos_positivos) == matriz_de_confusion[1][0]
