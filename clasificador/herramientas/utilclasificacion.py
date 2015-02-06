@@ -20,8 +20,8 @@ def train_test_split_pro(corpus, **options):
     fraccion_evaluacion = options.pop('test_size', 0.25)
 
     elegir_fraccion = random.sample(range(len(corpus)), int(len(corpus) * fraccion_evaluacion))
-    entrenamiento = [corpus[j] for j in range(len(corpus)) if j not in elegir_fraccion]
-    evaluacion = [corpus[j] for j in elegir_fraccion]
+    entrenamiento = [corpus[i] for i in range(len(corpus)) if i not in elegir_fraccion]
+    evaluacion = [corpus[i] for i in elegir_fraccion]
 
     return entrenamiento, evaluacion
 
