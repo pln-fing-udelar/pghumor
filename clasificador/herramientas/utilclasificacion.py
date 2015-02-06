@@ -29,7 +29,7 @@ def train_test_split_pro(corpus, **options):
 def get_features(tweets):
     assert len(tweets) > 0, "Deberían haber tweets para obtener las features y las clases"
 
-    largo_esperado_features = len(tweets[0].array_features())  # .shape[1]
+    largo_esperado_features = len(tweets[0].array_features())
 
     resultado = []
     for tweet in tweets:
@@ -37,7 +37,7 @@ def get_features(tweets):
         assert len(features_tweet) == largo_esperado_features, "Los tweets tienen distinta cantidad de features"
         resultado.append(features_tweet)
 
-    return resultado  # vstack(resultado)
+    return resultado
 
 
 def get_clases(tweets):
@@ -133,37 +133,36 @@ def calcular_medidas(tn, fp, fn, tp):
     return metricas
 
 
-def reportar_metricas_ponderadas(_verdaderos_negativos, _falsos_positivos, __falsos_negativos, _verdaderos_positivos):
-    # Calcula promedio de humor para cada clase
-    tp = sum(tw.promedio_de_humor for tw in _verdaderos_positivos)
-    fp = sum(tw.promedio_de_humor for tw in _falsos_positivos)
-    tn = sum(tw.promedio_de_humor for tw in _verdaderos_negativos)
+def reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos):
+    tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos)
+    fp = sum(tweet.promedio_de_humor for tweet in falsos_positivos)
+    fn = sum(tweeet.promedio_de_humor for tweeet in falsos_negativos)
 
     precision = tp / (fp + tp)
-    recall = tp / (tp + tn)
-    f1_score = 2*precision*recall/(precision + recall)
+    recall = tp / (tp + fn)
+    f1_score = 2 * precision * recall / (precision + recall)
 
     return precision, recall, f1_score
 
 
-def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_predecidas, medidas_ponderadas):
-    _verdaderos_positivos = [_evaluacion[_i] for _i in range(len(_evaluacion)) if
-                             _clases_predecidas[_i] and _clases_evaluacion[_i]]
-    _falsos_positivos = [_evaluacion[_i] for _i in range(len(_evaluacion)) if
-                         _clases_predecidas[_i] and not _clases_evaluacion[_i]]
-    _falsos_negativos = [_evaluacion[_i] for _i in range(len(_evaluacion)) if
-                         not _clases_predecidas[_i] and _clases_evaluacion[_i]]
-    _verdaderos_negativos = [_evaluacion[_i] for _i in range(len(_evaluacion)) if
-                             not _clases_predecidas[_i] and not _clases_evaluacion[_i]]
+def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas):
+    verdaderos_positivos = [evaluacion[_i] for _i in range(len(evaluacion)) if
+                            clases_predecidas[_i] and clases_evaluacion[_i]]
+    falsos_positivos = [evaluacion[_i] for _i in range(len(evaluacion)) if
+                        clases_predecidas[_i] and not clases_evaluacion[_i]]
+    falsos_negativos = [evaluacion[_i] for _i in range(len(evaluacion)) if
+                        not clases_predecidas[_i] and clases_evaluacion[_i]]
+    verdaderos_negativos = [evaluacion[_i] for _i in range(len(evaluacion)) if
+                            not clases_predecidas[_i] and not clases_evaluacion[_i]]
 
     # Reporte de estadísticas
 
-    print("Acierto: " + str(metrics.accuracy_score(_clases_evaluacion, _clases_predecidas)))
+    print("Acierto: " + str(metrics.accuracy_score(clases_evaluacion, clases_predecidas)))
     print('')
-    tn = len(_verdaderos_negativos)
-    fp = len(_falsos_positivos)
-    fn = len(_falsos_negativos)
-    tp = len(_verdaderos_positivos)
+    tn = len(verdaderos_negativos)
+    fp = len(falsos_positivos)
+    fn = len(falsos_negativos)
+    tp = len(verdaderos_positivos)
 
     # Matriz de cross-validation
     mean = calcular_medidas(tn, fp, fn, tp)
@@ -182,26 +181,27 @@ def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_pred
         af=(mean['f1score_positivo'] + mean['f1score_negativo']) / 2,
         su=tp + fp + tn + fn)
     )
-    matriz_de_confusion = metrics.confusion_matrix(_clases_evaluacion, _clases_predecidas, labels=[True, False])
-    # Con 'labels' pido el orden para la matriz
+    matriz_de_confusion = metrics.confusion_matrix(clases_evaluacion, clases_predecidas, labels=[True, False])
+    # Con 'labels' pido el orden para la matriz.
+
     if medidas_ponderadas:
-        precision, recall, f1_score = reportar_metricas_ponderadas(_verdaderos_negativos,_falsos_positivos,
-                                                                   _falsos_negativos, _verdaderos_positivos)
+        precision, recall, f1_score = reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos,
+                                                                   falsos_negativos, verdaderos_positivos)
         print("Precision en chistes ponderada: " + str(precision))
         print("Recall    en chistes ponderada: " + str(recall))
         print("F1-Score  en chistes ponderada: " + str(f1_score))
 
-    assert len(_verdaderos_positivos) == matriz_de_confusion[0][0]
-    assert len(_falsos_negativos) == matriz_de_confusion[0][1]
-    assert len(_falsos_positivos) == matriz_de_confusion[1][0]
-    assert len(_verdaderos_negativos) == matriz_de_confusion[1][1]
+    assert len(verdaderos_positivos) == matriz_de_confusion[0][0]
+    assert len(falsos_negativos) == matriz_de_confusion[0][1]
+    assert len(falsos_positivos) == matriz_de_confusion[1][0]
+    assert len(verdaderos_negativos) == matriz_de_confusion[1][1]
 
     print("Matriz de confusión:")
     print('')
     print("\t\t(clasificados como)")
     print("\t\tP\tN")
-    print("(son)\tP\t" + str(len(_verdaderos_positivos)) + '\t' + str(len(_falsos_negativos)))
-    print("(son)\tN\t" + str(len(_falsos_positivos)) + '\t' + str(len(_verdaderos_negativos)))
+    print("(son)\tP\t" + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_negativos)))
+    print("(son)\tN\t" + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
     print('')
 
-    return _verdaderos_positivos, _falsos_negativos, _falsos_positivos, _verdaderos_negativos
+    return verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos
