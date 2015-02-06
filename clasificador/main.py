@@ -62,6 +62,9 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--mismas-features-distinto-humor', action='store_true', default=False,
                         help="Imprime los tweets que tienen los mismos valores de features"
                              + " pero distinto valor de humor")
+    parser.add_argument('-q', '--medidas-ponderadas', action='store_true', default=False,
+                        help="Imprime las medidas precision, recall, f1-score ponderadas según el promedio de humor"
+                             + " pero distinto valor de humor")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parametros posibles para un clasificador")
     parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
@@ -277,7 +280,8 @@ if __name__ == "__main__":
 
         print("Evaluando clasificador con conjunto de entrenamiento...")
         clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
-        matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento)
+        matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento,
+                                       args.medidas_ponderadas)
         print('')
 
         print("Evaluando clasificador...")
@@ -285,7 +289,7 @@ if __name__ == "__main__":
         print('')
 
         verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
-            evaluacion, clases_evaluacion, clases_predecidas)
+            evaluacion, clases_evaluacion, clases_predecidas, args.medidas_ponderadas)
 
         if args.servidor:
             app = Flask(__name__)
