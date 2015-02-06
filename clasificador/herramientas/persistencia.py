@@ -56,10 +56,12 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
            followers_count_account,
            evaluacion,
            votos,
-           votos_humor
+           votos_humor,
+           promedio_votos
     FROM   tweets AS T
            NATURAL JOIN twitter_accounts
                         LEFT JOIN (SELECT id_tweet,
+                                          Avg(voto) AS promedio_votos,
                                           Count(*) AS votos,
                                           Count(If(voto <> 'x', 1, NULL)) AS votos_humor
                                    FROM   votos
@@ -77,7 +79,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     resultado = {}
 
     for (id_account, tweet_id, texto, favoritos, retweets, es_humor, censurado, cuenta, seguidores, evaluacion, votos,
-         votos_humor) in cursor:
+         votos_humor, promedio_votos) in cursor:
         tw = Tweet()
         tw.id = tweet_id
         tw.texto_original = texto
@@ -93,6 +95,8 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
             tw.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
         if votos_humor:
             tw.votos_humor = int(votos_humor)
+        if promedio_votos:
+            tw.promedio_de_humor = promedio_votos
 
         resultado[tw.id] = tw
         bar.next()
