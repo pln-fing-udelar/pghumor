@@ -69,7 +69,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parametros posibles para un clasificador")
     parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
-                        help="en la clasificación pondera los tweets según la concordancia en la votación"
+                        help="en la clasificación pondera los tweets según la concordancia en la votación."
                              + " Funciona sólo para SVM")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
