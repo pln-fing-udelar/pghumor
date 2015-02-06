@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import argparse
+from collections import defaultdict
 import os
 import random
 import sys
@@ -120,37 +121,49 @@ if __name__ == "__main__":
         if args.tweets_parecidos_distinto_humor:
             print("Buscando tweets muy parecidos pero con distinto valor de humor...")
 
-            bar = IncrementalBar("Tokenizando\t\t\t", max=len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            subcorpus_humor = [tweet for tweet in corpus if tweet.es_chiste]
+
+            subcorpus_humor_por_largo = defaultdict(list)
+
+            bar = IncrementalBar("Tokenizando\t\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
-            for tweet in corpus:
+            for tweet in subcorpus_humor:
                 tweet.oraciones = Freeling.procesar_texto(tweet.texto_original)
                 tweet.tokens = list(itertools.chain(*tweet.oraciones))
+
+                subcorpus_humor_por_largo[len(tweet.tokens)].append(tweet)
+
                 bar.next()
 
             bar.finish()
 
-            bar = IncrementalBar("Buscando en tweets\t\t", max=len(corpus) * (len(corpus) - 1) / 2,
-                                 suffix=SUFIJO_PROGRESS_BAR)
-            bar.next(0)
-
             parecidos_con_distinto_humor = set()
 
-            for tweet1 in corpus:
-                for tweet2 in corpus:
-                    if tweet1.id < tweet2.id:
-                        bar.next()
-                        if tweet1.es_humor != tweet2.es_humor \
-                                and distancia_edicion(tweet1.tokens, tweet2.tokens) \
-                                        <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
-                            parecidos_con_distinto_humor.add(tweet1)
-                            parecidos_con_distinto_humor.add(tweet2)
-                            print(tweet1.id)
-                            print(tweet1.texto_original)
-                            print("------------")
-                            print(tweet2.id)
-                            print(tweet2.texto_original)
-                            print("------------")
-                            print('')
+            bar = IncrementalBar("Buscando en tweets\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+            i = 1
+            for tweet1 in subcorpus_humor:
+                margen = int(round(len(tweet1.tokens) / 5))
+                largo_min = len(tweet1.tokens) - margen
+                largo_max = len(tweet1.tokens) + margen
+
+                for largo in range(largo_min, largo_max + 1):
+                    for tweet2 in subcorpus_humor_por_largo[largo]:
+                        if tweet1.id < tweet2.id:
+                            if tweet1.es_humor != tweet2.es_humor \
+                                    and distancia_edicion(tweet1.tokens, tweet2.tokens) \
+                                            <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
+                                parecidos_con_distinto_humor.add(tweet1)
+                                parecidos_con_distinto_humor.add(tweet2)
+                                print(tweet1.id)
+                                print(tweet1.texto_original)
+                                print("------------")
+                                print(tweet2.id)
+                                print(tweet2.texto_original)
+                                print("------------")
+                                print('')
+
+                bar.next()
 
             bar.finish()
 
@@ -165,8 +178,7 @@ if __name__ == "__main__":
                 for tweet2 in corpus:
                     if tweet1.id < tweet2.id:
                         bar.next()
-                        if tweet1.es_humor != tweet2.es_humor \
-                                and tweet1.features == tweet2.features:
+                        if tweet1.es_humor != tweet2.es_humor and tweet1.features == tweet2.features:
                             if tweet1.texto_original == tweet2.texto_original:
                                 print("-----MISMO TEXTO ORIGINAL------")
                             if tweet1.texto == tweet2.texto:
