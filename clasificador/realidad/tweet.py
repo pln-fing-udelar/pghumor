@@ -51,6 +51,7 @@ class Tweet:
         self.texto_original = ""
         self.votos = 0
         self.votos_humor = 0
+        self.promedio_de_humor = 0
 
         self.features = {}
 
