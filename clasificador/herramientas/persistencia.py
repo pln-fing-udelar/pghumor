@@ -133,9 +133,15 @@ def guardar_features(tweets, **opciones):
 
     for tweet in tweets:
         if nombre_feature:
-            cursor.execute(consulta,
-                           (tweet.id, nombre_feature, str(tweet.features[nombre_feature]),
-                            str(tweet.features[nombre_feature])))
+            cursor.execute(
+                consulta,
+                (
+                    tweet.id,
+                    nombre_feature,
+                    str(tweet.features[nombre_feature]),
+                    str(tweet.features[nombre_feature])
+                )
+            )
         else:
             for key, value in tweet.features.items():
                 cursor.execute(consulta, (tweet.id, key, str(value), str(value)))

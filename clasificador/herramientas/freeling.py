@@ -105,6 +105,9 @@ MSG_SERVER_READY = 'FL-SERVER-READY'
 
 
 class AnalyzerClient:
+    """
+    Es como el comando analyzer_client de Freeling. Sirve con la revisión 2588 del repositirio SVN de Freeling.
+    """
     def __init__(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
