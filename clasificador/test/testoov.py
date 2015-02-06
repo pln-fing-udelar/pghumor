@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from clasificador.features.oov import contiene_caracteres_no_espanoles, eliminar_underscores
+from clasificador.features.oov import eliminar_underscores
 
 
 class TestOOV(unittest.TestCase):
