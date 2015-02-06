@@ -15,7 +15,7 @@ DB_PASS = 'ckP8t/2l'
 DB_NAME = 'corpus'
 DB_NAME_CHISTES_DOT_COM = 'chistesdotcom'
 
-SUFIJO_PROGRESS_BAR = '%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta)ds'
+SUFIJO_PROGRESS_BAR = '%(index)d/%(max)d - %(percent).2f%% - ETA: %(eta_td)s'
 
 
 # Parametros para cada clasificador al realizar Grid Search

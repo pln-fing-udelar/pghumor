@@ -5,7 +5,7 @@ import random
 import math
 
 import numpy as np
-from progress.bar import Bar
+from progress.bar import IncrementalBar
 from sklearn import cross_validation, metrics
 
 from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
@@ -65,7 +65,7 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
         'F1-score negativo': f1score_negativo_cross_validation,
         'Acierto': accuracy_cross_validation,
     }
-    bar = Bar("Realizando cross-validation", max=numero_particiones, suffix=SUFIJO_PROGRESS_BAR)
+    bar = IncrementalBar("Realizando cross-validation", max=numero_particiones, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
     for train, test in skf:
         clasificador.fit(features[train], clases[train])
