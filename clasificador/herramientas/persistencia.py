@@ -15,11 +15,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     if limite:
-        if agregar_sexuales:
-            consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
-        else:
-            consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 AND censurado_tweet = 0 ORDER BY RAND() LIMIT "\
-                       + str(limite)
+        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
 
         cursor.execute(consulta)
 
@@ -34,15 +30,32 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
 
         bar.finish()
 
-        str_ids = "(" + unicode(ids).strip("[]L") + ")"
-        consulta_prueba_tweets = "WHERE T.id_tweet IN {ids}".format(ids=str_ids)
-        consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
+        str_ids = '(' + unicode(ids).strip('[]L') + ')'
+        consulta_prueba_tweets = "T.id_tweet IN {ids}".format(ids=str_ids)
+        consulta_prueba_features = "id_tweet IN {ids}".format(ids=str_ids)
 
     else:
-        consulta_prueba_tweets = ""
-        if not agregar_sexuales:
-            consulta_prueba_tweets = "WHERE censurado_tweet = 0"
         consulta_prueba_features = ""
+        consulta_prueba_tweets = ""
+
+    if agregar_sexuales:
+        consulta_sexuales_tweets = ""
+    else:
+        consulta_sexuales_tweets = "censurado_tweet = 0"
+    consulta_sexuales_features = consulta_sexuales_tweets
+
+    if not agregar_sexuales and limite:
+        restricciones_tweets = "WHERE " + consulta_sexuales_tweets + " AND " + consulta_prueba_tweets
+        restricciones_features = "WHERE " + consulta_sexuales_features + " AND " + consulta_prueba_features
+    elif not agregar_sexuales:
+        restricciones_tweets = "WHERE " + consulta_sexuales_tweets
+        restricciones_features = "WHERE " + consulta_sexuales_features
+    elif limite:
+        restricciones_tweets = "WHERE " + consulta_prueba_tweets
+        restricciones_features = "WHERE " + consulta_prueba_features
+    else:
+        restricciones_tweets = ""
+        restricciones_features = ""
 
     consulta = """
     SELECT id_account,
@@ -68,8 +81,8 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
                                    WHERE voto <> 'n'
                                    GROUP  BY id_tweet) V
                                ON ( V.id_tweet = T.id_tweet )
-    {filtro_prueba}
-    """.format(filtro_prueba=consulta_prueba_tweets)
+    {restricciones}
+    """.format(restricciones=restricciones_tweets)
 
     cursor.execute(consulta)
 
@@ -80,25 +93,26 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
 
     for (id_account, tweet_id, texto, favoritos, retweets, es_humor, censurado, cuenta, seguidores, evaluacion, votos,
          votos_humor, promedio_votos) in cursor:
-        tw = Tweet()
-        tw.id = tweet_id
-        tw.texto_original = texto
-        tw.texto = texto
-        tw.favoritos = favoritos
-        tw.retweets = retweets
-        tw.es_humor = es_humor
-        tw.censurado = censurado
-        tw.cuenta = cuenta
-        tw.seguidores = seguidores
-        tw.evaluacion = evaluacion
+        tweet = Tweet()
+        tweet.id = tweet_id
+        tweet.texto_original = texto
+        tweet.texto = texto
+        tweet.favoritos = favoritos
+        tweet.retweets = retweets
+        tweet.es_humor = es_humor
+        tweet.es_chiste = es_humor
+        tweet.censurado = censurado
+        tweet.cuenta = cuenta
+        tweet.seguidores = seguidores
+        tweet.evaluacion = evaluacion
         if votos:
-            tw.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
+            tweet.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
         if votos_humor:
-            tw.votos_humor = int(votos_humor)
+            tweet.votos_humor = int(votos_humor)
         if promedio_votos:
-            tw.promedio_de_humor = promedio_votos
+            tweet.promedio_de_humor = promedio_votos
 
-        resultado[tw.id] = tw
+        resultado[tweet.id] = tweet
         bar.next()
 
     bar.finish()
@@ -109,8 +123,9 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
                nombre_feature,
                valor_feature
         FROM   features
-        {filtro_prueba}
-        """.format(filtro_prueba=consulta_prueba_features)
+               NATURAL JOIN tweets
+        {restricciones}
+        """.format(restricciones=restricciones_features)
 
         cursor.execute(consulta)
 
@@ -118,7 +133,8 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
         bar.next(0)
 
         for (id_tweet, nombre_feature, valor_feature) in cursor:
-            resultado[id_tweet].features[nombre_feature] = valor_feature
+            if id_tweet in resultado:
+                resultado[id_tweet].features[nombre_feature] = valor_feature
             bar.next()
 
         bar.finish()
