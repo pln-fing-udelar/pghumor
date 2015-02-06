@@ -171,38 +171,42 @@ if __name__ == "__main__":
 
         if args.mismas_features_distinto_humor:
             print("Buscando tweets con mismos valores de features pero distinto de humor...")
-            bar = IncrementalBar("Buscando en tweets", max=len(corpus) * (len(corpus) - 1) / 2,
+
+            humoristicos = [tweet for tweet in corpus if tweet.es_humor]
+            no_humoristicos = [tweet for tweet in corpus if not tweet.es_humor]
+
+            bar = IncrementalBar("Buscando en tweets", max=len(humoristicos) * len(no_humoristicos),
                                  suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
-            for tweet1 in corpus:
-                for tweet2 in corpus:
-                    if tweet1.id < tweet2.id:
-                        bar.next()
-                        if tweet1.es_humor != tweet2.es_humor and tweet1.features == tweet2.features:
-                            if tweet1.texto_original == tweet2.texto_original:
-                                print("-----MISMO TEXTO ORIGINAL------")
-                            if tweet1.texto == tweet2.texto:
-                                print("----------MISMO TEXTO----------")
-                            if tweet1.id == tweet2.id:
-                                print("-----------MISMO ID------------")
-                            if tweet1.cuenta == tweet2.cuenta:
-                                print("----------MISMA CUENTA---------")
-                            print(tweet1.id)
-                            print(tweet1.texto)
-                            print("------------")
-                            print(tweet2.id)
-                            print(tweet2.texto)
-                            print("------------")
-                            print('')
-
+            for tweet1 in humoristicos:
+                for tweet2 in no_humoristicos:
+                    if tweet1.features == tweet2.features:
+                        if tweet1.texto_original == tweet2.texto_original:
+                            print("-----MISMO TEXTO ORIGINAL------")
+                        if tweet1.texto == tweet2.texto:
+                            print("----------MISMO TEXTO----------")
+                        if tweet1.id == tweet2.id:
+                            print("-----------MISMO ID------------")
+                        if tweet1.cuenta == tweet2.cuenta:
+                            print("----------MISMA CUENTA---------")
+                        print('')
+                        print(tweet1.id)
+                        print(tweet1.texto)
+                        print("------------")
+                        print(tweet2.id)
+                        print(tweet2.texto)
+                        print("------------")
+                        print('')
+                    bar.next()
             bar.finish()
 
-        if args.feature_aleatoria or args.feature_clase:
+        if args.feature_aleatoria:
             for tweet in corpus:
-                if args.feature_aleatoria:
-                    tweet.features["ALEATORIA"] = random.uniform(0, 1)
-                if args.feature_clase:
-                    tweet.features["CLASE"] = tweet.es_humor
+                tweet.features["ALEATORIA"] = random.uniform(0, 1)
+
+        if args.feature_clase:
+            for tweet in corpus:
+                tweet.features["CLASE"] = tweet.es_humor
 
         # Features que remueve RFE:
         for tweet in corpus:
