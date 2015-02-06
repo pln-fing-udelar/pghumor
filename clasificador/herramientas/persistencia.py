@@ -8,14 +8,19 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME,
 from clasificador.realidad.tweet import Tweet
 
 
-def cargar_tweets(limite=None, cargar_features=True):
+def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
     y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego."""
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     if limite:
-        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
+        if agregar_sexuales:
+            consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
+        else:
+            consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 AND censurado_tweet = 0 ORDER BY RAND() LIMIT "\
+                       + str(limite)
+
         cursor.execute(consulta)
 
         bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
@@ -30,11 +35,13 @@ def cargar_tweets(limite=None, cargar_features=True):
         bar.finish()
 
         str_ids = "(" + unicode(ids).strip("[]L") + ")"
-
         consulta_prueba_tweets = "WHERE T.id_tweet IN {ids}".format(ids=str_ids)
         consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
+
     else:
         consulta_prueba_tweets = ""
+        if not agregar_sexuales:
+            consulta_prueba_tweets = "WHERE censurado_tweet = 0"
         consulta_prueba_features = ""
 
     consulta = """
@@ -44,6 +51,7 @@ def cargar_tweets(limite=None, cargar_features=True):
            favorite_count_tweet,
            retweet_count_tweet,
            eschiste_tweet,
+           censurado_tweet,
            name_account,
            followers_count_account,
            evaluacion,
@@ -68,7 +76,7 @@ def cargar_tweets(limite=None, cargar_features=True):
 
     resultado = {}
 
-    for (id_account, tweet_id, texto, favoritos, retweets, es_humor, cuenta, seguidores, evaluacion, votos,
+    for (id_account, tweet_id, texto, favoritos, retweets, es_humor, censurado, cuenta, seguidores, evaluacion, votos,
          votos_humor) in cursor:
         tw = Tweet()
         tw.id = tweet_id
@@ -77,6 +85,7 @@ def cargar_tweets(limite=None, cargar_features=True):
         tw.favoritos = favoritos
         tw.retweets = retweets
         tw.es_humor = es_humor
+        tw.censurado = censurado
         tw.cuenta = cuenta
         tw.seguidores = seguidores
         tw.evaluacion = evaluacion
