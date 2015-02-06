@@ -133,6 +133,19 @@ def calcular_medidas(tn, fp, fn, tp):
     return metricas
 
 
+def reportar_metricas_ponderadas(_verdaderos_negativos, _falsos_positivos, __falsos_vegativos, _verdaderos_positivos):
+    # Calcula promedio de humor para cada clase
+    tp = sum(tw.promedio_humor for tw in _verdaderos_positivos)
+    fp = sum(tw.promedio_humor for tw in _falsos_positivos)
+    tn = sum(tw.promedio_humor for tw in _verdaderos_negativos)
+
+    precision = tp / (fp + tp)
+    recall = tp / (tp + tn)
+    f1_score = 2*precision*recall/(precision + recall)
+
+    return precision, recall, f1_score
+
+
 def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_predecidas):
     _verdaderos_positivos = [_evaluacion[_i] for _i in range(len(_evaluacion)) if
                              _clases_predecidas[_i] and _clases_evaluacion[_i]]
