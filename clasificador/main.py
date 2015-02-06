@@ -10,7 +10,7 @@ import itertools
 
 from flask import Flask, request
 from flask_cors import cross_origin
-from progress.bar import Bar
+from progress.bar import IncrementalBar
 from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
 from sklearn.feature_selection import RFECV
 from sklearn.grid_search import GridSearchCV
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         if args.tweets_parecidos_distinto_humor:
             print("Buscando tweets muy parecidos pero con distinto valor de humor...")
 
-            bar = Bar("Tokenizando", max=len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar = IncrementalBar("Tokenizando\t\t\t", max=len(corpus), suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
             for tweet in corpus:
                 tweet.oraciones = Freeling.procesar_texto(tweet.texto_original)
@@ -129,7 +129,8 @@ if __name__ == "__main__":
 
             bar.finish()
 
-            bar = Bar("Buscando en tweets", max=len(corpus) * (len(corpus) - 1) / 2, suffix=SUFIJO_PROGRESS_BAR)
+            bar = IncrementalBar("Buscando en tweets\t\t", max=len(corpus) * (len(corpus) - 1) / 2,
+                                 suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
 
             parecidos_con_distinto_humor = set()
@@ -157,28 +158,30 @@ if __name__ == "__main__":
 
         if args.mismas_features_distinto_humor:
             print("Buscando tweets con mismos valores de features pero distinto de humor...")
-            bar = Bar("Buscando en tweets", max=len(corpus) * len(corpus), suffix=SUFIJO_PROGRESS_BAR)
+            bar = IncrementalBar("Buscando en tweets", max=len(corpus) * (len(corpus) - 1) / 2,
+                                 suffix=SUFIJO_PROGRESS_BAR)
             bar.next(0)
             for tweet1 in corpus:
                 for tweet2 in corpus:
-                    bar.next()
-                    if tweet1.id < tweet2.id and tweet1.features == tweet2.features \
-                            and tweet1.es_humor != tweet2.es_humor:
-                        if tweet1.texto_original == tweet2.texto_original:
-                            print("-----MISMO TEXTO ORIGINAL------")
-                        if tweet1.texto == tweet2.texto:
-                            print("----------MISMO TEXTO----------")
-                        if tweet1.id == tweet2.id:
-                            print("-----------MISMO ID------------")
-                        if tweet1.cuenta == tweet2.cuenta:
-                            print("----------MISMA CUENTA---------")
-                        print(tweet1.id)
-                        print(tweet1.texto)
-                        print("------------")
-                        print(tweet2.id)
-                        print(tweet2.texto)
-                        print("------------")
-                        print('')
+                    if tweet1.id < tweet2.id:
+                        bar.next()
+                        if tweet1.es_humor != tweet2.es_humor \
+                                and tweet1.features == tweet2.features:
+                            if tweet1.texto_original == tweet2.texto_original:
+                                print("-----MISMO TEXTO ORIGINAL------")
+                            if tweet1.texto == tweet2.texto:
+                                print("----------MISMO TEXTO----------")
+                            if tweet1.id == tweet2.id:
+                                print("-----------MISMO ID------------")
+                            if tweet1.cuenta == tweet2.cuenta:
+                                print("----------MISMA CUENTA---------")
+                            print(tweet1.id)
+                            print(tweet1.texto)
+                            print("------------")
+                            print(tweet2.id)
+                            print(tweet2.texto)
+                            print("------------")
+                            print('')
 
             bar.finish()
 
@@ -190,9 +193,9 @@ if __name__ == "__main__":
                     tweet.features["CLASE"] = tweet.es_humor
 
         # Features que remueve RFE:
-        # for tweet in corpus:
-        # del tweet.features["Palabras no españolas"]
-        # del tweet.features["Negacion"]
+        for tweet in corpus:
+            del tweet.features["Palabras no españolas"]
+            del tweet.features["Negacion"]
 
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
