@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import sys
 
-from progress.bar import Bar
+from progress.bar import IncrementalBar
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -16,7 +16,7 @@ import clasificador.herramientas.utils
 if __name__ == "__main__":
     largo = 1000
 
-    bar = Bar('Calculando', max=largo, suffix=SUFIJO_PROGRESS_BAR)
+    bar = IncrementalBar('Calculando', max=largo, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     for i in range(largo):

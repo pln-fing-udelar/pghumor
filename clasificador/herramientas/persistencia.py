@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import mysql.connector
-from progress.bar import Bar
+from progress.bar import IncrementalBar
 
 from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME, SUFIJO_PROGRESS_BAR
 from clasificador.realidad.tweet import Tweet
@@ -18,7 +18,7 @@ def cargar_tweets(limite=None, cargar_features=True):
         consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
         cursor.execute(consulta)
 
-        bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+        bar = IncrementalBar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
         bar.next(0)
 
         ids = []
@@ -63,7 +63,7 @@ def cargar_tweets(limite=None, cargar_features=True):
 
     cursor.execute(consulta)
 
-    bar = Bar("Cargando tweets\t\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+    bar = IncrementalBar("Cargando tweets\t\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     resultado = {}
@@ -101,7 +101,7 @@ def cargar_tweets(limite=None, cargar_features=True):
 
         cursor.execute(consulta)
 
-        bar = Bar("Cargando features\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+        bar = IncrementalBar("Cargando features\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
         bar.next(0)
 
         for (id_tweet, nombre_feature, valor_feature) in cursor:
@@ -128,7 +128,7 @@ def guardar_features(tweets, **opciones):
     else:
         mensaje = 'Guardando features'
 
-    bar = Bar(mensaje, max=len(tweets), suffix=SUFIJO_PROGRESS_BAR)
+    bar = IncrementalBar(mensaje, max=len(tweets), suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
     for tweet in tweets:
