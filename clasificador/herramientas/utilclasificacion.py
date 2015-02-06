@@ -133,11 +133,11 @@ def calcular_medidas(tn, fp, fn, tp):
     return metricas
 
 
-def reportar_metricas_ponderadas(_verdaderos_negativos, _falsos_positivos, __falsos_vegativos, _verdaderos_positivos):
+def reportar_metricas_ponderadas(_verdaderos_negativos, _falsos_positivos, __falsos_negativos, _verdaderos_positivos):
     # Calcula promedio de humor para cada clase
-    tp = sum(tw.promedio_humor for tw in _verdaderos_positivos)
-    fp = sum(tw.promedio_humor for tw in _falsos_positivos)
-    tn = sum(tw.promedio_humor for tw in _verdaderos_negativos)
+    tp = sum(tw.promedio_de_humor for tw in _verdaderos_positivos)
+    fp = sum(tw.promedio_de_humor for tw in _falsos_positivos)
+    tn = sum(tw.promedio_de_humor for tw in _verdaderos_negativos)
 
     precision = tp / (fp + tp)
     recall = tp / (tp + tn)
@@ -146,7 +146,7 @@ def reportar_metricas_ponderadas(_verdaderos_negativos, _falsos_positivos, __fal
     return precision, recall, f1_score
 
 
-def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_predecidas):
+def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_predecidas, medidas_ponderadas):
     _verdaderos_positivos = [_evaluacion[_i] for _i in range(len(_evaluacion)) if
                              _clases_predecidas[_i] and _clases_evaluacion[_i]]
     _falsos_positivos = [_evaluacion[_i] for _i in range(len(_evaluacion)) if
@@ -184,6 +184,12 @@ def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_pred
     )
     matriz_de_confusion = metrics.confusion_matrix(_clases_evaluacion, _clases_predecidas, labels=[True, False])
     # Con 'labels' pido el orden para la matriz
+    if medidas_ponderadas:
+        precision, recall, f1_score = reportar_metricas_ponderadas(_verdaderos_negativos,_falsos_positivos,
+                                                                   _falsos_negativos, _verdaderos_positivos)
+        print("Precision en chistes ponderada: " + str(precision))
+        print("Recall    en chistes ponderada: " + str(recall))
+        print("F1-Score  en chistes ponderada: " + str(f1_score))
 
     assert len(_verdaderos_positivos) == matriz_de_confusion[0][0]
     assert len(_falsos_negativos) == matriz_de_confusion[0][1]
