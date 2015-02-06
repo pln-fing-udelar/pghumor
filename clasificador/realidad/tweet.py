@@ -8,7 +8,8 @@ patron_retweet = re.compile(r'^RT @\w+: ', re.UNICODE)
 
 patron_url = re.compile(
     r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)',
-    re.IGNORECASE)
+    re.IGNORECASE
+)
 
 patron_espacios_multiples = re.compile(r' +')
 
@@ -41,6 +42,7 @@ def remover_espacios_multiples_y_strip(texto):
 class Tweet:
     def __init__(self):
         self.cuenta = ""
+        self.es_chiste = False  # Si pertenece al subcorpus humor, aunque haya sido votado como no humor por la gente.
         self.es_humor = False
         self.evaluacion = False
         self.favoritos = 0
