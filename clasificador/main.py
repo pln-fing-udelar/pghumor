@@ -58,13 +58,13 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
                         help="reporta la importancia de cada feature")
     parser.add_argument('-z', '--incluir-chistes-sexuales', action='store_true', default=False,
-                        help="Incluye en el entrenamiento y en la evaluación los chistes con contenido sexual")
+                        help="incluye en el entrenamiento y en la evaluación los chistes con contenido sexual")
     parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
     parser.add_argument('-m', '--mismas-features-distinto-humor', action='store_true', default=False,
-                        help="Imprime los tweets que tienen los mismos valores de features"
+                        help="imprime los tweets que tienen los mismos valores de features"
                              + " pero distinto valor de humor")
     parser.add_argument('-q', '--medidas-ponderadas', action='store_true', default=False,
-                        help="Imprime las medidas precision, recall, f1-score ponderadas según el promedio de humor"
+                        help="imprime las medidas precision, recall, f1-score ponderadas según el promedio de humor"
                              + " pero distinto valor de humor")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parametros posibles para un clasificador")
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
-                        help="Imprime los tweets que son parecidos pero tienen distinto valor de humor")
+                        help="imprime los tweets que son parecidos pero tienen distinto valor de humor")
     args = parser.parse_args()
 
     if args.explicar_features:
