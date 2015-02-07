@@ -3,33 +3,30 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import argparse
-from collections import defaultdict
 import os
 import random
 import sys
-import itertools
 
 from flask import Flask, request
 from flask_cors import cross_origin
-from progress.bar import IncrementalBar
 from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
 from sklearn.feature_selection import RFECV
-from sklearn.grid_search import GridSearchCV
 
-from clasificador.herramientas.freeling import Freeling
+from sklearn.grid_search import GridSearchCV
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from clasificador.herramientas.define import parameters_svm, parameters_dt, \
-    parameters_gnb, parameters_mnb, parameters_knn, SUFIJO_PROGRESS_BAR
+    parameters_gnb, parameters_mnb, parameters_knn
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
-    f_score_feature_selection, imprimir_importancias, tree_based_feature_selection
-from clasificador.herramientas.utils import entropia, filtrar_segun_votacion, distancia_edicion
+    f_score_feature_selection, imprimir_importancias, tree_based_feature_selection, tweets_parecidos_con_distinto_humor, \
+    mismas_features_distinto_humor
+from clasificador.herramientas.utils import entropia, filtrar_segun_votacion
 from clasificador.realidad.tweet import Tweet
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
@@ -111,94 +108,19 @@ if __name__ == "__main__":
 
         corpus = filtrar_segun_votacion(corpus)
 
+        if args.tweets_parecidos_distinto_humor:
+            parecidos_con_distinto_humor = tweets_parecidos_con_distinto_humor(corpus)
+            corpus = [tweet for tweet in corpus if tweet not in parecidos_con_distinto_humor]
+
+        if args.mismas_features_distinto_humor:
+            mismas_features_distinto_humor(corpus)
+
         if args.evaluar:
             entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
             evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
         else:
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
-
-        if args.tweets_parecidos_distinto_humor:
-            print("Buscando tweets muy parecidos pero con distinto valor de humor...")
-
-            subcorpus_humor = [tweet for tweet in corpus if tweet.es_chiste]
-
-            subcorpus_humor_por_largo = defaultdict(list)
-
-            bar = IncrementalBar("Tokenizando\t\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
-            bar.next(0)
-            for tweet in subcorpus_humor:
-                tweet.oraciones = Freeling.procesar_texto(tweet.texto_original)
-                tweet.tokens = list(itertools.chain(*tweet.oraciones))
-
-                subcorpus_humor_por_largo[len(tweet.tokens)].append(tweet)
-
-                bar.next()
-
-            bar.finish()
-
-            parecidos_con_distinto_humor = set()
-
-            bar = IncrementalBar("Buscando en tweets\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
-            bar.next(0)
-            i = 1
-            for tweet1 in subcorpus_humor:
-                margen = int(round(len(tweet1.tokens) / 5))
-                largo_min = len(tweet1.tokens) - margen
-                largo_max = len(tweet1.tokens) + margen
-
-                for largo in range(largo_min, largo_max + 1):
-                    for tweet2 in subcorpus_humor_por_largo[largo]:
-                        if tweet1.id < tweet2.id:
-                            if tweet1.es_humor != tweet2.es_humor \
-                                    and distancia_edicion(tweet1.tokens, tweet2.tokens) \
-                                            <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
-                                parecidos_con_distinto_humor.add(tweet1)
-                                parecidos_con_distinto_humor.add(tweet2)
-                                print(tweet1.id)
-                                print(tweet1.texto_original)
-                                print("------------")
-                                print(tweet2.id)
-                                print(tweet2.texto_original)
-                                print("------------")
-                                print('')
-
-                bar.next()
-
-            bar.finish()
-
-            corpus = [tweet for tweet in corpus if tweet not in parecidos_con_distinto_humor]
-
-        if args.mismas_features_distinto_humor:
-            print("Buscando tweets con mismos valores de features pero distinto de humor...")
-
-            humoristicos = [tweet for tweet in corpus if tweet.es_humor]
-            no_humoristicos = [tweet for tweet in corpus if not tweet.es_humor]
-
-            bar = IncrementalBar("Buscando en tweets", max=len(humoristicos) * len(no_humoristicos),
-                                 suffix=SUFIJO_PROGRESS_BAR)
-            bar.next(0)
-            for tweet1 in humoristicos:
-                for tweet2 in no_humoristicos:
-                    if tweet1.features == tweet2.features:
-                        if tweet1.texto_original == tweet2.texto_original:
-                            print("-----MISMO TEXTO ORIGINAL------")
-                        if tweet1.texto == tweet2.texto:
-                            print("----------MISMO TEXTO----------")
-                        if tweet1.id == tweet2.id:
-                            print("-----------MISMO ID------------")
-                        if tweet1.cuenta == tweet2.cuenta:
-                            print("----------MISMA CUENTA---------")
-                        print('')
-                        print(tweet1.id)
-                        print(tweet1.texto)
-                        print("------------")
-                        print(tweet2.id)
-                        print(tweet2.texto)
-                        print("------------")
-                        print('')
-                    bar.next()
-            bar.finish()
 
         if args.feature_aleatoria:
             for tweet in corpus:
@@ -291,7 +213,7 @@ if __name__ == "__main__":
 
         print("Entrenando clasificador...")
         if args.ponderar_segun_votos:
-            sample_weights = [5 * (1 - entropia(tweet.votos_humor / float(tweet.votos))) if tweet.votos > 0 else 1
+            sample_weights = [1 - entropia(tweet.votos_humor / float(tweet.votos)) if tweet.votos > 0 else 1
                               for tweet in entrenamiento]
             clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
         else:
