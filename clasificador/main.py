@@ -11,7 +11,6 @@ from flask import Flask, request
 from flask_cors import cross_origin
 from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
 from sklearn.feature_selection import RFECV
-
 from sklearn.grid_search import GridSearchCV
 
 
@@ -79,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
-                        help="imprime los tweets que son parecidos pero tienen distinto valor de humor")
+                        help="busca y quita los tweets que son parecidos pero tienen distinto valor de humor")
     args = parser.parse_args()
 
     if args.explicar_features:

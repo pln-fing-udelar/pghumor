@@ -70,7 +70,8 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
            evaluacion,
            votos,
            votos_humor,
-           promedio_votos
+           promedio_votos,
+           parecido_a_otro_con_distinto_humor
     FROM   tweets AS T
            NATURAL JOIN twitter_accounts
                         LEFT JOIN (SELECT id_tweet,
@@ -92,7 +93,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     resultado = {}
 
     for (id_account, tweet_id, texto, favoritos, retweets, es_humor, censurado, cuenta, seguidores, evaluacion, votos,
-         votos_humor, promedio_votos) in cursor:
+         votos_humor, promedio_votos, parecido_a_otro_con_distinto_humor) in cursor:
         tweet = Tweet()
         tweet.id = tweet_id
         tweet.texto_original = texto
@@ -105,6 +106,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
         tweet.cuenta = cuenta
         tweet.seguidores = seguidores
         tweet.evaluacion = evaluacion
+        tweet.parecido_a_otro_con_distinto_humor = parecido_a_otro_con_distinto_humor
         if votos:
             tweet.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
         if votos_humor:
