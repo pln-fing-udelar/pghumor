@@ -112,7 +112,7 @@ if __name__ == "__main__":
             corpus = [tweet for tweet in corpus if tweet not in parecidos_con_distinto_humor]
 
         if args.mismas_features_distinto_humor:
-            mismas_features_distinto_humor(corpus)
+            mismas_features_distinto_humor = mismas_features_distinto_humor(corpus)
 
         if args.evaluar:
             entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]

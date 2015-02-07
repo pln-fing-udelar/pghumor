@@ -117,12 +117,15 @@ def mismas_features_distinto_humor(corpus):
     humoristicos = [tweet for tweet in corpus if tweet.es_humor]
     no_humoristicos = [tweet for tweet in corpus if not tweet.es_humor]
 
-    bar = IncrementalBar("Buscando en tweets", max=len(humoristicos) * len(no_humoristicos),
+    res = []
+
+    bar = IncrementalBar("Buscando en tweets\t\t", max=len(humoristicos) * len(no_humoristicos),
                          suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
     for tweet1 in humoristicos:
         for tweet2 in no_humoristicos:
             if tweet1.features == tweet2.features:
+                res.append((tweet1, tweet2))
                 if tweet1.texto_original == tweet2.texto_original:
                     print("-----MISMO TEXTO ORIGINAL------")
                 if tweet1.texto == tweet2.texto:
@@ -141,3 +144,5 @@ def mismas_features_distinto_humor(corpus):
                 print('')
             bar.next()
     bar.finish()
+
+    return res
