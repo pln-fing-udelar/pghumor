@@ -63,50 +63,50 @@ def f_score_feature_selection(features, clases, nombres_features_ordenadas):
 def tweets_parecidos_con_distinto_humor(corpus):
     print("Buscando tweets muy parecidos pero con distinto valor de humor...")
 
-    subcorpus_humor = [tweet for tweet in corpus if tweet.es_chiste]
+    parecidos_con_distinto_humor = {tweet for tweet in corpus if tweet.parecido_a_otro_con_distinto_humor}
 
-    subcorpus_humor_por_largo = defaultdict(list)
+    if not parecidos_con_distinto_humor:
+        subcorpus_humor = [tweet for tweet in corpus if tweet.es_chiste]
 
-    bar = IncrementalBar("Tokenizando\t\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
-    bar.next(0)
-    for tweet in subcorpus_humor:
-        tweet.oraciones = Freeling.procesar_texto(tweet.texto_original)
-        tweet.tokens = list(itertools.chain(*tweet.oraciones))
+        subcorpus_humor_por_largo = defaultdict(list)
 
-        subcorpus_humor_por_largo[len(tweet.tokens)].append(tweet)
+        bar = IncrementalBar("Tokenizando\t\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
+        bar.next(0)
+        for tweet in subcorpus_humor:
+            tweet.oraciones = Freeling.procesar_texto(tweet.texto_original)
+            tweet.tokens = list(itertools.chain(*tweet.oraciones))
 
-        bar.next()
+            subcorpus_humor_por_largo[len(tweet.tokens)].append(tweet)
 
-    bar.finish()
+            bar.next()
 
-    parecidos_con_distinto_humor = set()
+        bar.finish()
 
-    bar = IncrementalBar("Buscando en tweets\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
-    bar.next(0)
-    i = 1
-    for tweet1 in subcorpus_humor:
-        margen = int(round(len(tweet1.tokens) / 5))
-        largo_min = len(tweet1.tokens) - margen
-        largo_max = len(tweet1.tokens) + margen
+        bar = IncrementalBar("Buscando en tweets\t\t", max=len(subcorpus_humor), suffix=SUFIJO_PROGRESS_BAR)
+        bar.next(0)
+        for tweet1 in subcorpus_humor:
+            margen = int(round(len(tweet1.tokens) / 5))
+            largo_min = len(tweet1.tokens) - margen
+            largo_max = len(tweet1.tokens) + margen
 
-        for largo in range(largo_min, largo_max + 1):
-            for tweet2 in subcorpus_humor_por_largo[largo]:
-                if tweet1.id < tweet2.id:
-                    if tweet1.es_humor != tweet2.es_humor \
-                            and distancia_edicion(tweet1.tokens, tweet2.tokens) \
-                                    <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
-                        parecidos_con_distinto_humor.add(tweet1)
-                        parecidos_con_distinto_humor.add(tweet2)
-                        print('')
-                        print(tweet1.id)
-                        print(tweet1.texto_original)
-                        print("------------")
-                        print(tweet2.id)
-                        print(tweet2.texto_original)
-                        print("------------")
-                        print('')
-        bar.next()
-    bar.finish()
+            for largo in range(largo_min, largo_max + 1):
+                for tweet2 in subcorpus_humor_por_largo[largo]:
+                    if tweet1.id < tweet2.id:
+                        if tweet1.es_humor != tweet2.es_humor \
+                                and distancia_edicion(tweet1.tokens, tweet2.tokens) \
+                                <= max(len(tweet1.tokens), len(tweet2.tokens)) / 5:
+                            parecidos_con_distinto_humor.add(tweet1)
+                            parecidos_con_distinto_humor.add(tweet2)
+                            print('')
+                            print(tweet1.id)
+                            print(tweet1.texto_original)
+                            print("------------")
+                            print(tweet2.id)
+                            print(tweet2.texto_original)
+                            print("------------")
+                            print('')
+            bar.next()
+        bar.finish()
 
     return parecidos_con_distinto_humor
 
@@ -117,12 +117,15 @@ def mismas_features_distinto_humor(corpus):
     humoristicos = [tweet for tweet in corpus if tweet.es_humor]
     no_humoristicos = [tweet for tweet in corpus if not tweet.es_humor]
 
-    bar = IncrementalBar("Buscando en tweets", max=len(humoristicos) * len(no_humoristicos),
+    res = []
+
+    bar = IncrementalBar("Buscando en tweets\t\t", max=len(humoristicos) * len(no_humoristicos),
                          suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
     for tweet1 in humoristicos:
         for tweet2 in no_humoristicos:
             if tweet1.features == tweet2.features:
+                res.append((tweet1, tweet2))
                 if tweet1.texto_original == tweet2.texto_original:
                     print("-----MISMO TEXTO ORIGINAL------")
                 if tweet1.texto == tweet2.texto:
@@ -141,3 +144,5 @@ def mismas_features_distinto_humor(corpus):
                 print('')
             bar.next()
     bar.finish()
+
+    return res
