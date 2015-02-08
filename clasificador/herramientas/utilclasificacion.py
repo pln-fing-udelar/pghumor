@@ -139,13 +139,18 @@ def calcular_medidas(tn, fp, fn, tp):
     return metricas
 
 
-def reportar_metricas_ponderadas(falsos_negativos, verdaderos_positivos):
+def reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos):
     tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos)
     fn = sum(tweet.promedio_de_humor for tweet in falsos_negativos)
 
+    prom_tn = sum(tweet.promedio_de_humor for tweet in verdaderos_negativos) / len(verdaderos_negativos)
+    prom_fp = sum(tweet.promedio_de_humor for tweet in falsos_positivos) / len(falsos_positivos)
+    prom_tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos) / len(verdaderos_positivos)
+    prom_fn = sum(tweet.promedio_de_humor for tweet in falsos_negativos) / len(falsos_negativos)
+
     recall_positivo = tp / (tp + fn)
 
-    return recall_positivo
+    return recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn
 
 
 def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas):
@@ -161,8 +166,17 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
     if medidas_ponderadas:
         print("")
         print("Reportando medidas ponderadas")
-        recall_positivo = reportar_metricas_ponderadas(falsos_negativos, verdaderos_positivos)
+        recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn = reportar_metricas_ponderadas(verdaderos_negativos,
+                                                                                           falsos_positivos,
+                                                                                           falsos_negativos,
+                                                                                           verdaderos_positivos)
         print("Recall positivo: " + str(recall_positivo))
+        print("Matriz de confusión - de promedio de humor:")
+        print("\t\t(clasificados como)")
+        print("\t\tP\t   N")
+        print("(son)\tP\t{tp:0.4f}      {fn:0.4f}".format(tp=prom_tp, fn=prom_fn))
+        print("(son)\tN\t{fp:0.4f}      {tn:0.4f}".format(fp=prom_fp, tn=prom_tn))
+        print('')
         print("")
 
     # Reporte de estadísticas
