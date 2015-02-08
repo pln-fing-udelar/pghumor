@@ -8,7 +8,7 @@ import numpy as np
 from progress.bar import IncrementalBar
 from sklearn import cross_validation, metrics
 
-from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR, MAX_PROMEDIO_DE_HUMOR_TWEET_NO_HUMORISTICO
+from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
 
 
 def train_test_split_pro(corpus, **options):
@@ -139,16 +139,13 @@ def calcular_medidas(tn, fp, fn, tp):
     return metricas
 
 
-def reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos):
+def reportar_metricas_ponderadas(falsos_negativos, verdaderos_positivos):
     tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos)
-    fp = sum(tweet.promedio_de_humor for tweet in falsos_positivos)
     fn = sum(tweet.promedio_de_humor for tweet in falsos_negativos)
-    tn = sum(tweet.promedio_de_humor for tweet in verdaderos_negativos)
 
     recall_positivo = tp / (tp + fn)
-    recall_negativo = tn / (tn + fp)
 
-    return recall_positivo, recall_negativo
+    return recall_positivo
 
 
 def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas):
@@ -164,10 +161,8 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
     if medidas_ponderadas:
         print("")
         print("Reportando medidas ponderadas")
-        recall_positivo, recall_negativo = reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos,
-                                                                        falsos_negativos, verdaderos_positivos)
+        recall_positivo = reportar_metricas_ponderadas(falsos_negativos, verdaderos_positivos)
         print("Recall positivo: " + str(recall_positivo))
-        print("Recall negativo: " + str(recall_negativo))
         print("")
 
     # Reporte de estadísticas
