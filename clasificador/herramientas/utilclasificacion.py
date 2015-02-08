@@ -164,20 +164,22 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
                             not clases_predecidas[_i] and not clases_evaluacion[_i]]
 
     if medidas_ponderadas:
-        print("")
+        print('')
         print("Reportando medidas ponderadas")
         recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn = reportar_metricas_ponderadas(verdaderos_negativos,
                                                                                            falsos_positivos,
                                                                                            falsos_negativos,
                                                                                            verdaderos_positivos)
         print("Recall positivo: " + str(recall_positivo))
-        print("Matriz de confusión - de promedio de humor:")
+        print('')
+        print("Matriz de confusión de promedio de humor:")
+        print('')
         print("\t\t\t(clasificados como)")
         print("\t\t\tHumor\t\tNo humor")
         print("(son)\tHumor\t\t{tp:0.4f}\t\t{fn:0.4f}".format(tp=prom_tp, fn=prom_fn))
         print("(son)\tNo humor\t{fp:0.4f}\t\t{tn:0.4f}".format(fp=prom_fp, tn=prom_tn))
         print('')
-        print("")
+        print('')
 
     # Reporte de estadísticas
     print("Acierto: " + str(metrics.accuracy_score(clases_evaluacion, clases_predecidas)))
