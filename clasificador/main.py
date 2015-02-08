@@ -113,7 +113,10 @@ if __name__ == "__main__":
         corpus = filtrar_segun_votacion(corpus)
 
         if args.tweets_parecidos_distinto_humor:
-            parecidos_con_distinto_humor = tweets_parecidos_con_distinto_humor(corpus)
+            pares_parecidos_con_distinto_humor = tweets_parecidos_con_distinto_humor(corpus)
+            parecidos_con_distinto_humor = {tweet
+                                            for par_parecido in pares_parecidos_con_distinto_humor
+                                            for tweet in par_parecido}
             corpus = [tweet for tweet in corpus if tweet not in parecidos_con_distinto_humor]
 
         if args.mismas_features_distinto_humor:
