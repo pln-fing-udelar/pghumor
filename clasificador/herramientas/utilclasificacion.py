@@ -1,6 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
-
+from collections import defaultdict
 import random
 import math
 
@@ -45,19 +45,18 @@ def get_clases(tweets):
 
 
 def imprimir_matriz_metricas(pn, rn, fn, pp, rp, fp):
-    # Matriz de métricas
     print("               precision      recall    f1-score\n")
-    print("          N       {pn:0.4f}      {rn:0.4f}      {fn:0.4f}".format(pn=pn,
+    print("     No humor     {pn:0.4f}      {rn:0.4f}      {fn:0.4f}".format(pn=pn,
                                                                              rn=rn,
                                                                              fn=fn))
-    print("          P       {pp:0.4f}      {rp:0.4f}      {fp:0.4f}\n".format(pp=pp,
+    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}\n".format(pp=pp,
                                                                                rp=rp,
                                                                                fp=fp))
     print("avg / total       {ap:0.4f}      {ar:0.4f}      {af:0.4f}".format(
         ap=(pn + pp) / 2,
         ar=(rp + rn) / 2,
-        af=(fp + fn) / 2),
-    )
+        af=(fp + fn) / 2,
+    ))
 
 
 def cross_validation_y_reportar(clasificador, features, clases, numero_particiones):
@@ -65,78 +64,59 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
     features = np.array(features)
     clases = np.array(clases)
     matrices = []
-    precision_positivo_cross_validation = []
-    precision_negativo_cross_validation = []
-    recall_positivo_cross_validation = []
-    recall_negativo_cross_validation = []
-    f1score_positivo_cross_validation = []
-    f1score_negativo_cross_validation = []
-    accuracy_cross_validation = []
-    diccionario_array_medidas = {
-        'Recall positivo': recall_positivo_cross_validation,
-        'Recall negativo': recall_negativo_cross_validation,
-        'Precision positivo': precision_positivo_cross_validation,
-        'Precision negativo': precision_negativo_cross_validation,
-        'F1-score positivo': f1score_positivo_cross_validation,
-        'F1-score negativo': f1score_negativo_cross_validation,
-        'Acierto': accuracy_cross_validation,
-    }
-    bar = IncrementalBar("Realizando cross-validation", max=numero_particiones, suffix=SUFIJO_PROGRESS_BAR)
-    bar.next(0)
-    for train, test in skf:
-        clasificador.fit(features[train], clases[train])
-        y_pred = clasificador.predict(features[test])
-        cm = metrics.confusion_matrix(clases[test], y_pred).flatten()
-        matrices.append(cm)
-        metricas = calcular_medidas(*cm)
-        recall_positivo_cross_validation.append(metricas['recall_positivo'])
-        recall_negativo_cross_validation.append(metricas['recall_negativo'])
-        precision_positivo_cross_validation.append(metricas['precision_positivo'])
-        precision_negativo_cross_validation.append(metricas['precision_negativo'])
-        f1score_positivo_cross_validation.append(metricas['f1score_positivo'])
-        f1score_negativo_cross_validation.append(metricas['f1score_negativo'])
-        accuracy_cross_validation.append(metricas['accuracy'])
-        bar.next()
+    medidas = defaultdict(list)
 
+    bar = IncrementalBar("Realizando cross-validation\t", max=numero_particiones, suffix=SUFIJO_PROGRESS_BAR)
+    bar.next(0)
+    for entrenamiento, evaluacion in skf:
+        clasificador.fit(features[entrenamiento], clases[entrenamiento])
+        clases_predecidas = clasificador.predict(features[evaluacion])
+        matriz_de_confusion = metrics.confusion_matrix(clases[evaluacion], clases_predecidas).flatten()
+        matrices.append(matriz_de_confusion)
+        for medida, valor_medida in calcular_medidas(*matriz_de_confusion).items():
+            medidas[medida].append(valor_medida)
+        bar.next()
     bar.finish()
 
+    promedios = {}
+
+    print('')
     print("Resultados de cross-validation:")
     print('')
-    mean = {}
-    for key, puntajes in diccionario_array_medidas.iteritems():
-        print(key + ":\t" + str(puntajes))
-        promedio = np.mean(puntajes)
-        mean[key] = promedio
-        delta = np.std(puntajes) * 1.96 / math.sqrt(numero_particiones)
-        print("Intervalo de confianza 95%:\t{promedio:0.4f} (± {delta:0.4f}) --- [{inf:0.4f}, {sup:0.4f}]".format(
+    for medida, valor_medida in medidas.items():
+        print("\t{medida: >18s}:\t{valor_medida}".format(medida=medida, valor_medida=valor_medida))
+        promedio = np.mean(valor_medida)
+        promedios[medida] = promedio
+        delta = np.std(valor_medida) * 1.96 / math.sqrt(numero_particiones)
+        print("Intervalo de confianza 95%:\t{promedio:0.4f} ± {delta:0.4f} --- [{inf:0.4f}, {sup:0.4f}]".format(
             promedio=promedio, delta=delta, inf=promedio - delta, sup=promedio + delta))
         print('')
 
-    # Matriz de cross-validation
-    imprimir_matriz_metricas(mean['Precision negativo'], mean['Recall negativo'], mean['F1-score negativo'],
-                             mean['Precision positivo'], mean['Recall positivo'], mean['F1-score positivo'])
+    imprimir_matriz_metricas(
+        promedios['Precision No humor'],
+        promedios['Recall No humor'],
+        promedios['F1-score No humor'],
+        promedios['Precision Humor'],
+        promedios['Recall Humor'],
+        promedios['F1-score Humor'],
+    )
 
+    print('')
     print('')
     print('')
 
 
 def calcular_medidas(tn, fp, fn, tp):
     """Dada la matriz de confusión desglozada, calcula todas las medidas."""
-    metricas = {
-        'precision_positivo': tp / (fp + tp),
-        'precision_negativo': tn / (fn + tn),
-        'recall_negativo': tn / (tn + fp),
-        'recall_positivo': tp / (tp + fn),
-        'accuracy': (tp + tn) / (tp + fp + tn + fn),
+    return {
+        'Precision No humor': tn / (tn + fn),
+        'Recall No humor': tn / (tn + fp),
+        'F1-score No humor': tn / (tn + (fp + fn) / 2),
+        'Precision Humor': tp / (tp + fp),
+        'Recall Humor': tp / (tp + fn),
+        'F1-score Humor': tp / (tp + (fp + fn) / 2),
+        'Acierto': (tp + tn) / (tp + fp + tn + fn),
     }
-
-    metricas['f1score_positivo'] = 2 * metricas['precision_positivo'] * metricas['recall_positivo'] / (
-        metricas['precision_positivo'] + metricas['recall_positivo'])
-
-    metricas['f1score_negativo'] = 2 * metricas['precision_negativo'] * metricas['recall_negativo'] / (
-        metricas['precision_negativo'] + metricas['recall_negativo'])
-
-    return metricas
 
 
 def reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos):
@@ -170,7 +150,7 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
                                                                                            falsos_positivos,
                                                                                            falsos_negativos,
                                                                                            verdaderos_positivos)
-        print("Recall positivo: " + str(recall_positivo))
+        print("Recall positivo: " + unicode(recall_positivo))
         print('')
         print("Matriz de confusión de promedio de humor:")
         print('')
@@ -182,7 +162,7 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
         print('')
 
     # Reporte de estadísticas
-    print("Acierto: " + str(metrics.accuracy_score(clases_evaluacion, clases_predecidas)))
+    print("Acierto: {acierto:0.4f}".format(acierto=metrics.accuracy_score(clases_evaluacion, clases_predecidas)))
     print('')
     tn = len(verdaderos_negativos)
     fp = len(falsos_positivos)
@@ -190,20 +170,17 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
     tp = len(verdaderos_positivos)
 
     # Matriz de cross-validation
-    mean = calcular_medidas(tn, fp, fn, tp)
+    promedios = calcular_medidas(tn, fp, fn, tp)
     print("               precision      recall    f1-score    support\n")
-    print("     No humor     {pn:0.4f}      {rn:0.4f}      {fn:0.4f}      {sn}".format(pn=mean['precision_negativo'],
-                                                                                       rn=mean['recall_negativo'],
-                                                                                       fn=mean['f1score_negativo'],
-                                                                                       sn=tn + fp))
-    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}      {sp}\n".format(pp=mean['precision_positivo'],
-                                                                                         rp=mean['recall_positivo'],
-                                                                                         fp=mean['f1score_positivo'],
-                                                                                         sp=tp + fn))
+    print("     No humor     {pn:0.4f}      {rn:0.4f}      {fn:0.4f}      {sn}".format(
+        pn=promedios['Precision No humor'], rn=promedios['Recall No humor'], fn=promedios['F1-score No humor'],
+        sn=tn + fp))
+    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}      {sp}\n".format(
+        pp=promedios['Precision Humor'], rp=promedios['Recall Humor'], fp=promedios['F1-score Humor'], sp=tp + fn))
     print("avg / total       {ap:0.4f}      {ar:0.4f}      {af:0.4f}      {su}".format(
-        ap=(mean['precision_positivo'] + mean['precision_negativo']) / 2,
-        ar=(mean['recall_positivo'] + mean['recall_negativo']) / 2,
-        af=(mean['f1score_positivo'] + mean['f1score_negativo']) / 2,
+        ap=(promedios['Precision Humor'] + promedios['Precision No humor']) / 2,
+        ar=(promedios['Recall Humor'] + promedios['Recall No humor']) / 2,
+        af=(promedios['F1-score Humor'] + promedios['F1-score No humor']) / 2,
         su=tp + fp + tn + fn
     ))
 
