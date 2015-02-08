@@ -108,7 +108,7 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
         promedio = np.mean(puntajes)
         mean[key] = promedio
         delta = np.std(puntajes) * 1.96 / math.sqrt(numero_particiones)
-        print("Intervalo de confianza 95%:\t{promedio:0.4f} (+/- {delta:0.4f}) --- [{inf:0.4f}, {sup:0.4f}]".format(
+        print("Intervalo de confianza 95%:\t{promedio:0.4f} (± {delta:0.4f}) --- [{inf:0.4f}, {sup:0.4f}]".format(
             promedio=promedio, delta=delta, inf=promedio - delta, sup=promedio + delta))
         print('')
 
@@ -162,7 +162,7 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
                         not clases_predecidas[_i] and clases_evaluacion[_i]]
     verdaderos_negativos = [evaluacion[_i] for _i in range(len(evaluacion)) if
                             not clases_predecidas[_i] and not clases_evaluacion[_i]]
-    # Reporte de métricas ponderadas
+
     if medidas_ponderadas:
         print("")
         print("Reportando medidas ponderadas")
@@ -172,10 +172,10 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
                                                                                            verdaderos_positivos)
         print("Recall positivo: " + str(recall_positivo))
         print("Matriz de confusión - de promedio de humor:")
-        print("\t\t(clasificados como)")
-        print("\t\tP\t   N")
-        print("(son)\tP\t{tp:0.4f}      {fn:0.4f}".format(tp=prom_tp, fn=prom_fn))
-        print("(son)\tN\t{fp:0.4f}      {tn:0.4f}".format(fp=prom_fp, tn=prom_tn))
+        print("\t\t\t(clasificados como)")
+        print("\t\t\tHumor\t\tNo humor")
+        print("(son)\tHumor\t\t{tp:0.4f}\t\t{fn:0.4f}".format(tp=prom_tp, fn=prom_fn))
+        print("(son)\tNo humor\t{fp:0.4f}\t\t{tn:0.4f}".format(fp=prom_fp, tn=prom_tn))
         print('')
         print("")
 
@@ -190,11 +190,11 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
     # Matriz de cross-validation
     mean = calcular_medidas(tn, fp, fn, tp)
     print("               precision      recall    f1-score    support\n")
-    print("          N       {pn:0.4f}      {rn:0.4f}      {fn:0.4f}      {sn}".format(pn=mean['precision_negativo'],
+    print("     No humor     {pn:0.4f}      {rn:0.4f}      {fn:0.4f}      {sn}".format(pn=mean['precision_negativo'],
                                                                                        rn=mean['recall_negativo'],
                                                                                        fn=mean['f1score_negativo'],
                                                                                        sn=tn + fp))
-    print("          P       {pp:0.4f}      {rp:0.4f}      {fp:0.4f}      {sp}\n".format(pp=mean['precision_positivo'],
+    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}      {sp}\n".format(pp=mean['precision_positivo'],
                                                                                          rp=mean['recall_positivo'],
                                                                                          fp=mean['f1score_positivo'],
                                                                                          sp=tp + fn))
@@ -202,8 +202,11 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
         ap=(mean['precision_positivo'] + mean['precision_negativo']) / 2,
         ar=(mean['recall_positivo'] + mean['recall_negativo']) / 2,
         af=(mean['f1score_positivo'] + mean['f1score_negativo']) / 2,
-        su=tp + fp + tn + fn)
-    )
+        su=tp + fp + tn + fn
+    ))
+
+    print('')
+
     matriz_de_confusion = metrics.confusion_matrix(clases_evaluacion, clases_predecidas, labels=[True, False])
     # Con 'labels' pido el orden para la matriz.
 
@@ -214,10 +217,10 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
 
     print("Matriz de confusión:")
     print('')
-    print("\t\t(clasificados como)")
-    print("\t\tP\tN")
-    print("(son)\tP\t" + str(len(verdaderos_positivos)) + '\t' + str(len(falsos_negativos)))
-    print("(son)\tN\t" + str(len(falsos_positivos)) + '\t' + str(len(verdaderos_negativos)))
+    print("\t\t\t(clasificados como)")
+    print("\t\t\tHumor\tNo humor")
+    print("(son)\tHumor\t\t{vp: >d}\t{fn: >d}".format(vp=len(verdaderos_positivos), fn=len(falsos_negativos)))
+    print("(son)\tNo humor\t{fp: >d}\t{vn: >d}".format(fp=len(falsos_positivos), vn=len(verdaderos_negativos)))
     print('')
 
     return verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos
