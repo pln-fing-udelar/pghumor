@@ -75,6 +75,8 @@ if __name__ == "__main__":
                         help="habilita el uso de Recursive Feature Elimination antes de clasificar")
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
                         help="levanta el servidor para responder a clasificaciones")
+    parser.add_argument('-S', '--solo-subcorpus-humor', action='store_true', default=False,
+                        help="Entrena y evalua solo en el corpus de humor")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
@@ -88,6 +90,9 @@ if __name__ == "__main__":
             print(feature.descripcion)
     else:
         corpus = cargar_tweets(args.limite, args.incluir_chistes_sexuales)
+
+        if args.solo_subcorpus_humor:
+            corpus = [tweet for tweet in corpus if tweet.es_chiste]
 
         for tweet in corpus:
             tweet.preprocesar()
@@ -221,7 +226,7 @@ if __name__ == "__main__":
         print("Evaluando clasificador con conjunto de entrenamiento...")
         clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
         matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento,
-                                       args.medidas_ponderadas)
+                                       args.medidas_ponderadas and args.solo_subcorpus_humor)
         print('')
 
         print("Evaluando clasificador...")
