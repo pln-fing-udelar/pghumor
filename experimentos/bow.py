@@ -10,7 +10,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline, FeatureUnion
 
 from experimentos.TweetToText import TweetToText
-from experimentos.TweetsToFeatures import TweetsToFeatures
+from experimentos.tweetstofeatures import TweetsToFeatures
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
