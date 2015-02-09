@@ -240,7 +240,7 @@ if __name__ == "__main__":
         else:
             medidas_ponderadas = ""
 
-        print("Evaluando clasificador con conjunto de entrenamiento...")
+        print("Evaluando clasificador con el conjunto de entrenamiento...")
         clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
         matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento,
                                        medidas_ponderadas=medidas_ponderadas)
