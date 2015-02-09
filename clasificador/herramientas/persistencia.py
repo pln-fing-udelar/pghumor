@@ -16,7 +16,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     if limite:
-        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
+        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + unicode(limite)
 
         cursor.execute(consulta)
 
@@ -168,13 +168,13 @@ def guardar_features(tweets, **opciones):
                 (
                     tweet.id,
                     nombre_feature,
-                    str(tweet.features[nombre_feature]),
-                    str(tweet.features[nombre_feature])
+                    unicode(tweet.features[nombre_feature]),
+                    unicode(tweet.features[nombre_feature])
                 )
             )
         else:
-            for key, value in tweet.features.items():
-                cursor.execute(consulta, (tweet.id, key, str(value), str(value)))
+            for nombre_feature, valor_feature in tweet.features.items():
+                cursor.execute(consulta, (tweet.id, nombre_feature, unicode(valor_feature), unicode(valor_feature)))
         bar.next()
 
     conexion.commit()
