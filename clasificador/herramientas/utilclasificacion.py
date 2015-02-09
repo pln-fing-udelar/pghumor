@@ -46,13 +46,15 @@ def get_clases(tweets):
 
 
 def imprimir_matriz_metricas(pn, rn, fn, pp, rp, fp):
-    print("               precision      recall    f1-score\n")
+    print("               precision      recall    f1-score")
+    print('')
     print("     No humor     {pn:0.4f}      {rn:0.4f}      {fn:0.4f}".format(pn=pn,
                                                                              rn=rn,
                                                                              fn=fn))
-    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}\n".format(pp=pp,
-                                                                               rp=rp,
-                                                                               fp=fp))
+    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}".format(pp=pp,
+                                                                             rp=rp,
+                                                                             fp=fp))
+    print('')
     print("avg / total       {ap:0.4f}      {ar:0.4f}      {af:0.4f}".format(
         ap=(pn + pp) / 2,
         ar=(rp + rn) / 2,
@@ -169,12 +171,14 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
     print('')
 
     # Matriz de cross-validation
-    print("               precision      recall    f1-score    support\n")
+    print("               precision      recall    f1-score    support")
+    print('')
     print("     No humor     {pn:0.4f}      {rn:0.4f}      {fn:0.4f}      {sn}".format(
         pn=promedios['Precision No humor'], rn=promedios['Recall No humor'], fn=promedios['F1-score No humor'],
         sn=tn + fp))
-    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}      {sp}\n".format(
+    print("     Humor        {pp:0.4f}      {rp:0.4f}      {fp:0.4f}      {sp}".format(
         pp=promedios['Precision Humor'], rp=promedios['Recall Humor'], fp=promedios['F1-score Humor'], sp=tp + fn))
+    print('')
     print("avg / total       {ap:0.4f}      {ar:0.4f}      {af:0.4f}      {su}".format(
         ap=(promedios['Precision Humor'] + promedios['Precision No humor']) / 2,
         ar=(promedios['Recall Humor'] + promedios['Recall No humor']) / 2,

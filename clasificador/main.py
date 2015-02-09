@@ -66,7 +66,7 @@ if __name__ == "__main__":
                         help="lista los parametros posibles para un clasificador")
     parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
                         help="en la clasificación pondera los tweets según la concordancia en la votación."
-                             + " Funciona sólo para SVM")
+                             + " Funciona sólo para DT y SVM")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=unicode, metavar="NOMBRE_FEATURE",
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-S', '--solo-subcorpus-humor', action='store_true', default=False,
-                        help="Entrena y evalua solo en el corpus de humor")
+                        help="entrena y evalúa sólo en el corpus de humor")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
@@ -167,7 +167,7 @@ if __name__ == "__main__":
             rfecv = RFECV(estimator=svm.SVC(kernel=str('linear')), cv=5, scoring='accuracy', verbose=3)
             rfecv.fit(features_entrenamiento, clases_entrenamiento)
 
-            print("Número óptimo de featues: %d" % rfecv.n_features_)
+            print("Número óptimo de featues: {n_features}".format(n_features=rfecv.n_features_))
 
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
@@ -200,10 +200,10 @@ if __name__ == "__main__":
 
             grid_search.fit(features, clases)
             print("Mejores parámetros encontrados para " + args.clasificador + ":")
-            for key, value in clasificador_usado.get_params().items():
-                print("\t" + unicode(key) + ": " + unicode(value))
+            for nombre_parametro, valor_parametro in clasificador_usado.get_params().items():
+                print("\t{clave}: {valor}".format(clave=nombre_parametro, valor=valor_parametro))
             print('')
-            print("Acierto: " + unicode(grid_search.best_score_))
+            print("Acierto: {acierto}".format(acierto=grid_search.best_score_))
             grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
             clasificador_usado = grid_search.best_estimator_
             print('')
@@ -211,8 +211,8 @@ if __name__ == "__main__":
         if args.parametros_clasificador:
             print('')
             print("Parametros del clasificador:")
-            for key, value in clasificador_usado.get_params().items():
-                print("\t" + unicode(key) + ": " + unicode(value))
+            for nombre_parametro, valor_parametro in clasificador_usado.get_params().items():
+                print("\t{clave}: {valor}".format(clave=nombre_parametro, valor=valor_parametro))
             print('')
 
         if args.cross_validation and not args.evaluar:
