@@ -46,7 +46,7 @@ class TestCorpus(unittest.TestCase):
             cursor.execute(consulta)
             resultados = cursor.fetchone()[0]
             self.assertEquals(0, resultados,
-                              "No debería haber tweets repetidos, pero se encontraron " + str(resultados))
+                              "No debería haber tweets repetidos, pero se encontraron " + unicode(resultados))
 
 
 if __name__ == '__main__':

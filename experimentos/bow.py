@@ -8,15 +8,15 @@ import sys
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.svm import SVC
-from sklearn import preprocessing
+
 from experimentos.TweetToText import TweetToText
 from experimentos.TweetsToFeatures import TweetsToFeatures
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from clasificador.herramientas.persistencia import cargar_tweets
-from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, get_clases, \
+from clasificador.herramientas.utilclasificacion import get_clases, \
     matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utils import filtrar_segun_votacion, get_stop_words
 
@@ -72,8 +72,8 @@ if __name__ == "__main__":
     clasificador.fit(X_train, y_train)
 
     print("Evaluando clasificador...")
-    y_pred = clasificador.predict(X_test)
     print('')
+    y_pred = clasificador.predict(X_test)
 
     verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
         evaluacion, y_test, y_pred)

@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Clasifica humor de los tweets almacenados en la base de datos.')
     parser.add_argument('-a', '--calcular-features-faltantes', action='store_true', default=False,
                         help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
-    parser.add_argument('-c', '--clasificador', type=str, default="SVM",
+    parser.add_argument('-c', '--clasificador', type=unicode, default="SVM",
                         choices=["DT", "GNB", "kNN", "LinearSVM", "MNB", "SGD", "SVM"],
                         help="establece qué tipo de clasificador será usado, que por defecto es SVM")
     parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
@@ -69,7 +69,7 @@ if __name__ == "__main__":
                              + " Funciona sólo para SVM")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
-    parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
+    parser.add_argument('-f', '--recalcular-feature', type=unicode, metavar="NOMBRE_FEATURE",
                         help="recalcula el valor de una feature")
     parser.add_argument('-d', '--rfe', action='store_true', default=False,
                         help="habilita el uso de Recursive Feature Elimination antes de clasificar")
@@ -220,24 +220,42 @@ if __name__ == "__main__":
 
         print("Entrenando clasificador...")
         if args.ponderar_segun_votos:
-            sample_weights = [1 - entropia(tweet.votos_humor / float(tweet.votos)) if tweet.votos > 0 else 1
-                              for tweet in entrenamiento]
-            clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+            if args.clasificador == "SVM":
+                sample_weights = [1 - entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+                                  for tweet in entrenamiento]
+                clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+            elif args.clasificador == "DT":
+                sample_weights = [1 - 2 * entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+                                  for tweet in entrenamiento]
+                clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+            else:
+                clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
         else:
             clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
+
+        if args.medidas_ponderadas and args.solo_subcorpus_humor:
+            medidas_ponderadas = "humor"
+        elif args.ponderar_segun_votos:
+            medidas_ponderadas = "concordancia"
+        else:
+            medidas_ponderadas = ""
 
         print("Evaluando clasificador con conjunto de entrenamiento...")
         clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
         matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento,
-                                       args.medidas_ponderadas and args.solo_subcorpus_humor)
+                                       medidas_ponderadas=medidas_ponderadas)
+        print('')
         print('')
 
         print("Evaluando clasificador...")
-        clases_predecidas = clasificador_usado.predict(features_evaluacion)
         print('')
+        clases_predecidas = clasificador_usado.predict(features_evaluacion)
+
+        if args.medidas_ponderadas:
+            medidas_ponderadas = "humor"
 
         verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
-            evaluacion, clases_evaluacion, clases_predecidas, args.medidas_ponderadas)
+            evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas=medidas_ponderadas)
 
         if args.servidor:
             app = Flask(__name__)
@@ -255,6 +273,6 @@ if __name__ == "__main__":
                 _features_obj = Features(args.threads)
                 _features_obj.calcular_features([_tweet])
                 _features = [list(_tweet.features.values())]
-                return str(int(clasificador_usado.predict(_features)[0]))
+                return unicode(int(clasificador_usado.predict(_features)[0]))
 
             app.run(debug=True, host='0.0.0.0')

@@ -22,7 +22,7 @@ class TestAntonimos(unittest.TestCase):
 
         tweet.features[antonimos.nombre] = antonimos.calcular_feature(tweet)
         self.assertEquals(0.25, tweet.features[antonimos.nombre],
-                          "El tweet debería tener 0.25 en antonimos, no " + str(tweet.features[antonimos.nombre]))
+                          "El tweet debería tener 0.25 en antonimos, no " + unicode(tweet.features[antonimos.nombre]))
 
 
 if __name__ == '__main__':

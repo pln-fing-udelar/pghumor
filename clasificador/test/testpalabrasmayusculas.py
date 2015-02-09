@@ -29,7 +29,7 @@ class TestPalabrasMayusculas(unittest.TestCase):
         valor_esperado = 10 / 15
 
         self.assertEquals(valor_esperado, tweet.features[palabrasmayusculas.nombre],
-                          "El tweet debería tener " + str(valor_esperado) + " en PalabrasMayusculas, no "
+                          "El tweet debería tener " + unicode(valor_esperado) + " en PalabrasMayusculas, no "
                           + str(tweet.features[palabrasmayusculas.nombre]))
 
 

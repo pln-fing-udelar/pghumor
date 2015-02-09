@@ -9,6 +9,7 @@ from progress.bar import IncrementalBar
 from sklearn import cross_validation, metrics
 
 from clasificador.herramientas.define import SUFIJO_PROGRESS_BAR
+from clasificador.herramientas.utils import entropia
 
 
 def train_test_split_pro(corpus, **options):
@@ -119,40 +120,72 @@ def calcular_medidas(tn, fp, fn, tp):
     }
 
 
-def reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos):
+def metricas_ponderadas_segun_humor(verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos):
     tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos)
     fn = sum(tweet.promedio_de_humor for tweet in falsos_negativos)
 
     prom_tn = sum(tweet.promedio_de_humor for tweet in verdaderos_negativos) / len(verdaderos_negativos)
     prom_fp = sum(tweet.promedio_de_humor for tweet in falsos_positivos) / len(falsos_positivos)
-    prom_tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos) / len(verdaderos_positivos)
-    prom_fn = sum(tweet.promedio_de_humor for tweet in falsos_negativos) / len(falsos_negativos)
+    prom_tp = tp / len(verdaderos_positivos)
+    prom_fn = fn / len(falsos_negativos)
 
     recall_positivo = tp / (tp + fn)
 
     return recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn
 
 
-def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas):
-    verdaderos_positivos = [evaluacion[_i] for _i in range(len(evaluacion)) if
-                            clases_predecidas[_i] and clases_evaluacion[_i]]
-    falsos_positivos = [evaluacion[_i] for _i in range(len(evaluacion)) if
-                        clases_predecidas[_i] and not clases_evaluacion[_i]]
-    falsos_negativos = [evaluacion[_i] for _i in range(len(evaluacion)) if
-                        not clases_predecidas[_i] and clases_evaluacion[_i]]
-    verdaderos_negativos = [evaluacion[_i] for _i in range(len(evaluacion)) if
-                            not clases_predecidas[_i] and not clases_evaluacion[_i]]
+def metricas_ponderadas_segun_concordancia(verdaderos_negativos, falsos_positivos, falsos_negativos,
+                                           verdaderos_positivos):
+    tp = sum(1 - entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+             for tweet in verdaderos_positivos)
+    fn = sum(1 - entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+             for tweet in falsos_negativos)
 
-    if medidas_ponderadas:
+    prom_tn = sum(1 - entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+                  for tweet in verdaderos_negativos) / len(verdaderos_negativos)
+    prom_fp = sum(1 - entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+                  for tweet in falsos_positivos) / len(falsos_positivos)
+    prom_tp = tp / len(verdaderos_positivos)
+    prom_fn = fn / len(falsos_negativos)
+
+    recall_positivo = tp / (tp + fn)
+
+    return recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn
+
+
+def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas=""):
+    verdaderos_positivos = [evaluacion[i] for i in range(len(evaluacion)) if
+                            clases_predecidas[i] and clases_evaluacion[i]]
+    falsos_positivos = [evaluacion[i] for i in range(len(evaluacion)) if
+                        clases_predecidas[i] and not clases_evaluacion[i]]
+    falsos_negativos = [evaluacion[i] for i in range(len(evaluacion)) if
+                        not clases_predecidas[i] and clases_evaluacion[i]]
+    verdaderos_negativos = [evaluacion[i] for i in range(len(evaluacion)) if
+                            not clases_predecidas[i] and not clases_evaluacion[i]]
+
+    if medidas_ponderadas != "":
         print('')
-        print("Reportando medidas ponderadas")
-        recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn = reportar_metricas_ponderadas(verdaderos_negativos,
-                                                                                           falsos_positivos,
-                                                                                           falsos_negativos,
-                                                                                           verdaderos_positivos)
-        print("Recall positivo: " + unicode(recall_positivo))
+        print("Medidas ponderadas según {criterio}:".format(criterio=medidas_ponderadas))
+
+    if medidas_ponderadas == "humor":
+        recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn = metricas_ponderadas_segun_humor(verdaderos_negativos,
+                                                                                              falsos_positivos,
+                                                                                              falsos_negativos,
+                                                                                              verdaderos_positivos)
+    elif medidas_ponderadas == "concordancia":
+        recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn = metricas_ponderadas_segun_concordancia(
+            verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos)
+    else:
+        recall_positivo = 0
+        prom_tn = 0
+        prom_fp = 0
+        prom_tp = 0
+        prom_fn = 0
+
+    if medidas_ponderadas != "":
+        print("Recall positivo: {rp}".format(rp=recall_positivo))
         print('')
-        print("Matriz de confusión de promedio de humor:")
+        print("Matriz de confusión de promedio de {criterio}:".format(criterio=medidas_ponderadas))
         print('')
         print("\t\t\t(clasificados como)")
         print("\t\t\tHumor\t\tNo humor")
@@ -164,10 +197,10 @@ def matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predeci
     # Reporte de estadísticas
     print("Acierto: {acierto:0.4f}".format(acierto=metrics.accuracy_score(clases_evaluacion, clases_predecidas)))
     print('')
-    tn = len(verdaderos_negativos)
-    fp = len(falsos_positivos)
-    fn = len(falsos_negativos)
-    tp = len(verdaderos_positivos)
+    tn = len(verdaderos_negativos)  # tn = prom_tn
+    fp = len(falsos_positivos)  # fp = prom_fp
+    fn = len(falsos_negativos)  # fn = prom_fn
+    tp = len(verdaderos_positivos)  # tp = prom_tp
 
     # Matriz de cross-validation
     promedios = calcular_medidas(tn, fp, fn, tp)
