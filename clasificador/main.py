@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
         if args.grupo_de_calificacion:
             corpus = [tweet for tweet in corpus
-                      if not tweet.promedio_de_humor
+                      if not tweet.promedio_de_humor or not tweet.es_humor
                       or args.grupo_de_calificacion - 0.5 <= tweet.promedio_de_humor < args.grupo_de_calificacion + 0.5]
 
         if args.tweets_parecidos_distinto_humor:
