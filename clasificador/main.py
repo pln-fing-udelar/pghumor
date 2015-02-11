@@ -114,11 +114,6 @@ if __name__ == "__main__":
         if args.solo_subcorpus_humor:
             corpus = [tweet for tweet in corpus if tweet.es_chiste]
 
-        if args.grupo_de_calificacion:
-            corpus = [tweet for tweet in corpus
-                      if not tweet.promedio_de_humor or not tweet.es_humor
-                      or args.grupo_de_calificacion - 0.5 <= tweet.promedio_de_humor < args.grupo_de_calificacion + 0.5]
-
         if args.tweets_parecidos_distinto_humor:
             pares_parecidos_con_distinto_humor = tweets_parecidos_con_distinto_humor(corpus)
             parecidos_con_distinto_humor = {tweet
@@ -135,6 +130,12 @@ if __name__ == "__main__":
         else:
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
+
+        if args.grupo_de_calificacion:
+            evaluacion = [tweet for tweet in evaluacion
+                          if not tweet.promedio_de_humor or not tweet.es_humor
+                          or args.grupo_de_calificacion - 0.5 <= tweet.promedio_de_humor
+                          < args.grupo_de_calificacion + 0.5]
 
         if args.feature_aleatoria:
             for tweet in corpus:
