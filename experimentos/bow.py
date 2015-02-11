@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
-
+import argparse
 import os
 import sys
 
 from sklearn.feature_extraction.text import CountVectorizer
-
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline, FeatureUnion
 
@@ -22,6 +21,12 @@ from experimentos.tweettotext import TweetToText
 from experimentos.tweetstofeatures import TweetsToFeatures
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Clasifica humor de los tweets almacenados en la base de datos, utilizando BOW.')
+    parser.add_argument('-e', '--evaluar', action='store_true', default=False,
+                        help="para evaluar con el corpus de evaluación")
+    args = parser.parse_args()
+
     corpus = cargar_tweets(cargar_features=True)
     print('')
     print('')
@@ -30,7 +35,13 @@ if __name__ == "__main__":
     filtrar_segun_votacion(corpus)
 
     print("Separando en entrenamiento y evaluación...")
-    entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
+
+    if args.evaluar:
+        entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
+        evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
+    else:
+        corpus = [tweet for tweet in corpus if not tweet.evaluacion]
+        entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
     print("Separando tweets en features y clases...")
     X = [tweet for tweet in corpus]
