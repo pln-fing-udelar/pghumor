@@ -41,6 +41,8 @@ if __name__ == "__main__":
                         help="establece qué tipo de clasificador será usado, que por defecto es SVM")
     parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
                         help="para hacer cross-validation")
+    parser.add_argument('-E', '--sin-escalar', action='store_true', default=False,
+                        help="establece si no deben escalarse las características")
     parser.add_argument('-e', '--evaluar', action='store_true', default=False,
                         help="para evaluar con el corpus de evaluación")
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
@@ -165,7 +167,7 @@ if __name__ == "__main__":
             chi2_feature_selection(features, clases, nombres_features_ordenadas)
             f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
-        if args.clasificador != "MNB":
+        if not args.sin_escalar and args.clasificador != "MNB":
             scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
             features = scaler.transform(features)
             features_entrenamiento = scaler.transform(features_entrenamiento)
