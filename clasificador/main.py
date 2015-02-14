@@ -151,6 +151,7 @@ if __name__ == "__main__":
         for tweet in corpus:
             del tweet.features["Palabras no españolas"]
             del tweet.features["Negacion"]
+            # del tweet.features["Antonimos"]  # No la sacamos porque ya hicimos el análisis así.
 
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
@@ -182,7 +183,7 @@ if __name__ == "__main__":
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
 
-            # Esto saca "Palabras no españolas" y "Negación".
+            # Esto saca "Palabras no españolas" y "Negación". La última vez también sacó "Antónimos".
 
         parameters_grid_search = {}
         if args.clasificador == "DT":
