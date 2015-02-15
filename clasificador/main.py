@@ -41,8 +41,8 @@ if __name__ == "__main__":
                         help="establece qué tipo de clasificador será usado, que por defecto es SVM")
     parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
                         help="para hacer cross-validation")
-    parser.add_argument('-E', '--sin-escalar', action='store_true', default=False,
-                        help="establece si no deben escalarse las características")
+    parser.add_argument('-D', '--dudosos', action='store_true', default=False,
+                        help="clasifica los tweets dudosos")
     parser.add_argument('-e', '--evaluar', action='store_true', default=False,
                         help="para evaluar con el corpus de evaluación")
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
@@ -79,6 +79,8 @@ if __name__ == "__main__":
                         help="habilita el uso de Recursive Feature Elimination antes de clasificar")
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
                         help="levanta el servidor para responder a clasificaciones")
+    parser.add_argument('-E', '--sin-escalar', action='store_true', default=False,
+                        help="establece si no deben escalarse las características")
     parser.add_argument('-S', '--solo-subcorpus-humor', action='store_true', default=False,
                         help="entrena y evalúa sólo en el corpus de humor")
     parser.add_argument('-t', '--threads', type=int,
@@ -111,7 +113,9 @@ if __name__ == "__main__":
             features_obj.calcular_features_faltantes(corpus)
             guardar_features(corpus)
 
-        corpus = filtrar_segun_votacion(corpus)
+        no_dudosos = filtrar_segun_votacion(corpus)
+        dudosos = [tweet for tweet in corpus if tweet not in no_dudosos]
+        corpus = list(no_dudosos)
 
         if args.solo_subcorpus_humor:
             corpus = [tweet for tweet in corpus if tweet.es_chiste]
@@ -153,6 +157,12 @@ if __name__ == "__main__":
             del tweet.features["Negacion"]
             # del tweet.features["Antonimos"]  # No la sacamos porque ya hicimos el análisis así.
 
+        if args.dudosos:
+            for tweet in dudosos:
+                del tweet.features["Palabras no españolas"]
+                del tweet.features["Negacion"]
+                # del tweet.features["Antonimos"]
+
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
         clases_evaluacion = get_clases(evaluacion)
@@ -160,6 +170,9 @@ if __name__ == "__main__":
         features = get_features(corpus)
         features_entrenamiento = get_features(entrenamiento)
         features_evaluacion = get_features(evaluacion)
+
+        if args.dudosos:
+            features_dudosos = get_features(dudosos)
 
         # Se tiene que hacer antes del scaler (las features no puden tomar valores negativos)
         if args.importancias_features:
@@ -174,6 +187,9 @@ if __name__ == "__main__":
             features_entrenamiento = scaler.transform(features_entrenamiento)
             features_evaluacion = scaler.transform(features_evaluacion)
 
+            if args.dudosos:
+                features_dudosos = scaler.transform(features_dudosos)
+
         if args.rfe:
             rfecv = RFECV(estimator=svm.SVC(kernel=str('linear')), cv=5, scoring='accuracy', verbose=3)
             rfecv.fit(features_entrenamiento, clases_entrenamiento)
@@ -184,6 +200,13 @@ if __name__ == "__main__":
             imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
 
             # Esto saca "Palabras no españolas" y "Negación". La última vez también sacó "Antónimos".
+
+            import matplotlib.pyplot as plt
+            plt.figure()
+            plt.xlabel("Número de características seleccionadas")
+            plt.ylabel("Acierto")
+            plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
+            plt.show()
 
         parameters_grid_search = {}
         if args.clasificador == "DT":
@@ -267,6 +290,13 @@ if __name__ == "__main__":
 
         verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
             evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas=medidas_ponderadas)
+
+        if args.dudosos:
+            clases_predecidas_dudosos = clasificador_usado.predict(features_dudosos)
+
+            cantidad_de_dudosos_de_humor = sum(clases_predecidas_dudosos)
+            print("Dudosos clasificados como humor: {dudosos_humor:0.4f}".format(
+                dudosos_humor=cantidad_de_dudosos_de_humor/len(clases_predecidas_dudosos)))
 
         if args.servidor:
             app = Flask(__name__)
