@@ -54,6 +54,7 @@ class Tweet:
         self.votos = 0
         self.votos_humor = 0
         self.promedio_de_humor = 0
+        self.categoria = 'H'
         self.parecido_a_otro_con_distinto_humor = False
 
         self.features = {}
