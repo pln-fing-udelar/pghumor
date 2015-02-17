@@ -77,6 +77,9 @@ if __name__ == "__main__":
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-S', '--solo-subcorpus-humor', action='store_true', default=False,
                         help="Entrena y evalua solo en el corpus de humor")
+    parser.add_argument('-N', '--subconjunto-no-humor', type=str, default=None,
+                        choices=["Noticias", "Curiosidades", "Reflexiones"],
+                        help="Selecciona solamente el subconjunto pasado como parametro del corpus no humorístico")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
@@ -111,6 +114,9 @@ if __name__ == "__main__":
             guardar_features(corpus)
 
         corpus = filtrar_segun_votacion(corpus)
+
+        if args.subconjunto_no_humor:
+            corpus = [tweet for tweet in corpus if tweet.es_humor or tweet.categoria == args.subconjunto_no_humor[0]]
 
         if args.tweets_parecidos_distinto_humor:
             parecidos_con_distinto_humor = tweets_parecidos_con_distinto_humor(corpus)
@@ -226,7 +232,7 @@ if __name__ == "__main__":
         print("Evaluando clasificador con conjunto de entrenamiento...")
         clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
         matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento,
-                                       args.medidas_ponderadas and args.solo_subcorpus_humor)
+                                       args.medidas_ponderadas)
         print('')
 
         print("Evaluando clasificador...")

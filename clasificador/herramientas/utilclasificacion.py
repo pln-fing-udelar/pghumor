@@ -140,15 +140,18 @@ def calcular_medidas(tn, fp, fn, tp):
 
 
 def reportar_metricas_ponderadas(verdaderos_negativos, falsos_positivos, falsos_negativos, verdaderos_positivos):
-    tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos)
-    fn = sum(tweet.promedio_de_humor for tweet in falsos_negativos)
+    # Nota if tweet.es_chiste en tp y fn es siempre verdadero. Se prioriza claridad
+    tp_suma_ph = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos if tweet.es_chiste)
+    fn_suma_ph = sum(tweet.promedio_de_humor for tweet in falsos_negativos if tweet.es_chiste)
+    tn_suma_ph = sum(tweet.promedio_de_humor for tweet in verdaderos_negativos if tweet.es_chiste)
+    fp_suma_ph = sum(tweet.promedio_de_humor for tweet in falsos_positivos if tweet.es_chiste)
 
-    prom_tn = sum(tweet.promedio_de_humor for tweet in verdaderos_negativos) / len(verdaderos_negativos)
-    prom_fp = sum(tweet.promedio_de_humor for tweet in falsos_positivos) / len(falsos_positivos)
-    prom_tp = sum(tweet.promedio_de_humor for tweet in verdaderos_positivos) / len(verdaderos_positivos)
-    prom_fn = sum(tweet.promedio_de_humor for tweet in falsos_negativos) / len(falsos_negativos)
+    prom_tn = tn_suma_ph / len([tweet for tweet in verdaderos_negativos if tweet.es_chiste])
+    prom_fp = fp_suma_ph / len([tweet for tweet in falsos_positivos if tweet.es_chiste])
+    prom_tp = tp_suma_ph / len([tweet for tweet in verdaderos_positivos if tweet.es_chiste])
+    prom_fn = fn_suma_ph / len([tweet for tweet in falsos_negativos if tweet.es_chiste])
 
-    recall_positivo = tp / (tp + fn)
+    recall_positivo = tp_suma_ph / (tp_suma_ph + fn_suma_ph)
 
     return recall_positivo, prom_tn, prom_fp, prom_tp, prom_fn
 
