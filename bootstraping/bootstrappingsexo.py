@@ -48,7 +48,7 @@ def bootstrapping():
                     except Exception:
                         time.sleep(60)
                         reintentos += 1
-                        print("Ocurrió un error haciendo el intento número " + str(reintentos) + ".")
+                        print("Ocurrió un error haciendo el intento número {n_reintentos}.".format(n_reintentos=reintentos))
 
                 for tweet in tweets:
                     for oracion in tokenizar(tweet.text):

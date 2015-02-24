@@ -1,28 +1,32 @@
 #!/usr/bin/env python
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
-
+import argparse
 import os
 import sys
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.svm import SVC
-from sklearn import preprocessing
-from experimentos.TweetToText import TweetToText
-from experimentos.TweetsToFeatures import TweetsToFeatures
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from clasificador.herramientas.persistencia import cargar_tweets
-from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, get_clases, \
+from clasificador.herramientas.utilclasificacion import get_clases, \
     matriz_de_confusion_y_reportar, train_test_split_pro
 from clasificador.herramientas.utils import filtrar_segun_votacion, get_stop_words
 
-c = CountVectorizer()
+from experimentos.tweettotext import TweetToText
+from experimentos.tweetstofeatures import TweetsToFeatures
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Clasifica humor de los tweets almacenados en la base de datos, utilizando BOW.')
+    parser.add_argument('-e', '--evaluar', action='store_true', default=False,
+                        help="para evaluar con el corpus de evaluación")
+    args = parser.parse_args()
+
     corpus = cargar_tweets(cargar_features=True)
     print('')
     print('')
@@ -31,7 +35,13 @@ if __name__ == "__main__":
     filtrar_segun_votacion(corpus)
 
     print("Separando en entrenamiento y evaluación...")
-    entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
+
+    if args.evaluar:
+        entrenamiento = [tweet for tweet in corpus if not tweet.evaluacion]
+        evaluacion = [tweet for tweet in corpus if tweet.evaluacion]
+    else:
+        corpus = [tweet for tweet in corpus if not tweet.evaluacion]
+        entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
     print("Separando tweets en features y clases...")
     X = [tweet for tweet in corpus]
@@ -50,17 +60,16 @@ if __name__ == "__main__":
                 strip_accents='ascii',
                 stop_words=get_stop_words(),
                 token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
-            ))])
-        ),
-        ('features_tweets', TweetsToFeatures())
-
+            ))
+        ])),
+        ('features_tweets', TweetsToFeatures()),
     ])
 
     clasificador = Pipeline([
         ('features', feature_union),
         # ('scaler', preprocessing.StandardScaler()),
         # ('features_tweets', TweetsToFeatures()),
-        ('clf', MultinomialNB(alpha=0.01)),  # alpha=0.01
+        ('clf', MultinomialNB(alpha=0.01)),
     ])
 
     print('')
@@ -72,8 +81,8 @@ if __name__ == "__main__":
     clasificador.fit(X_train, y_train)
 
     print("Evaluando clasificador...")
-    y_pred = clasificador.predict(X_test)
     print('')
+    y_pred = clasificador.predict(X_test)
 
     verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
         evaluacion, y_test, y_pred)

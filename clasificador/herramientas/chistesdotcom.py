@@ -52,7 +52,7 @@ def obtener_chistes_categoria(categoria):
     WHERE id_clasificacion =
     """
 
-    consulta += str(categoria)
+    consulta += unicode(categoria)
 
     cursor.execute(consulta)
 

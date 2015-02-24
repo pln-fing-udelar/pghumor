@@ -8,12 +8,14 @@ from clasificador.herramientas.freeling import Freeling
 
 
 def esta_en_persona(tag, numero_persona):
-    # determinante en 'numeroPersona' persona
-    # OR verbo en primera persona
-    # OR pronombre en primera persona
-    return (tag[0] == 'D' and tag[2] == str(numero_persona)) or\
-           (tag[0] == 'V' and tag[4] == str(numero_persona)) or\
-           (tag[0] == 'P' and tag[2] == str(numero_persona))
+    """
+    :param tag: tag.
+    :param numero_persona: 1 para primera persona, 2 para segunda persona o 3 para tercera persona.
+    :return: devuelve si es un determinante, verbo o pronombre en numero_persona.
+    """
+    return (tag[0] == 'D' and tag[2] == unicode(numero_persona)) or \
+           (tag[0] == 'V' and tag[4] == unicode(numero_persona)) or \
+           (tag[0] == 'P' and tag[2] == unicode(numero_persona))
 
 
 class NPersona(Feature):
