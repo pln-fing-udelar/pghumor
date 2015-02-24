@@ -18,18 +18,18 @@ def eliminar_underscores(texto):
 
 
 def filtrar_segun_votacion(corpus):
-    res = []
+    res = set()
     for tweet in corpus:
         if tweet.es_humor:
             if tweet.votos > 0:
                 porcentaje_humor = tweet.votos_humor / float(tweet.votos)
                 if porcentaje_humor >= 0.60:
-                    res.append(tweet)
+                    res.add(tweet)
                 elif porcentaje_humor <= 0.30:
                     tweet.es_humor = False
-                    res.append(tweet)
+                    res.add(tweet)
         else:
-            res.append(tweet)
+            res.add(tweet)
     return res
 
 

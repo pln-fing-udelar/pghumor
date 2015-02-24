@@ -16,7 +16,7 @@ class TestGoogle(unittest.TestCase):
         self.assertTrue(Google.esta_en_google_consulta(texto), "Debería estar en google el texto \"" + texto + "\"")
 
     def test_esta_en_google_consulta_error_de_tipeo(self):
-        texto = "holaa"
+        texto = "trvaesuras"  # "holaa" comenzó a estar en google
         self.assertFalse(Google.esta_en_google_consulta(texto), "No debería estar en google el texto \"" + texto + "\"")
 
     def test_esta_en_google_consulta_palabra_inexistente(self):

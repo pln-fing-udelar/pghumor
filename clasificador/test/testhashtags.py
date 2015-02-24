@@ -22,7 +22,7 @@ class TestHashtags(unittest.TestCase):
 
         tweet.features[hashtags.nombre] = hashtags.calcular_feature(tweet)
         self.assertEquals(5, tweet.features[hashtags.nombre],
-                          "El tweet debería tener 5 hashtags, no " + str(tweet.features[hashtags.nombre]))
+                          "El tweet debería tener 5 hashtags, no " + unicode(tweet.features[hashtags.nombre]))
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
+from contextlib import closing
 
 import mysql.connector
 from progress.bar import IncrementalBar
@@ -15,7 +16,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     if limite:
-        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
+        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + unicode(limite)
 
         cursor.execute(consulta)
 
@@ -71,7 +72,6 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
            votos,
            votos_humor,
            promedio_votos,
-           parecido_a_otro_con_distinto_humor,
            categoria_tweet
     FROM   tweets AS T
            NATURAL JOIN twitter_accounts
@@ -94,7 +94,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     resultado = {}
 
     for (id_account, tweet_id, texto, favoritos, retweets, es_humor, censurado, cuenta, seguidores, evaluacion, votos,
-         votos_humor, promedio_votos, parecido_a_otro_con_distinto_humor, categoria) in cursor:
+         votos_humor, promedio_votos, categoria) in cursor:
         tweet = Tweet()
         tweet.id = tweet_id
         tweet.texto_original = texto
@@ -107,7 +107,6 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
         tweet.cuenta = cuenta
         tweet.seguidores = seguidores
         tweet.evaluacion = evaluacion
-        tweet.parecido_a_otro_con_distinto_humor = parecido_a_otro_con_distinto_humor
         tweet.categoria = categoria
         if votos:
             tweet.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
@@ -171,13 +170,13 @@ def guardar_features(tweets, **opciones):
                 (
                     tweet.id,
                     nombre_feature,
-                    str(tweet.features[nombre_feature]),
-                    str(tweet.features[nombre_feature])
+                    unicode(tweet.features[nombre_feature]),
+                    unicode(tweet.features[nombre_feature])
                 )
             )
         else:
-            for key, value in tweet.features.items():
-                cursor.execute(consulta, (tweet.id, key, str(value), str(value)))
+            for nombre_feature, valor_feature in tweet.features.items():
+                cursor.execute(consulta, (tweet.id, nombre_feature, unicode(valor_feature), unicode(valor_feature)))
         bar.next()
 
     conexion.commit()
@@ -185,3 +184,47 @@ def guardar_features(tweets, **opciones):
 
     cursor.close()
     conexion.close()
+
+
+def cargar_parecidos_con_distinto_humor():
+    with closing(mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)) as conexion:
+        # buffered=True así sé la cantidad que son antes de iterarlos.
+        with closing(conexion.cursor(buffered=True)) as cursor:
+            consulta = """
+            SELECT id_tweet_humor,
+                   id_tweet_no_humor
+            FROM   tweets_parecidos_distinto_humor
+            """
+
+            cursor.execute(consulta)
+
+            pares_ids_parecidos_con_distinto_humor = []
+
+            bar = IncrementalBar("Cargando tweets parecidos\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+
+            for par_ids in cursor:
+                pares_ids_parecidos_con_distinto_humor.append(par_ids)
+                bar.next()
+
+            bar.finish()
+
+            return pares_ids_parecidos_con_distinto_humor
+
+
+def guardar_parecidos_con_distinto_humor(pares_parecidos_distinto_humor):
+    with closing(mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)) as conexion:
+        with closing(conexion.cursor()) as cursor:
+            consulta = "INSERT INTO tweets_parecidos_distinto_humor VALUES (%s, %s)" \
+                       + " ON DUPLICATE KEY UPDATE id_tweet_no_humor = %s"
+
+            bar = IncrementalBar("Guardando tweets parecidos\t", max=len(pares_parecidos_distinto_humor),
+                                 suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+
+            for tweet_humor, tweet_no_humor in pares_parecidos_distinto_humor:
+                cursor.execute(consulta, (tweet_humor.id, tweet_no_humor.id, tweet_no_humor.id))
+                bar.next()
+
+            conexion.commit()
+            bar.finish()

@@ -21,7 +21,8 @@ from clasificador.herramientas.define import parameters_svm, parameters_dt, \
 from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
-    get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
+    get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro, \
+    mostrar_medidas_ponderadas
 from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
     f_score_feature_selection, imprimir_importancias, tree_based_feature_selection, tweets_parecidos_con_distinto_humor, \
     mismas_features_distinto_humor
@@ -36,11 +37,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Clasifica humor de los tweets almacenados en la base de datos.')
     parser.add_argument('-a', '--calcular-features-faltantes', action='store_true', default=False,
                         help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
-    parser.add_argument('-c', '--clasificador', type=str, default="SVM",
+    parser.add_argument('-c', '--clasificador', type=unicode, default="SVM",
                         choices=["DT", "GNB", "kNN", "LinearSVM", "MNB", "SGD", "SVM"],
                         help="establece qué tipo de clasificador será usado, que por defecto es SVM")
     parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
                         help="para hacer cross-validation")
+    parser.add_argument('-D', '--dudosos', action='store_true', default=False,
+                        help="clasifica los tweets dudosos")
     parser.add_argument('-e', '--evaluar', action='store_true', default=False,
                         help="para evaluar con el corpus de evaluación")
     parser.add_argument('-b', '--explicar-features', action='store_true', default=False,
@@ -51,6 +54,8 @@ if __name__ == "__main__":
                         help="agrega una feature cuyo valor es igual a la clase objetivo")
     parser.add_argument('-g', '--grid-search', action='store_true', default=False,
                         help="realiza el algoritmo grid search para el tuning de hyperparametros")
+    parser.add_argument('-G', '--grupo-de-calificacion', type=int,
+                        choices=[1, 2, 3, 4, 5], help="establece a qué grupo de promedio de humor restringir el corpus")
     parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
                         help="reporta la importancia de cada feature")
     parser.add_argument('-z', '--incluir-chistes-sexuales', action='store_true', default=False,
@@ -66,15 +71,17 @@ if __name__ == "__main__":
                         help="lista los parametros posibles para un clasificador")
     parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
                         help="en la clasificación pondera los tweets según la concordancia en la votación."
-                             + " Funciona sólo para SVM")
+                             + " Funciona sólo para DT y SVM")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
-    parser.add_argument('-f', '--recalcular-feature', type=str, metavar="NOMBRE_FEATURE",
+    parser.add_argument('-f', '--recalcular-feature', type=unicode, metavar="NOMBRE_FEATURE",
                         help="recalcula el valor de una feature")
     parser.add_argument('-d', '--rfe', action='store_true', default=False,
                         help="habilita el uso de Recursive Feature Elimination antes de clasificar")
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
                         help="levanta el servidor para responder a clasificaciones")
+    parser.add_argument('-E', '--sin-escalar', action='store_true', default=False,
+                        help="establece si no deben escalarse las características")
     parser.add_argument('-S', '--solo-subcorpus-humor', action='store_true', default=False,
                         help="Entrena y evalua solo en el corpus de humor")
     parser.add_argument('-N', '--subconjunto-no-humor', type=str, default=None,
@@ -113,13 +120,21 @@ if __name__ == "__main__":
             features_obj.calcular_features_faltantes(corpus)
             guardar_features(corpus)
 
-        corpus = filtrar_segun_votacion(corpus)
+        no_dudosos = filtrar_segun_votacion(corpus)
+        dudosos = [tweet for tweet in corpus if tweet not in no_dudosos]
+        corpus = list(no_dudosos)
+
+        if args.solo_subcorpus_humor:
+            corpus = [tweet for tweet in corpus if tweet.es_chiste]
 
         if args.subconjunto_no_humor:
             corpus = [tweet for tweet in corpus if tweet.es_humor or tweet.categoria == args.subconjunto_no_humor[0]]
 
         if args.tweets_parecidos_distinto_humor:
-            parecidos_con_distinto_humor = tweets_parecidos_con_distinto_humor(corpus)
+            pares_parecidos_con_distinto_humor = tweets_parecidos_con_distinto_humor(corpus)
+            parecidos_con_distinto_humor = {tweet
+                                            for par_parecido in pares_parecidos_con_distinto_humor
+                                            for tweet in par_parecido}
             corpus = [tweet for tweet in corpus if tweet not in parecidos_con_distinto_humor]
 
         if args.mismas_features_distinto_humor:
@@ -131,6 +146,12 @@ if __name__ == "__main__":
         else:
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
+
+        if args.grupo_de_calificacion:
+            evaluacion = [tweet for tweet in evaluacion
+                          if not tweet.promedio_de_humor or not tweet.es_humor
+                          or args.grupo_de_calificacion - 0.5 <= tweet.promedio_de_humor
+                          < args.grupo_de_calificacion + 0.5]
 
         if args.feature_aleatoria:
             for tweet in corpus:
@@ -144,6 +165,13 @@ if __name__ == "__main__":
         for tweet in corpus:
             del tweet.features["Palabras no españolas"]
             del tweet.features["Negacion"]
+            # del tweet.features["Antonimos"]  # No la sacamos porque ya hicimos el análisis así.
+
+        if args.dudosos:
+            for tweet in dudosos:
+                del tweet.features["Palabras no españolas"]
+                del tweet.features["Negacion"]
+                # del tweet.features["Antonimos"]
 
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
@@ -153,6 +181,9 @@ if __name__ == "__main__":
         features_entrenamiento = get_features(entrenamiento)
         features_evaluacion = get_features(evaluacion)
 
+        if args.dudosos:
+            features_dudosos = get_features(dudosos)
+
         # Se tiene que hacer antes del scaler (las features no puden tomar valores negativos)
         if args.importancias_features:
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
@@ -160,22 +191,32 @@ if __name__ == "__main__":
             chi2_feature_selection(features, clases, nombres_features_ordenadas)
             f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
-        if args.clasificador != "MNB":
+        if not args.sin_escalar and args.clasificador != "MNB":
             scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
             features = scaler.transform(features)
             features_entrenamiento = scaler.transform(features_entrenamiento)
             features_evaluacion = scaler.transform(features_evaluacion)
 
+            if args.dudosos:
+                features_dudosos = scaler.transform(features_dudosos)
+
         if args.rfe:
             rfecv = RFECV(estimator=svm.SVC(kernel=str('linear')), cv=5, scoring='accuracy', verbose=3)
             rfecv.fit(features_entrenamiento, clases_entrenamiento)
 
-            print("Número óptimo de featues: %d" % rfecv.n_features_)
+            print("Número óptimo de featues: {n_features}".format(n_features=rfecv.n_features_))
 
             nombres_features_ordenadas = corpus[0].nombres_features_ordenadas()
             imprimir_importancias(rfecv.ranking_, "RFECV", nombres_features_ordenadas)
 
-            # Esto saca "Palabras no españolas" y "Negación".
+            # Esto saca "Palabras no españolas" y "Negación". La última vez también sacó "Antónimos".
+
+            import matplotlib.pyplot as plt
+            plt.figure()
+            plt.xlabel("Número de características seleccionadas")
+            plt.ylabel("Acierto")
+            plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
+            plt.show()
 
         parameters_grid_search = {}
         if args.clasificador == "DT":
@@ -203,10 +244,10 @@ if __name__ == "__main__":
 
             grid_search.fit(features, clases)
             print("Mejores parámetros encontrados para " + args.clasificador + ":")
-            for key, value in clasificador_usado.get_params().items():
-                print("\t" + unicode(key) + ": " + unicode(value))
+            for nombre_parametro, valor_parametro in clasificador_usado.get_params().items():
+                print("\t{clave}: {valor}".format(clave=nombre_parametro, valor=valor_parametro))
             print('')
-            print("Acierto: " + unicode(grid_search.best_score_))
+            print("Acierto: {acierto}".format(acierto=grid_search.best_score_))
             grid_search.best_estimator_ = grid_search.best_estimator_.fit(features, clases)
             clasificador_usado = grid_search.best_estimator_
             print('')
@@ -214,8 +255,8 @@ if __name__ == "__main__":
         if args.parametros_clasificador:
             print('')
             print("Parametros del clasificador:")
-            for key, value in clasificador_usado.get_params().items():
-                print("\t" + unicode(key) + ": " + unicode(value))
+            for nombre_parametro, valor_parametro in clasificador_usado.get_params().items():
+                print("\t{clave}: {valor}".format(clave=nombre_parametro, valor=valor_parametro))
             print('')
 
         if args.cross_validation and not args.evaluar:
@@ -223,24 +264,42 @@ if __name__ == "__main__":
 
         print("Entrenando clasificador...")
         if args.ponderar_segun_votos:
-            sample_weights = [1 - entropia(tweet.votos_humor / float(tweet.votos)) if tweet.votos > 0 else 1
-                              for tweet in entrenamiento]
-            clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+            if args.clasificador == "SVM":
+                sample_weights = [1 - entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+                                  for tweet in entrenamiento]
+                clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+            elif args.clasificador == "DT":
+                sample_weights = [1 - 2 * entropia(tweet.votos_humor / tweet.votos) if tweet.votos > 0 else 1
+                                  for tweet in entrenamiento]
+                clasificador_usado.fit(features_entrenamiento, clases_entrenamiento, sample_weight=sample_weights)
+            else:
+                clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
         else:
             clasificador_usado.fit(features_entrenamiento, clases_entrenamiento)
 
-        print("Evaluando clasificador con conjunto de entrenamiento...")
+        if args.ponderar_segun_votos:
+            medidas_ponderadas = "concordancia"
+        else:
+            medidas_ponderadas = ""
+
+        print("Evaluando clasificador con el conjunto de entrenamiento...")
         clases_predecidas_entrenamiento = clasificador_usado.predict(features_entrenamiento)
         matriz_de_confusion_y_reportar(entrenamiento, clases_entrenamiento, clases_predecidas_entrenamiento,
-                                       args.medidas_ponderadas)
-        print('')
+                                       medidas_ponderadas)
 
         print("Evaluando clasificador...")
-        clases_predecidas = clasificador_usado.predict(features_evaluacion)
         print('')
+        clases_predecidas = clasificador_usado.predict(features_evaluacion)
+        if args.medidas_ponderadas:
+            mostrar_medidas_ponderadas(evaluacion, clases_evaluacion, clases_predecidas)
+        matriz_de_confusion_y_reportar(evaluacion, clases_evaluacion, clases_predecidas, medidas_ponderadas)
 
-        verdaderos_positivos, falsos_negativos, falsos_positivos, verdaderos_negativos = matriz_de_confusion_y_reportar(
-            evaluacion, clases_evaluacion, clases_predecidas, args.medidas_ponderadas)
+        if args.dudosos:
+            clases_predecidas_dudosos = clasificador_usado.predict(features_dudosos)
+
+            cantidad_de_dudosos_de_humor = sum(clases_predecidas_dudosos)
+            print("Dudosos clasificados como humor: {dudosos_humor:0.4f}".format(
+                dudosos_humor=cantidad_de_dudosos_de_humor/len(clases_predecidas_dudosos)))
 
         if args.servidor:
             app = Flask(__name__)
@@ -258,6 +317,6 @@ if __name__ == "__main__":
                 _features_obj = Features(args.threads)
                 _features_obj.calcular_features([_tweet])
                 _features = [list(_tweet.features.values())]
-                return str(int(clasificador_usado.predict(_features)[0]))
+                return unicode(int(clasificador_usado.predict(_features)[0]))
 
             app.run(debug=True, host='0.0.0.0')
