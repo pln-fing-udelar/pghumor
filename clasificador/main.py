@@ -65,8 +65,7 @@ if __name__ == "__main__":
                         help="imprime los tweets que tienen los mismos valores de features"
                              + " pero distinto valor de humor")
     parser.add_argument('-q', '--medidas-ponderadas', action='store_true', default=False,
-                        help="imprime las medidas precision, recall, f1-score ponderadas según el promedio de humor"
-                             + " pero distinto valor de humor")
+                        help="imprime las medidas precision, recall, f1-score ponderadas según el promedio de humor")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parametros posibles para un clasificador")
     parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
