@@ -90,6 +90,8 @@ if __name__ == "__main__":
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
                         help="busca y quita los tweets que son parecidos pero tienen distinto valor de humor")
+    parser.add_argument('-C', '--reportar-informacion-corpus', action='store_true', default=False,
+                        help="reporta como está conformado el corpus")
     args = parser.parse_args()
 
     if args.explicar_features:
@@ -145,6 +147,25 @@ if __name__ == "__main__":
         else:
             corpus = [tweet for tweet in corpus if not tweet.evaluacion]
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
+
+        if args.reportar_informacion_corpus:
+            print("Conformación Del corpus")
+            print("                 Entrenamiento Evaluacion Total")
+            print("    Humor        {he}          {ht}       {htot}".format(
+                he=len([tweet for tweet in entrenamiento if tweet.es_humor]),
+                ht=len([tweet for tweet in evaluacion if tweet.es_humor]),
+                htot=len([tweet for tweet in corpus if tweet.es_humor])
+            ))
+            print("    No humor     {nhe}         {nht}       {nhtot}".format(
+                nhe=len([tweet for tweet in entrenamiento if not tweet.es_humor]),
+                nht=len([tweet for tweet in evaluacion if not tweet.es_humor]),
+                nhtot=len([tweet for tweet in corpus if not tweet.es_humor])
+            ))
+            print("    Total        {te}         {tt}       {t}".format(
+                te=len(entrenamiento),
+                tt=len(evaluacion),
+                t=len(corpus)
+            ))
 
         if args.grupo_de_calificacion:
             evaluacion = [tweet for tweet in evaluacion
