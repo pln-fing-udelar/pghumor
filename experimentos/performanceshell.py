@@ -19,7 +19,7 @@ if __name__ == "__main__":
     bar = IncrementalBar('Calculando', max=largo, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
-    for i in range(largo):
+    for i in xrange(largo):
         clasificador.herramientas.utils.ejecutar_comando("echo 1")
         bar.next()
 
