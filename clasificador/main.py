@@ -151,7 +151,7 @@ if __name__ == "__main__":
         if args.reportar_informacion_corpus:
             print('')
             print("Conformación del corpus")
-            print("                 Entrenamiento Evaluacion Total")
+            print("                 entrenamiento evaluacion total")
             print("    Humor        {he}          {ht}       {htot}".format(
                 he=len([tweet for tweet in entrenamiento if tweet.es_humor]),
                 ht=len([tweet for tweet in evaluacion if tweet.es_humor]),
