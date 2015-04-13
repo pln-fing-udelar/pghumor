@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.chistesdotcom import obtener_chistes_categoria
-from clasificador.herramientas.utils import *
+from clasificador.herramientas.utils import get_stop_words
 from clasificador.herramientas.wikicorpus import obtener_sample_wikicorpus
 
 
