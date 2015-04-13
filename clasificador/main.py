@@ -224,7 +224,7 @@ if __name__ == "__main__":
             f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
         if not args.sin_escalar and args.clasificador != "MNB" \
-                and args.clasificador != "LB1":
+                and args.clasificador != "LB1" and args.clasificador != "LB2":
             scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
             features = scaler.transform(features)
             features_entrenamiento = scaler.transform(features_entrenamiento)

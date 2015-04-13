@@ -113,13 +113,13 @@ def cross_validation_y_reportar(clasificador, features, clases, numero_particion
 def calcular_medidas(tn, fp, fn, tp):
     """Dada la matriz de confusión desglozada, calcula todas las medidas."""
     return {
-        'Precision No humor': tn / (tn + fn),
-        'Recall No humor': tn / (tn + fp),
-        'F1-score No humor': tn / (tn + (fp + fn) / 2),
-        'Precision Humor': tp / (tp + fp),
-        'Recall Humor': tp / (tp + fn),
-        'F1-score Humor': tp / (tp + (fp + fn) / 2),
-        'Acierto': (tp + tn) / (tp + fp + tn + fn),
+        'Precision No humor': tn / (tn + fn) if tn + fn > 0 else 0,
+        'Recall No humor': tn / (tn + fp) if tn + fp > 0 else 0,
+        'F1-score No humor': tn / (tn + (fp + fn) / 2) if tn + fn + fp > 0 else 0,
+        'Precision Humor': tp / (tp + fp) if tp + fp > 0 else 0,
+        'Recall Humor': tp / (tp + fn) if tp + fn > 0 else 0,
+        'F1-score Humor': tp / (tp + (fp + fn) / 2) if tp + fp + fn > 0 else 0,
+        'Acierto': (tp + tn) / (tp + fp + tn + fn) if tp + fp + tn + fn > 0 else 0,
     }
 
 
@@ -139,10 +139,17 @@ def metricas_ponderadas_segun_humor(verdaderos_negativos, falsos_positivos, fals
     tn_suma_ph = sum(tweet.promedio_de_humor for tweet in verdaderos_negativos if tweet.es_chiste)
     fp_suma_ph = sum(tweet.promedio_de_humor for tweet in falsos_positivos if tweet.es_chiste)
 
-    prom_tn = tn_suma_ph / len([tweet for tweet in verdaderos_negativos if tweet.es_chiste])
-    prom_fp = fp_suma_ph / len([tweet for tweet in falsos_positivos if tweet.es_chiste])
-    prom_tp = tp_suma_ph / len([tweet for tweet in verdaderos_positivos if tweet.es_chiste])
-    prom_fn = fn_suma_ph / len([tweet for tweet in falsos_negativos if tweet.es_chiste])
+    cant_tn = len([tweet for tweet in verdaderos_negativos if tweet.es_chiste])
+    prom_tn = tn_suma_ph / cant_tn if cant_tn > 0 else 0
+
+    cant_fp = len([tweet for tweet in falsos_positivos if tweet.es_chiste])
+    prom_fp = fp_suma_ph / cant_fp if cant_fp > 0 else 0
+
+    cant_tn = len([tweet for tweet in verdaderos_positivos if tweet.es_chiste])
+    prom_tp = tp_suma_ph / cant_tn if cant_tn > 0 else 0
+
+    cant_fn = len([tweet for tweet in falsos_negativos if tweet.es_chiste])
+    prom_fn = fn_suma_ph / cant_fn
 
     recall_positivo = tp_suma_ph / (tp_suma_ph + fn_suma_ph)
 
