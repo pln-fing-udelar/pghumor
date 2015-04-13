@@ -10,23 +10,27 @@ import sys
 from flask import Flask, request
 from flask_cors import cross_origin
 from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import RFECV
 from sklearn.grid_search import GridSearchCV
+from sklearn.pipeline import FeatureUnion, Pipeline
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from clasificador.features.features import Features
 from clasificador.herramientas.define import parameters_svm, parameters_dt, \
     parameters_gnb, parameters_mnb, parameters_knn
-from clasificador.features.features import Features
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
+from clasificador.herramientas.tweetstofeatures import TweetsToFeatures
+from clasificador.herramientas.tweettotext import TweetToText
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro, \
     mostrar_medidas_ponderadas
 from clasificador.herramientas.utilanalisis import chi2_feature_selection, \
     f_score_feature_selection, imprimir_importancias, tree_based_feature_selection, tweets_parecidos_con_distinto_humor, \
     mismas_features_distinto_humor
-from clasificador.herramientas.utils import entropia, filtrar_segun_votacion
+from clasificador.herramientas.utils import entropia, filtrar_segun_votacion, get_stop_words
 from clasificador.realidad.tweet import Tweet
 
 # Ver esto: http://ceur-ws.org/Vol-1086/paper12.pdf
@@ -38,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--calcular-features-faltantes', action='store_true', default=False,
                         help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
     parser.add_argument('-c', '--clasificador', type=unicode, default="SVM",
-                        choices=["DT", "GNB", "kNN", "LinearSVM", "MNB", "SGD", "SVM"],
+                        choices=["DT", "GNB", "kNN", "LB1", "LB2", "LinearSVM", "MNB", "SGD", "SVM"],
                         help="establece qué tipo de clasificador será usado, que por defecto es SVM")
     parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
                         help="para hacer cross-validation")
@@ -199,9 +203,14 @@ if __name__ == "__main__":
         clases_entrenamiento = get_clases(entrenamiento)
         clases_evaluacion = get_clases(evaluacion)
 
-        features = get_features(corpus)
-        features_entrenamiento = get_features(entrenamiento)
-        features_evaluacion = get_features(evaluacion)
+        if args.clasificador == "LB1":
+            features = corpus
+            features_entrenamiento = entrenamiento
+            features_evaluacion = evaluacion
+        else:
+            features = get_features(corpus)
+            features_entrenamiento = get_features(entrenamiento)
+            features_evaluacion = get_features(evaluacion)
 
         if args.dudosos:
             features_dudosos = get_features(dudosos)
@@ -213,7 +222,8 @@ if __name__ == "__main__":
             chi2_feature_selection(features, clases, nombres_features_ordenadas)
             f_score_feature_selection(features, clases, nombres_features_ordenadas)
 
-        if not args.sin_escalar and args.clasificador != "MNB":
+        if not args.sin_escalar and args.clasificador != "MNB" \
+                and args.clasificador != "LB1":
             scaler = preprocessing.StandardScaler().fit(features_entrenamiento)
             features = scaler.transform(features)
             features_entrenamiento = scaler.transform(features_entrenamiento)
@@ -234,6 +244,7 @@ if __name__ == "__main__":
             # Esto saca "Palabras no españolas" y "Negación". La última vez también sacó "Antónimos".
 
             import matplotlib.pyplot as plt
+
             plt.figure()
             plt.xlabel("Número de características seleccionadas")
             plt.ylabel("Acierto")
@@ -252,6 +263,25 @@ if __name__ == "__main__":
             parameters_grid_search = parameters_knn
         elif args.clasificador == "LinearSVM":
             clasificador_usado = svm.LinearSVC()
+        elif args.clasificador == "LB1":
+            feature_union = FeatureUnion([
+                ('vectorizer_bow', Pipeline([
+                    ('tweet_to_text', TweetToText()),
+                    ('vectorizer', CountVectorizer(
+                        strip_accents='ascii',
+                        stop_words=get_stop_words(),
+                        token_pattern=r'\b[a-z0-9_\-\.]+[a-z][a-z0-9_\-\.]+\b',
+                    ))
+                ])),
+                ('features_tweets', TweetsToFeatures()),
+            ])
+
+            clasificador_usado = Pipeline([
+                ('features', feature_union),
+                ('clf', naive_bayes.MultinomialNB(alpha=0.01)),
+            ])
+        elif args.clasificador == "LB1":
+            clasificador_usado = None
         elif args.clasificador == "MNB":
             clasificador_usado = naive_bayes.MultinomialNB()
             parameters_grid_search = parameters_mnb
@@ -321,7 +351,7 @@ if __name__ == "__main__":
 
             cantidad_de_dudosos_de_humor = sum(clases_predecidas_dudosos)
             print("Dudosos clasificados como humor: {dudosos_humor:0.4f}".format(
-                dudosos_humor=cantidad_de_dudosos_de_humor/len(clases_predecidas_dudosos)))
+                dudosos_humor=cantidad_de_dudosos_de_humor / len(clases_predecidas_dudosos)))
 
         if args.servidor:
             app = Flask(__name__)
