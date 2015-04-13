@@ -21,6 +21,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from clasificador.features.features import Features
 from clasificador.herramientas.define import parameters_svm, parameters_dt, \
     parameters_gnb, parameters_mnb, parameters_knn
+from clasificador.herramientas.mayoria import Mayoria
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.tweetstofeatures import TweetsToFeatures
 from clasificador.herramientas.tweettotext import TweetToText
@@ -280,8 +281,8 @@ if __name__ == "__main__":
                 ('features', feature_union),
                 ('clf', naive_bayes.MultinomialNB(alpha=0.01)),
             ])
-        elif args.clasificador == "LB1":
-            clasificador_usado = None
+        elif args.clasificador == "LB2":
+            clasificador_usado = Mayoria()
         elif args.clasificador == "MNB":
             clasificador_usado = naive_bayes.MultinomialNB()
             parameters_grid_search = parameters_mnb
