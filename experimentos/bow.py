@@ -34,6 +34,10 @@ if __name__ == "__main__":
     print("Filtrando y corrigiendo según la votación...")
     corpus = filtrar_segun_votacion(corpus)
 
+    print("Preprocesando tweets...")
+    for tweet in corpus:
+        tweet.preprocesar()
+
     print("Separando en entrenamiento y evaluación...")
 
     if args.evaluar:
