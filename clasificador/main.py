@@ -149,7 +149,8 @@ if __name__ == "__main__":
             entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
 
         if args.reportar_informacion_corpus:
-            print("Conformación Del corpus")
+            print('')
+            print("Conformación del corpus")
             print("                 Entrenamiento Evaluacion Total")
             print("    Humor        {he}          {ht}       {htot}".format(
                 he=len([tweet for tweet in entrenamiento if tweet.es_humor]),
@@ -166,6 +167,7 @@ if __name__ == "__main__":
                 tt=len(evaluacion),
                 t=len(corpus)
             ))
+            print('')
 
         if args.grupo_de_calificacion:
             evaluacion = [tweet for tweet in evaluacion
