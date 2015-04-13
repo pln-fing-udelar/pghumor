@@ -91,7 +91,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
                         help="busca y quita los tweets que son parecidos pero tienen distinto valor de humor")
     parser.add_argument('-C', '--reportar-informacion-corpus', action='store_true', default=False,
-                        help="reporta como está conformado el corpus")
+                        help="reporta cómo está conformado el corpus")
     args = parser.parse_args()
 
     if args.explicar_features:
