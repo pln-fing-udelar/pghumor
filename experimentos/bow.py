@@ -32,7 +32,7 @@ if __name__ == "__main__":
     print('')
 
     print("Filtrando y corrigiendo según la votación...")
-    filtrar_segun_votacion(corpus)
+    corpus = filtrar_segun_votacion(corpus)
 
     print("Separando en entrenamiento y evaluación...")
 
