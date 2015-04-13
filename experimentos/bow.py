@@ -25,6 +25,8 @@ if __name__ == "__main__":
         description='Clasifica humor de los tweets almacenados en la base de datos, utilizando BOW.')
     parser.add_argument('-e', '--evaluar', action='store_true', default=False,
                         help="para evaluar con el corpus de evaluación")
+    parser.add_argument('-C', '--reportar-informacion-corpus', action='store_true', default=False,
+                        help="reporta cómo está conformado el corpus")
     args = parser.parse_args()
 
     corpus = cargar_tweets(cargar_features=True)
@@ -42,6 +44,27 @@ if __name__ == "__main__":
     else:
         corpus = [tweet for tweet in corpus if not tweet.evaluacion]
         entrenamiento, evaluacion = train_test_split_pro(corpus, test_size=0.2)
+
+    if args.reportar_informacion_corpus:
+        print('')
+        print("Conformación del corpus")
+        print("                 Entrenamiento Evaluacion Total")
+        print("    Humor        {he}          {ht}       {htot}".format(
+            he=len([tweet for tweet in entrenamiento if tweet.es_humor]),
+            ht=len([tweet for tweet in evaluacion if tweet.es_humor]),
+            htot=len([tweet for tweet in corpus if tweet.es_humor])
+        ))
+        print("    No humor     {nhe}         {nht}       {nhtot}".format(
+            nhe=len([tweet for tweet in entrenamiento if not tweet.es_humor]),
+            nht=len([tweet for tweet in evaluacion if not tweet.es_humor]),
+            nhtot=len([tweet for tweet in corpus if not tweet.es_humor])
+        ))
+        print("    Total        {te}         {tt}       {t}".format(
+            te=len(entrenamiento),
+            tt=len(evaluacion),
+            t=len(corpus)
+        ))
+        print('')
 
     print("Separando tweets en features y clases...")
     X = [tweet for tweet in corpus]
