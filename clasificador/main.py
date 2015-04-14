@@ -80,6 +80,8 @@ if __name__ == "__main__":
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=unicode, metavar="NOMBRE_FEATURE",
                         help="recalcula el valor de una feature")
+    parser.add_argument('-C', '--reportar-informacion-corpus', action='store_true', default=False,
+                        help="reporta cómo está conformado el corpus")
     parser.add_argument('-d', '--rfe', action='store_true', default=False,
                         help="habilita el uso de Recursive Feature Elimination antes de clasificar")
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
@@ -87,16 +89,14 @@ if __name__ == "__main__":
     parser.add_argument('-E', '--sin-escalar', action='store_true', default=False,
                         help="establece si no deben escalarse las características")
     parser.add_argument('-S', '--solo-subcorpus-humor', action='store_true', default=False,
-                        help="Entrena y evalua solo en el corpus de humor")
+                        help="entrena y evalua solo en el corpus de humor")
     parser.add_argument('-N', '--subconjunto-no-humor', type=str, default=None,
                         choices=["Noticias", "Curiosidades", "Reflexiones"],
-                        help="Selecciona solamente el subconjunto pasado como parametro del corpus no humorístico")
+                        help="selecciona solamente el subconjunto pasado como parametro del corpus no humorístico")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
                         help="busca y quita los tweets que son parecidos pero tienen distinto valor de humor")
-    parser.add_argument('-C', '--reportar-informacion-corpus', action='store_true', default=False,
-                        help="reporta cómo está conformado el corpus")
     args = parser.parse_args()
 
     if args.explicar_features:
