@@ -110,8 +110,9 @@ if __name__ == "__main__":
         if args.solo_subcorpus_humor:
             corpus = [tweet for tweet in corpus if tweet.es_chiste]
 
-        for tweet in corpus:
-            tweet.preprocesar()
+        if not args.clasificador.startswith("LB"):
+            for tweet in corpus:
+                tweet.preprocesar()
 
         if args.recalcular_features:
             features_obj = Features(args.threads)
