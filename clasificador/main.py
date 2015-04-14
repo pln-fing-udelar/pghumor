@@ -159,14 +159,14 @@ if __name__ == "__main__":
             print("Conformación del corpus")
             print("                 entrenamiento evaluacion total")
             print("    Humor        {he}          {ht}       {htot}".format(
-                he=len([tweet for tweet in entrenamiento if tweet.es_humor]),
-                ht=len([tweet for tweet in evaluacion if tweet.es_humor]),
-                htot=len([tweet for tweet in corpus if tweet.es_humor])
+                he=sum(1 for tweet in entrenamiento if tweet.es_humor),
+                ht=sum(1 for tweet in evaluacion if tweet.es_humor),
+                htot=sum(1 for tweet in corpus if tweet.es_humor)
             ))
             print("    No humor     {nhe}         {nht}       {nhtot}".format(
-                nhe=len([tweet for tweet in entrenamiento if not tweet.es_humor]),
-                nht=len([tweet for tweet in evaluacion if not tweet.es_humor]),
-                nhtot=len([tweet for tweet in corpus if not tweet.es_humor])
+                nhe=sum(1 for tweet in entrenamiento if not tweet.es_humor),
+                nht=sum(1 for tweet in evaluacion if not tweet.es_humor),
+                nhtot=sum(1 for tweet in corpus if not tweet.es_humor)
             ))
             print("    Total        {te}         {tt}       {t}".format(
                 te=len(entrenamiento),
