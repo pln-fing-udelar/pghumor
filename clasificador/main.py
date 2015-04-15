@@ -44,9 +44,9 @@ if __name__ == "__main__":
                         help="calcula el valor de todas las features para los tweets a los que les falta calcularla")
     parser.add_argument('-c', '--clasificador', type=unicode, default="SVM",
                         choices=["DT", "GNB", "kNN", "LB1", "LB2", "LinearSVM", "MNB", "SGD", "SVM"],
-                        help="establece qué tipo de clasificador será usado, que por defecto es SVM")
+                        help="establece qué tipo de clasificador es usado, que por defecto es SVM")
     parser.add_argument('-x', '--cross-validation', action='store_true', default=False,
-                        help="para hacer cross-validation")
+                        help="para hacer validación cruzada")
     parser.add_argument('-D', '--dudosos', action='store_true', default=False,
                         help="clasifica los tweets dudosos")
     parser.add_argument('-e', '--evaluar', action='store_true', default=False,
@@ -58,45 +58,48 @@ if __name__ == "__main__":
     parser.add_argument('-k', '--feature-clase', action='store_true', default=False,
                         help="agrega una feature cuyo valor es igual a la clase objetivo")
     parser.add_argument('-g', '--grid-search', action='store_true', default=False,
-                        help="realiza el algoritmo grid search para el tuning de hyperparametros")
-    parser.add_argument('-G', '--grupo-de-calificacion', type=int,
-                        choices=[1, 2, 3, 4, 5], help="establece a qué grupo de promedio de humor restringir el corpus")
+                        help="realiza el algoritmo grid search para el ajuste de parámetros")
+    parser.add_argument('-G', '--grupo-de-calificacion', type=int, choices=[1, 2, 3, 4, 5],
+                        help="establece a qué grupo de promedio de humor restringir el corpus")
     parser.add_argument('-i', '--importancias-features', action='store_true', default=False,
                         help="reporta la importancia de cada feature")
     parser.add_argument('-z', '--incluir-chistes-sexuales', action='store_true', default=False,
-                        help="incluye en el entrenamiento y en la evaluación los chistes con contenido sexual")
-    parser.add_argument('-l', '--limite', type=int, help="establece una cantidad límite de tweets a procesar")
+                        help="incluye en el entrenamiento y en la evaluación los chistes censurados")
+    parser.add_argument('-l', '--limite', type=int,
+                        help="establece una cantidad límite de tweets aleatorios a procesar")
     parser.add_argument('-m', '--mismas-features-distinto-humor', action='store_true', default=False,
-                        help="imprime los tweets que tienen los mismos valores de features"
-                             + " pero distinto valor de humor")
+                        help="imprime los pares de tweets que tienen los mismos valores de features"
+                             + " pero uno positivo y el otro negativo")
     parser.add_argument('-q', '--medidas-ponderadas', action='store_true', default=False,
-                        help="imprime las medidas precision, recall, f1-score ponderadas según el promedio de humor")
+                        help="imprime las medidas precisión, recall y f1 ponderadas"
+                             + " según el porcenaje de votos positivos")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
-                        help="lista los parametros posibles para un clasificador")
+                        help="lista los parámetros disponibles para el clasificador elegido")
     parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
                         help="en la clasificación pondera los tweets según la concordancia en la votación."
                              + " Funciona sólo para DT y SVM")
     parser.add_argument('-s', '--recalcular-features', action='store_true', default=False,
                         help="recalcula el valor de todas las features")
     parser.add_argument('-f', '--recalcular-feature', type=unicode, metavar="NOMBRE_FEATURE",
-                        help="recalcula el valor de una feature")
+                        help="recalcula el valor de una feature dada")
     parser.add_argument('-C', '--reportar-informacion-corpus', action='store_true', default=False,
-                        help="reporta cómo está conformado el corpus")
+                        help="reporta cómo está conformado el corpus respecto a positivos y negativos,"
+                             + " y respecto a entrenamiento y evaluación")
     parser.add_argument('-d', '--rfe', action='store_true', default=False,
                         help="habilita el uso de Recursive Feature Elimination antes de clasificar")
     parser.add_argument('-r', '--servidor', action='store_true', default=False,
                         help="levanta el servidor para responder a clasificaciones")
     parser.add_argument('-E', '--sin-escalar', action='store_true', default=False,
-                        help="establece si no deben escalarse las características")
+                        help="establece que no deben escalarse las características")
     parser.add_argument('-S', '--solo-subcorpus-humor', action='store_true', default=False,
-                        help="entrena y evalua solo en el corpus de humor")
+                        help="entrena y evalúa sólo con los positivos")
     parser.add_argument('-N', '--subconjunto-no-humor', type=str, default=None,
                         choices=["Noticias", "Curiosidades", "Reflexiones"],
-                        help="selecciona solamente el subconjunto pasado como parametro del corpus no humorístico")
+                        help="selecciona solamente el subconjunto pasado como parámetro de los negativos")
     parser.add_argument('-t', '--threads', type=int,
                         help="establece la cantidad de threads a usar al recalcular las features", default=1)
     parser.add_argument('-o', '--tweets-parecidos-distinto-humor', action='store_true', default=False,
-                        help="busca y quita los tweets que son parecidos pero tienen distinto valor de humor")
+                        help="busca y quita los pares de tweets que son parecidos pero uno positivo y el otro negativo")
     args = parser.parse_args()
 
     if args.explicar_features:
@@ -156,7 +159,8 @@ if __name__ == "__main__":
 
         if args.reportar_informacion_corpus:
             print('')
-            print("Conformación del corpus")
+            print("Conformación del corpus:")
+            print('')
             print("                 entrenamiento evaluacion total")
             print("    Humor        {he}          {ht}       {htot}".format(
                 he=sum(1 for tweet in entrenamiento if tweet.es_humor),
@@ -352,7 +356,7 @@ if __name__ == "__main__":
             clases_predecidas_dudosos = clasificador_usado.predict(features_dudosos)
 
             cantidad_de_dudosos_de_humor = sum(clases_predecidas_dudosos)
-            print("Dudosos clasificados como humor: {dudosos_humor:0.4f}".format(
+            print("Porcentaje de dudosos clasificados como positivos: {dudosos_humor:0.4f}".format(
                 dudosos_humor=cantidad_de_dudosos_de_humor / len(clases_predecidas_dudosos)))
 
         if args.servidor:
