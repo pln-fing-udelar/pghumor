@@ -72,7 +72,7 @@ if __name__ == "__main__":
                              + " pero uno positivo y el otro negativo")
     parser.add_argument('-q', '--medidas-ponderadas', action='store_true', default=False,
                         help="imprime las medidas precisión, recall y f1 ponderadas"
-                             + " según el porcenaje de votos positivos")
+                             + " según el porcentaje de votos positivos")
     parser.add_argument('-p', '--parametros-clasificador', action='store_true', default=False,
                         help="lista los parámetros disponibles para el clasificador elegido")
     parser.add_argument('-n', '--ponderar-segun-votos', action='store_true', default=False,
