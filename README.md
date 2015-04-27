@@ -1,3 +1,9 @@
+# Instalación
+
+Se precisa python 2.7, MySQL, las librerías python aquí utilizadas, Freeling (revisión 2588 del SVN) y el corpus WordNet en NLTK.
+
+Se deben cargar los dumps corpus.sql y chistesdotcom.sql 
+
 # Configuración
 
 Poner la variable de entorno a donde se encuentre el entorno de Freeling y dejarla puesta siempre:
@@ -9,7 +15,7 @@ echo "export FREELINGSHARE=$FREELINGSHARE" >> ~/.bashrc
 
 # Ejecución
 
-Levantar antes los servidores de Freeling:
+Levantar antes los servidores de Freeling (para poder calcular las características):
 
 ```bash
 ./freeling.sh start
@@ -25,6 +31,12 @@ Para bajar los servidores de Freeling:
 
 ```bash
 ./freeling.sh stop
+```
+
+## Ayuda
+
+```bash
+clasificador/main.py --help
 ```
 
 # Tests
