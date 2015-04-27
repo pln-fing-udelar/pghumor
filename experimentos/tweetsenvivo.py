@@ -14,12 +14,8 @@ from tweepy import Stream
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from clasificador.herramientas.define import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_KEY, ACCESS_SECRET
 from clasificador.realidad.tweet import patron_hashtag, patron_usuario, patron_url
-
-CONSUMER_KEY = "GoJjP7Xmj4kpxjttr8qJ9cLtC"
-CONSUMER_SECRET = "PnbLJGXnJjsE9M97yhHXY2Oyj7ojcrcVulDGM2yQfS05NQjoNK"
-ACCESS_TOKEN = "2714871673-HF7B4EPK4mWceAuEuBR4TRhJ12AGlJCVS6VPjZb"
-ACCESS_TOKEN_SECRET = "Yjp80IStjuot5Muvy4SAt2qoaHQdFGQDMJBqD4HQqX1s6"
 
 COLOR_BLUE = '\033[94m'
 COLOR_RED = '\033[91m'
@@ -52,7 +48,7 @@ class SalidaEstandarListener(StreamListener):
 if __name__ == '__main__':
     listener = SalidaEstandarListener()
     auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 
     stream = Stream(auth, listener)
     stream.filter(locations=[-56.435446, -34.938062, -56.016434, -34.698919])
