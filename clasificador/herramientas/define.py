@@ -1,19 +1,24 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+
 import numpy as np
 
-# Twitter API credentials
-CONSUMER_KEY = 'GoJjP7Xmj4kpxjttr8qJ9cLtC'
-CONSUMER_SECRET = 'PnbLJGXnJjsE9M97yhHXY2Oyj7ojcrcVulDGM2yQfS05NQjoNK'
-ACCESS_KEY = '2714871673-HF7B4EPK4mWceAuEuBR4TRhJ12AGlJCVS6VPjZb'
-ACCESS_SECRET = 'Yjp80IStjuot5Muvy4SAt2qoaHQdFGQDMJBqD4HQqX1s6'
+# noinspection PyUnresolvedReferences
+import clasificador.config.environment
 
-DB_HOST = 'localhost'
-DB_USER = 'pghumor'
-DB_PASS = 'ckP8t/2l'
-DB_NAME = 'corpus'
-DB_NAME_CHISTES_DOT_COM = 'chistesdotcom'
+# Twitter API credentials
+CONSUMER_KEY = os.environ['CONSUMER_KEY']
+CONSUMER_SECRET = os.environ['CONSUMER_SECRET']
+ACCESS_KEY = os.environ['ACCESS_KEY']
+ACCESS_SECRET = os.environ['ACCESS_SECRET']
+
+DB_HOST = os.environ['DB_HOST']
+DB_USER = os.environ['DB_USER']
+DB_PASS = os.environ['DB_PASS']
+DB_NAME = os.environ['DB_NAME']
+DB_NAME_CHISTES_DOT_COM = os.environ['DB_NAME_CHISTES_DOT_COM']
 
 SUFIJO_PROGRESS_BAR = '%(index)#9d/%(max)#9d - %(percent)#6.2f%% - ETA: %(eta_td)s'
 
