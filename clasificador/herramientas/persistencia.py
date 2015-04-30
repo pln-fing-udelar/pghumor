@@ -15,8 +15,17 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
+    if agregar_sexuales:
+        consulta_sexuales_tweets = ""
+        consulta_limite_sexuales = ""
+    else:
+        consulta_sexuales_tweets = "censurado_tweet = 0"
+        consulta_limite_sexuales = "AND " + consulta_sexuales_tweets
+    consulta_sexuales_features = consulta_sexuales_tweets
+
     if limite:
-        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + unicode(limite)
+        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 " + consulta_limite_sexuales + " ORDER BY RAND() LIMIT "\
+                   + unicode(limite)
 
         cursor.execute(consulta)
 
@@ -38,12 +47,6 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     else:
         consulta_prueba_features = ""
         consulta_prueba_tweets = ""
-
-    if agregar_sexuales:
-        consulta_sexuales_tweets = ""
-    else:
-        consulta_sexuales_tweets = "censurado_tweet = 0"
-    consulta_sexuales_features = consulta_sexuales_tweets
 
     if not agregar_sexuales and limite:
         restricciones_tweets = "WHERE " + consulta_sexuales_tweets + " AND " + consulta_prueba_tweets
