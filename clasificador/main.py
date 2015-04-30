@@ -257,6 +257,13 @@ if __name__ == "__main__":
             plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
             plt.show()
 
+            plt.figure()
+            plt.xlabel("Número de características seleccionadas")
+            plt.ylabel("Acierto")
+            plt.autoscale(enable=False, axis='y')
+            plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
+            plt.show()
+
         parameters_grid_search = {}
         if args.clasificador == "DT":
             clasificador_usado = tree.DecisionTreeClassifier()
