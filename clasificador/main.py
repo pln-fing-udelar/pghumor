@@ -193,17 +193,18 @@ if __name__ == "__main__":
             for tweet in corpus:
                 tweet.features["CLASE"] = tweet.es_humor
 
-        # Features que remueve RFE:
-        for tweet in corpus:
-            del tweet.features["Palabras no españolas"]
-            del tweet.features["Negacion"]
-            # del tweet.features["Antonimos"]  # No la sacamos porque ya hicimos el análisis así.
-
-        if args.dudosos:
-            for tweet in dudosos:
+        if not args.rfe:
+            # Features que remueve RFE:
+            for tweet in corpus:
                 del tweet.features["Palabras no españolas"]
                 del tweet.features["Negacion"]
-                # del tweet.features["Antonimos"]
+                # del tweet.features["Antonimos"]  # No la sacamos porque ya hicimos el análisis así.
+
+            if args.dudosos:
+                for tweet in dudosos:
+                    del tweet.features["Palabras no españolas"]
+                    del tweet.features["Negacion"]
+                    # del tweet.features["Antonimos"]
 
         clases = get_clases(corpus)
         clases_entrenamiento = get_clases(entrenamiento)
