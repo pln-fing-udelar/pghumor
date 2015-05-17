@@ -129,6 +129,8 @@ if __name__ == "__main__":
             features_obj = Features(args.threads)
             features_obj.calcular_features_faltantes(corpus)
             guardar_features(corpus)
+        else:
+            features_obj = None
 
         no_dudosos = filtrar_segun_votacion(corpus)
         dudosos = [tweet for tweet in corpus if tweet not in no_dudosos]
@@ -370,6 +372,14 @@ if __name__ == "__main__":
         if args.servidor:
             app = Flask(__name__)
 
+            if not features_obj:
+                features_obj = Features(args.threads)
+
+                # Features que remueve RFE:
+                del features_obj.features["Palabras no españolas"]
+                del features_obj.features["Negacion"]
+                # del features_obj.features["Antonimos"]
+
             @app.route("/")
             def inicio():
                 return app.send_static_file('evaluacion.html')
@@ -380,9 +390,9 @@ if __name__ == "__main__":
                 _tweet = Tweet()
                 _tweet.texto = request.form['texto']
                 _tweet.preprocesar()
-                _features_obj = Features(args.threads)
-                _features_obj.calcular_features([_tweet])
-                _features = [list(_tweet.features.values())]
+
+                features_obj.calcular_features([_tweet])
+                _features = [_tweet.array_features()]
                 return unicode(int(clasificador_usado.predict(_features)[0]))
 
             app.run(debug=True, host='0.0.0.0')
