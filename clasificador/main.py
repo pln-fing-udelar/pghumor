@@ -8,6 +8,7 @@ import random
 import sys
 
 from flask import Flask, request
+import flask
 from flask_cors import cross_origin
 from sklearn import linear_model, naive_bayes, neighbors, preprocessing, svm, tree
 from sklearn.feature_extraction.text import CountVectorizer
@@ -393,6 +394,10 @@ if __name__ == "__main__":
 
                 features_obj.calcular_features([_tweet])
                 _features = [_tweet.array_features()]
-                return unicode(int(clasificador_usado.predict(_features)[0]))
+                return flask.jsonify(
+                    {
+                        'humor': unicode(int(clasificador_usado.predict(_features)[0])),
+                        'features': _tweet.features,
+                    })
 
-            app.run(debug=True, host='0.0.0.0')
+            app.run(host='0.0.0.0')  # debug=True,
