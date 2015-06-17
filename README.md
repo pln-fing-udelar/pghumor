@@ -6,7 +6,26 @@ Se deben cargar los dumps corpus.sql y chistesdotcom.sql
 
 # Configuración
 
-En el archivo `clasificador/config/environment.py` poner las credenciales de la API de Twitter y los datos para las bases de datos.
+En el archivo `clasificador/config/environment.py` poner las credenciales de la API de Twitter y los datos para las bases de datos. Un ejemplo de este archivo es el siguiente:
+
+```python
+# coding=utf-8
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import os
+
+# Twitter API credentials
+os.environ['CONSUMER_KEY'] = '--CONSUMER KEY--'
+os.environ['CONSUMER_SECRET'] = '--CONSUMER SECRET--'
+os.environ['ACCESS_KEY'] = '--ACCESS KEY--'
+os.environ['ACCESS_SECRET'] = '--ACCESS SECRET--'
+
+os.environ['DB_HOST'] = 'localhost'
+os.environ['DB_USER'] = 'pghumor'
+os.environ['DB_PASS'] = '--PASSWORD--'
+os.environ['DB_NAME'] = 'corpus'
+os.environ['DB_NAME_CHISTES_DOT_COM'] = 'chistesdotcom'
+```
 
 Poner la variable de entorno a donde se encuentre el entorno de Freeling y dejarla puesta siempre:
 

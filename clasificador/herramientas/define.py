@@ -5,8 +5,11 @@ import os
 
 import numpy as np
 
-# noinspection PyUnresolvedReferences
-import clasificador.config.environment
+try:
+    # noinspection PyUnresolvedReferences
+    import clasificador.config.environment
+except ImportError:
+    pass
 
 # Twitter API credentials
 CONSUMER_KEY = os.environ['CONSUMER_KEY']

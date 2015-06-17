@@ -59,3 +59,5 @@ target/
 
 #WikiCorpus
 clasificador/recursos/wikicorpus
+
+clasificador/config/environment.py
