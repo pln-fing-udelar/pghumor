@@ -1,8 +1,12 @@
+# pgHumor: Detección de humor en tweets en idioma español
+
+Este proyecto de grado busca saber si un tweet escrito en idioma español se trata de humor o no. Fue realizado por [Matías Cubero](https://github.com/matu1104) y [Santiago Castro](https://github.com/bryant1410), y supervisado por [Guillermo Moncecchi](https://github.com/gmonce) y Diego Garat.
+
 # Instalación
 
 Se precisa python 2.7, MySQL, las librerías python aquí utilizadas, Freeling (revisión 2588 del SVN) y el corpus WordNet en NLTK.
 
-Se deben cargar los dumps corpus.sql y chistesdotcom.sql 
+Se deben cargar los dumps corpus.sql y chistesdotcom.sql
 
 # Configuración
 
