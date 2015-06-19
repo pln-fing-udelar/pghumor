@@ -5,7 +5,7 @@ import math
 
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
-from clasificador.herramientas.persistencia import  guardar_feature
+
 
 def esta_en_persona(tag, numero_persona):
     # determinante en 'numeroPersona' persona
@@ -33,18 +33,3 @@ class NPersona(Feature):
             return 0
         else:
             return primera_persona / math.sqrt(len(tf.tokens))
-
-    def calcular_feature_PRUEBA(self, tweet):
-        tf = Freeling(tweet)
-        primera_persona = 0
-        for token in tf.tokens:
-            if esta_en_persona(token.tag, self.persona):
-                primera_persona += 1
-
-        if len(tf.tokens) == 0:
-            print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
-            retorno = 0
-        else:
-            retorno = primera_persona / math.sqrt(len(tf.tokens))
-
-        guardar_feature(tweet,self.nombre,retorno)

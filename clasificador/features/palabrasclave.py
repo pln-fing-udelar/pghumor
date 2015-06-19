@@ -32,19 +32,3 @@ class PalabrasClave(Feature):
             return 0
         else:
             return cant_palabras_claves / math.sqrt(len(tf.tokens))
-
-
-    def calcular_feature_PRUEBA(self, tweet):
-        tf = Freeling(tweet)
-        cant_palabras_claves = 0
-        for token in tf.tokens:
-            if (token.token in self.palabrasAnimales) or (token.lemma in self.palabrasAnimales):
-                cant_palabras_claves += 1
-
-        if len(tf.tokens) == 0:
-            print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
-            retorno = 0
-        else:
-            retorno = cant_palabras_claves / math.sqrt(len(tf.tokens))
-
-        guardar_feature(tweet,self.nombre,retorno)

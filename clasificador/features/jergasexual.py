@@ -33,19 +33,3 @@ class JergaSexual(Feature):
             return 0
         else:
             return cant_palabras_sexuales / math.sqrt(len(tf.tokens))
-
-
-    def calcular_feature_PRUEBA(self, tweet):
-        tf = Freeling(tweet)
-        cant_palabras_sexuales = 0
-        for token in tf.tokens:
-            if token.token in self.palabrasSexuales or token.lemma in self.palabrasSexuales:
-                cant_palabras_sexuales += 1
-
-        if len(tf.tokens) == 0:
-            print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
-            retorno = 0
-        else:
-            retorno = cant_palabras_sexuales / math.sqrt(len(tf.tokens))
-
-        guardar_feature(tweet,self.nombre,retorno)

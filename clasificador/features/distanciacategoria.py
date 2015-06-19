@@ -9,7 +9,7 @@ from clasificador.features.feature import Feature
 from clasificador.herramientas.chistesdotcom import obtener_chistes_categoria
 from clasificador.herramientas.utils import *
 from clasificador.herramientas.wikicorpus import obtener_sample_wikicorpus
-from clasificador.herramientas.persistencia import  guardar_feature
+
 
 class DistanciaCategoria(Feature):
     def __init__(self, id_categoria, nombre_categoria, verbose):
@@ -53,16 +53,3 @@ class DistanciaCategoria(Feature):
                 print(self.clasificador.steps[1][1].classes_[i], ": ", result[0][i])
 
         return retorno
-
-    def calcular_feature_PRUEBA(self, tweet):
-        result = self.clasificador.predict_proba([tweet.texto_original])
-        retorno = 0
-        if self.verbose:
-            print("El resultado es:")
-
-        for i in range(len(result[0])):
-            if self.clasificador.steps[1][1].classes_[i] != 'wiki':
-                retorno = result[0][i]
-            if self.verbose:
-                print(self.clasificador.steps[1][1].classes_[i], ": ", result[0][i])
-        guardar_feature(tweet,self.nombre,retorno)

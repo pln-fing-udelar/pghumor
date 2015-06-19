@@ -85,7 +85,7 @@ class Features:
 
     def calculoFeaturePOSIX(self, tweets, feature):
         print("calculando feature" + feature.nombre)
-        feature.calcular_feature_PRUEBA_tweets(tweets)
+        feature.calcular_feature_prueba_tweets(tweets)
 
 
     def repartir_en_threads_PRUEBA(self, funcion, tweets):
@@ -122,7 +122,7 @@ class Features:
             bar.next(0)
             for feature in list(self.features.values()):
                 self.abortar_si_feature_no_es_thread_safe(feature)
-                feature.calcular_feature_PRUEBA_tweets(tweets)
+                feature.calcular_feature_prueba_tweets(tweets)
                 bar.next()
             bar.finish()
 

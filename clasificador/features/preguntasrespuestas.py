@@ -5,7 +5,7 @@ import re
 
 from clasificador.features.feature import Feature
 from clasificador.features.dialogo import guiones_dialogo
-from clasificador.herramientas.persistencia import  guardar_feature
+
 
 def guion_dialogo_re():
     return r'(?:' + r'|'.join(guiones_dialogo()) + r')'
@@ -33,7 +33,3 @@ class PreguntasRespuestas(Feature):
 
     def calcular_feature(self, tweet):
         return cantidad_de_capturas_no_solapadas(patron_pregunta_respuesta, tweet.texto)
-
-    def calcular_feature_PRUEBA(self, tweet):
-        retorno = cantidad_de_capturas_no_solapadas(patron_pregunta_respuesta, tweet.texto)
-        guardar_feature(tweet,self.nombre,retorno)
