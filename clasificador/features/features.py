@@ -14,6 +14,11 @@ import clasificador.herramientas.persistencia
 from clasificador.herramientas.reflection import cargar_modulos_vecinos, subclases
 
 
+def calculo_feature_posix(tweets, feature):
+    print("calculando feature" + feature.nombre)
+    feature.calcular_feature_prueba_tweets(tweets)
+
+
 class Features:
     def __init__(self, cantidad_threads):
         self.cantidad_threads = cantidad_threads
@@ -49,7 +54,7 @@ class Features:
             "La feature " + feature.nombre + " no es thread-safe y hay más de un hilo corriendo"
 
     def calcular_features(self, tweets):
-        self.repartir_en_threads_PRUEBA(self.calculoFeaturePOSIX, tweets)
+        self.repartir_en_threads_prueba(calculo_feature_posix, tweets)
 
     def calcular_feature(self, tweets, nombre_feature):
         self.repartir_en_threads(self.calcular_feature_thread, tweets, nombre_feature)
@@ -81,15 +86,7 @@ class Features:
         for hilo in threads:
             hilo.join()
 
-
-
-    def calculoFeaturePOSIX(self, tweets, feature):
-        print("calculando feature" + feature.nombre)
-        feature.calcular_feature_prueba_tweets(tweets)
-
-
-    def repartir_en_threads_PRUEBA(self, funcion, tweets):
-        intervalo = int(len(tweets) / self.cantidad_threads)
+    def repartir_en_threads_prueba(self, funcion, tweets):
         threads = []
         for feature in list(self.features.values()):
             args = (tweets, feature)
@@ -114,8 +111,8 @@ class Features:
                     bar.next()
             bar.finish()
 
-   #funcion declarada peligrosa
-    def calcular_features_thread_PRUEBA(self, tweets, identificador):
+    # función declarada peligrosa
+    def calcular_features_thread_prueba(self, tweets, identificador):
         if len(tweets) > 0:
             bar = Bar("Calculando features - " + unicode(identificador), max=len(tweets) * len(self.features),
                       suffix=SUFIJO_PROGRESS_BAR)
