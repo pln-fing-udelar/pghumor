@@ -8,37 +8,78 @@ from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME,
 from clasificador.realidad.tweet import Tweet
 
 
-def cargar_tweets(limite=None, cargar_features=True):
+def cargar_tweets(limite=None, cargar_features=True,rank=0):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
     y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego."""
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
+    consulta = "SELECT count(*) as cantidad FROM tweets "
+    cursor.execute(consulta)
+
+    bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+    bar.next(0)
+
+    ids = []
+
+
+    for (cantidad,) in cursor:
+        cantTweetsTotal=int(cantidad)
+        bar.next()
+
+    bar.finish()
+
     if limite:
-        consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
-        cursor.execute(consulta)
+        #consulta = "SELECT id_tweet FROM tweets WHERE evaluacion = 0 ORDER BY RAND() LIMIT " + str(limite)
 
-        bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
-        bar.next(0)
+        #cursor.execute(consulta)
 
-        ids = []
+        #bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+        #bar.next(0)
 
-        for (tweet_id,) in cursor:
-            ids.append(tweet_id)
-            bar.next()
+        #ids = []
 
-        bar.finish()
+        #for (tweet_id,) in cursor:
+         #   ids.append(tweet_id)
+          #  bar.next()
 
-        str_ids = "(" + unicode(ids).strip("[]L") + ")"
+        #bar.finish()
 
-        consulta_prueba_tweets = "WHERE T.id_tweet IN {ids}".format(ids=str_ids)
-        consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
+        #str_ids = "(" + unicode(ids).strip("[]L") + ")"
+
+        #consulta_prueba_tweets = "WHERE T.id_tweet IN {ids}".format(ids=str_ids)
+        #consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
+
+       # consulta = "SELECT count(*) as cantidad FROM tweets "
+       # cursor.execute(consulta)
+
+        #bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
+        #bar.next(0)
+
+        #ids = []
+
+
+
+        cantTweets=int(cantTweetsTotal/limite)
+
+        cantTweets=200 #para probar con pocos
+ #       str_ids = "(" + unicode(ids).strip("[]L") + ")"
+
+        consulta_prueba_tweets = ""
+        consulta_prueba_features = ""
     else:
         consulta_prueba_tweets = ""
         consulta_prueba_features = ""
+        cantTweets=cantTweetsTotal
+        cantTweets=400 #para probar con pocos
+
+
+    indice=rank*cantTweets
+
+    print(str("Indice: " + str(indice) + " cantTweets: " + str(cantTweets) ))
 
     consulta = """
-    SELECT id_account,
+    SELECT  id_account,
            T.id_tweet,
            text_tweet,
            favorite_count_tweet,
@@ -58,14 +99,15 @@ def cargar_tweets(limite=None, cargar_features=True):
                                    WHERE voto <> 'n'
                                    GROUP  BY id_tweet) V
                                ON ( V.id_tweet = T.id_tweet )
-    {filtro_prueba}
+    ORDER BY T.id_tweet
+    LIMIT """ + str(indice) + """,""" + str(cantTweets) + """
     """.format(filtro_prueba=consulta_prueba_tweets)
 
     cursor.execute(consulta)
-
+    print("Pre cargados tweets - agregado")
     bar = Bar("Cargando tweets\t\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
-
+    ids=[]
     resultado = {}
 
     for (id_account, tweet_id, texto, favoritos, retweets, es_humor, cuenta, seguidores, evaluacion, votos,
@@ -84,23 +126,29 @@ def cargar_tweets(limite=None, cargar_features=True):
             tw.votos = int(votos)  # Esta y la siguiente al venir de count y sum, son decimal.
         if votos_humor:
             tw.votos_humor = int(votos_humor)
-
+        ids.append(tweet_id)
         resultado[tw.id] = tw
         bar.next()
-
+    print("Pre cargado arreglo de tweets")
     bar.finish()
+    str_ids = "(" + unicode(ids).strip("[]") + ")"
+    str_ids=str_ids.replace("L","")
+    #consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
+    consulta_prueba_features = ""
 
     if cargar_features:
         consulta = """
-        SELECT id_tweet,
+        SELECT features.id_tweet,
                nombre_feature,
                valor_feature
         FROM   features
+            INNER JOIN (SELECT id_tweet FROM tweets ORDER BY id_tweet
+                LIMIT """ + str(indice) + """,""" + str(cantTweets) + """) AS T ON features.id_tweet=T.id_tweet
         {filtro_prueba}
         """.format(filtro_prueba=consulta_prueba_features)
 
         cursor.execute(consulta)
-
+        print("Pre cargados features - agregado 2")
         bar = Bar("Cargando features\t\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
         bar.next(0)
 
@@ -146,3 +194,17 @@ def guardar_features(tweets, **opciones):
 
     cursor.close()
     conexion.close()
+
+def guardar_feature(tweet, nombre_feature, valor_feature):
+    #nombre_feature = opciones.pop('nombre_feature', None)
+    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+    cursor = conexion.cursor()
+
+    consulta = "INSERT INTO features VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE valor_feature = %s"
+
+    cursor.execute(consulta,
+                           (tweet.id, nombre_feature, str(valor_feature),  str(valor_feature)))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    #i=1

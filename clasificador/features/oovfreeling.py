@@ -8,7 +8,7 @@ from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
 from clasificador.herramientas.utils import eliminar_underscores
 from clasificador.realidad.tweet import *
-
+from clasificador.herramientas.persistencia import  guardar_feature
 
 class OOVFreeling(Feature):
     def __init__(self):
@@ -38,3 +38,27 @@ class OOVFreeling(Feature):
             return 0
         else:
             return cant_palabras_oov / math.sqrt(len(tokens))
+
+
+    def calcular_feature_PRUEBA(self, tweet):
+        texto = tweet.texto
+        texto = remover_hashtags(texto)
+        texto = remover_usuarios(texto)
+        oraciones = Freeling.procesar_texto(texto)
+        tokens = list(itertools.chain(*oraciones))
+
+        cant_palabras_oov = 0
+        for token_freeling in tokens:
+            if not token_freeling.tag.startswith('F') \
+                    and not token_freeling.tag.startswith('Z') \
+                    and not token_freeling.tag.startswith('W'):
+                token = eliminar_underscores(token_freeling.token)
+                if not Freeling.esta_en_diccionario(token):
+                    cant_palabras_oov += 1
+
+        if len(tokens) == 0:
+            retorno = 0
+        else:
+            retorno = cant_palabras_oov / math.sqrt(len(tokens))
+
+        guardar_feature(tweet,self.nombre,retorno)

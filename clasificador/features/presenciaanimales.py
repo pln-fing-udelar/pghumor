@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import *
 import clasificador.herramientas.utils
-
+from clasificador.herramientas.persistencia import  guardar_feature
 
 class PresenciaAnimales(Feature):
     def __init__(self):
@@ -32,3 +32,18 @@ class PresenciaAnimales(Feature):
             return 0
         else:
             return cant_palabras_animales / math.sqrt(len(tf.tokens))
+
+    def calcular_feature_PRUEBA(self, tweet):
+        tf = Freeling(tweet)
+        cant_palabras_animales = 0
+        for token in tf.tokens:
+            if (token.token in self.palabrasAnimales) or (token.lemma in self.palabrasAnimales):
+                cant_palabras_animales += 1
+
+        if len(tf.tokens) == 0:
+            print("Error de tokens vacíos en " + self.nombre + ": ", tweet.texto)
+            retorno=  0
+        else:
+            retorno= cant_palabras_animales / math.sqrt(len(tf.tokens))
+
+        guardar_feature(tweet,self.nombre,retorno)

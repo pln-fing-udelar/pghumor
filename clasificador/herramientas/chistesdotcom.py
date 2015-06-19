@@ -52,8 +52,11 @@ def obtener_chistes_categoria(categoria):
     WHERE id_clasificacion =
     """
 
-    consulta += str(categoria)
 
+
+    #WHERE id_clasificacion = """ + str(categoria) + """ LIMIT 10"""
+
+    consulta += str(categoria)
     cursor.execute(consulta)
 
     chistes = []

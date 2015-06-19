@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from clasificador.features.feature import Feature
-
+from clasificador.herramientas.persistencia import  guardar_feature
 
 class Links(Feature):
     def __init__(self):
@@ -14,3 +14,7 @@ class Links(Feature):
 
     def calcular_feature(self, tweet):
         return tweet.cantidad_links()
+
+    def calcular_feature_PRUEBA(self, tweet):
+        retorno = tweet.cantidad_links()
+        guardar_feature(tweet,self.nombre,retorno)

@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from clasificador.features.feature import Feature
-
+from clasificador.herramientas.persistencia import  guardar_feature
 
 def guiones_dialogo():
     """Devuelve una lista de símbolos de diálogo posibles. Parecen todos iguales, pero son
@@ -23,3 +23,9 @@ class Dialogo(Feature):
             if tweet.texto.startswith(guion):
                 return 1
         return 0
+
+    def calcular_feature_PRUEBA(self, tweet):
+        for guion in guiones_dialogo():
+            if tweet.texto.startswith(guion):
+                guardar_feature(tweet,self.nombre,1)
+        guardar_feature(tweet,self.nombre,0)

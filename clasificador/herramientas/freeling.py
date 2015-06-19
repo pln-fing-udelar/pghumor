@@ -67,7 +67,7 @@ class Freeling:
     @staticmethod
     def respuesta_socket_freeling(texto, puerto):
         with AnalyzerClient() as client:
-            client.connect(('127.0.0.1', puerto))
+            client.connect(('nachoLap', puerto))
             client.send(texto)
             return client.recv()
 

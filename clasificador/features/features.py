@@ -20,7 +20,7 @@ class Features:
         self.bar = ""
         self.features = {}
 
-        print("Comienzo de la carga de características")
+        print("Comienzo de la carga de caracteristicas")
 
         cargar_modulos_vecinos(__name__, __file__)
 
@@ -30,7 +30,7 @@ class Features:
                 objeto_feature = clase_feature()
                 if objeto_feature.incluir:
                     self.features[objeto_feature.nombre] = objeto_feature
-                    print(objeto_feature.nombre)
+                    #print(objeto_feature.nombre)
 
         categorias_chistes_dot_com = clasificador.herramientas.chistesdotcom.obtener_categorias()
 
@@ -42,14 +42,14 @@ class Features:
                 self.features[feature.nombre] = feature
                 print(feature.nombre)
 
-        print("Fin de la carga de características")
+        print("Fin de la carga de caracteristicas")
 
     def abortar_si_feature_no_es_thread_safe(self, feature):
         assert self.cantidad_threads == 1 or feature.thread_safe, \
             "La feature " + feature.nombre + " no es thread-safe y hay más de un hilo corriendo"
 
     def calcular_features(self, tweets):
-        self.repartir_en_threads(self.calcular_features_thread, tweets)
+        self.repartir_en_threads_PRUEBA(self.calculoFeaturePOSIX, tweets)
 
     def calcular_feature(self, tweets, nombre_feature):
         self.repartir_en_threads(self.calcular_feature_thread, tweets, nombre_feature)
@@ -81,6 +81,27 @@ class Features:
         for hilo in threads:
             hilo.join()
 
+
+
+    def calculoFeaturePOSIX(self, tweets, feature):
+        print("calculando feature" + feature.nombre)
+        feature.calcular_feature_PRUEBA_tweets(tweets)
+
+
+    def repartir_en_threads_PRUEBA(self, funcion, tweets):
+        intervalo = int(len(tweets) / self.cantidad_threads)
+        threads = []
+        for feature in list(self.features.values()):
+            args = (tweets, feature)
+            thread = Thread(target=funcion, args=args)
+            threads.append(thread)
+
+        for hilo in threads:
+            hilo.start()
+
+        for hilo in threads:
+            hilo.join()
+
     def calcular_features_thread(self, tweets, identificador):
         if len(tweets) > 0:
             bar = Bar("Calculando features - " + unicode(identificador), max=len(tweets) * len(self.features),
@@ -91,6 +112,18 @@ class Features:
                     self.abortar_si_feature_no_es_thread_safe(feature)
                     tweet.features[feature.nombre] = feature.calcular_feature(tweet)
                     bar.next()
+            bar.finish()
+
+   #funcion declarada peligrosa
+    def calcular_features_thread_PRUEBA(self, tweets, identificador):
+        if len(tweets) > 0:
+            bar = Bar("Calculando features - " + unicode(identificador), max=len(tweets) * len(self.features),
+                      suffix=SUFIJO_PROGRESS_BAR)
+            bar.next(0)
+            for feature in list(self.features.values()):
+                self.abortar_si_feature_no_es_thread_safe(feature)
+                feature.calcular_feature_PRUEBA_tweets(tweets)
+                bar.next()
             bar.finish()
 
     def calcular_feature_thread(self, tweets, nombre_feature, identificador):
