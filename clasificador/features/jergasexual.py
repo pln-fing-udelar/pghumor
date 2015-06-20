@@ -9,7 +9,7 @@ from clasificador.features.feature import Feature
 import clasificador.herramientas.define
 from clasificador.herramientas.freeling import Freeling
 import clasificador.herramientas.utils
-from clasificador.herramientas.persistencia import  guardar_feature
+
 
 class JergaSexual(Feature):
     def __init__(self):

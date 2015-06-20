@@ -2,13 +2,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import mysql.connector
+
 from progress.bar import Bar
 
 from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME, SUFIJO_PROGRESS_BAR
 from clasificador.realidad.tweet import Tweet
 
 
-def cargar_tweets(limite=None, cargar_features=True,rank=0):
+def cargar_tweets(limite=None, cargar_features=True, rank=0):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
     y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego."""
     conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
@@ -20,11 +21,10 @@ def cargar_tweets(limite=None, cargar_features=True,rank=0):
     bar = Bar("Eligiendo tweets aleatorios\t", max=cursor.rowcount, suffix=SUFIJO_PROGRESS_BAR)
     bar.next(0)
 
-    ids = []
-
+    # ids = []
 
     for (cantidad,) in cursor:
-        cantTweetsTotal=int(cantidad)
+        cant_tweets_total = int(cantidad)
         bar.next()
 
     bar.finish()
@@ -58,25 +58,22 @@ def cargar_tweets(limite=None, cargar_features=True,rank=0):
 
         #ids = []
 
+        cant_tweets = int(cant_tweets_total / limite)
 
-
-        cantTweets=int(cantTweetsTotal/limite)
-
-        cantTweets=200 #para probar con pocos
- #       str_ids = "(" + unicode(ids).strip("[]L") + ")"
+        # cant_tweets = 200  # para probar con pocos
+        #       str_ids = "(" + unicode(ids).strip("[]L") + ")"
 
         consulta_prueba_tweets = ""
         consulta_prueba_features = ""
     else:
         consulta_prueba_tweets = ""
         consulta_prueba_features = ""
-        cantTweets=cantTweetsTotal
-        cantTweets=400 #para probar con pocos
+        cant_tweets = cant_tweets_total
+        # cant_tweets = 400  # para probar con pocos
 
+    indice = rank * cant_tweets
 
-    indice=rank*cantTweets
-
-    print(str("Indice: " + str(indice) + " cantTweets: " + str(cantTweets) ))
+    print(str("Indice: " + str(indice) + " cantTweets: " + str(cant_tweets)))
 
     consulta = """
     SELECT  id_account,
@@ -100,7 +97,7 @@ def cargar_tweets(limite=None, cargar_features=True,rank=0):
                                    GROUP  BY id_tweet) V
                                ON ( V.id_tweet = T.id_tweet )
     ORDER BY T.id_tweet
-    LIMIT """ + str(indice) + """,""" + str(cantTweets) + """
+    LIMIT """ + str(indice) + """,""" + str(cant_tweets) + """
     """.format(filtro_prueba=consulta_prueba_tweets)
 
     cursor.execute(consulta)
@@ -132,8 +129,8 @@ def cargar_tweets(limite=None, cargar_features=True,rank=0):
     print("Pre cargado arreglo de tweets")
     bar.finish()
     str_ids = "(" + unicode(ids).strip("[]") + ")"
-    str_ids=str_ids.replace("L","")
-    #consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
+    str_ids = str_ids.replace("L", "")
+    # consulta_prueba_features = "WHERE id_tweet IN {ids}".format(ids=str_ids)
     consulta_prueba_features = ""
 
     if cargar_features:
@@ -143,7 +140,7 @@ def cargar_tweets(limite=None, cargar_features=True,rank=0):
                valor_feature
         FROM   features
             INNER JOIN (SELECT id_tweet FROM tweets ORDER BY id_tweet
-                LIMIT """ + str(indice) + """,""" + str(cantTweets) + """) AS T ON features.id_tweet=T.id_tweet
+                LIMIT """ + str(indice) + """,""" + str(cant_tweets) + """) AS T ON features.id_tweet=T.id_tweet
         {filtro_prueba}
         """.format(filtro_prueba=consulta_prueba_features)
 

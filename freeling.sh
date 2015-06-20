@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ "$#" -ne 1 ]; then
-    echo "Numero de parametros incorrecto"
+    echo "Numero de parámetros incorrecto"
     exit 1
 fi
 

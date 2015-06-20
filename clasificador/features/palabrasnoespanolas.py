@@ -9,6 +9,7 @@ from clasificador.herramientas.freeling import Freeling
 from clasificador.herramientas.utils import eliminar_underscores
 from clasificador.realidad.tweet import *
 
+
 CARACTERES_ESPANOL = 255
 
 patron_todo_espacios = re.compile(r'^\s*$', re.UNICODE)

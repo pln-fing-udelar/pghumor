@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import *
 import clasificador.herramientas.utils
-from clasificador.herramientas.persistencia import  guardar_feature
+
 
 class PresenciaAnimales(Feature):
     def __init__(self):

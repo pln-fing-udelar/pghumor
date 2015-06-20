@@ -15,7 +15,7 @@ from clasificador.herramientas.reflection import cargar_modulos_vecinos, subclas
 
 
 def calculo_feature_posix(tweets, feature):
-    print("calculando feature" + feature.nombre)
+    print("Calculando feature" + feature.nombre)
     feature.calcular_feature_prueba_tweets(tweets)
 
 
@@ -25,7 +25,7 @@ class Features:
         self.bar = ""
         self.features = {}
 
-        print("Comienzo de la carga de caracteristicas")
+        print("Comienzo de la carga de características")
 
         cargar_modulos_vecinos(__name__, __file__)
 
@@ -35,7 +35,7 @@ class Features:
                 objeto_feature = clase_feature()
                 if objeto_feature.incluir:
                     self.features[objeto_feature.nombre] = objeto_feature
-                    #print(objeto_feature.nombre)
+                    print(objeto_feature.nombre)
 
         categorias_chistes_dot_com = clasificador.herramientas.chistesdotcom.obtener_categorias()
 
@@ -47,7 +47,7 @@ class Features:
                 self.features[feature.nombre] = feature
                 print(feature.nombre)
 
-        print("Fin de la carga de caracteristicas")
+        print("Fin de la carga de características")
 
     def abortar_si_feature_no_es_thread_safe(self, feature):
         assert self.cantidad_threads == 1 or feature.thread_safe, \

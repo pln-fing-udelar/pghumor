@@ -158,7 +158,7 @@ def matriz_de_confusion_y_reportar(_evaluacion, _clases_evaluacion, _clases_pred
     assert len(_falsos_positivos) == matriz_de_confusion[1][0]
     assert len(_verdaderos_negativos) == matriz_de_confusion[1][1]
 
-    print("Matriz de confusion:")
+    print("Matriz de confusión:")
     print('')
     print("\t\t(clasificados como)")
     print("\t\tP\tN")

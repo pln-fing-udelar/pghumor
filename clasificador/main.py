@@ -18,10 +18,10 @@ from mpi4py import MPI
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from clasificador.herramientas.freeling import Freeling
+from clasificador.features.features import Features
 from clasificador.herramientas.define import parameters_svm, parameters_dt, \
     parameters_gnb, parameters_mnb, parameters_knn, SUFIJO_PROGRESS_BAR
-from clasificador.features.features import Features
+from clasificador.herramientas.freeling import Freeling
 from clasificador.herramientas.persistencia import cargar_tweets, guardar_features
 from clasificador.herramientas.utilclasificacion import cross_validation_y_reportar, \
     get_clases, get_features, matriz_de_confusion_y_reportar, train_test_split_pro
