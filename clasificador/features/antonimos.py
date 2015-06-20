@@ -10,6 +10,7 @@ from clasificador.features.feature import Feature
 from clasificador.herramientas.freeling import Freeling
 from clasificador.realidad.tweet import remover_hashtags, remover_usuarios
 
+
 class Antonimos(Feature):
     def __init__(self):
         super(Antonimos, self).__init__()
