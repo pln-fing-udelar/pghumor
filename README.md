@@ -2,6 +2,8 @@
 
 Este proyecto de grado busca saber si un tweet escrito en idioma español se trata de humor o no, aplicando técnicas supervisadas de aprendizaje automático. Fue realizado por [Matías Cubero](https://github.com/matu1104) y [Santiago Castro](https://github.com/bryant1410), y supervisado por [Guillermo Moncecchi](https://github.com/gmonce) y Diego Garat. Por información más completa, ver [el informe final](InformeV3.4.pdf).
 
+Queremos agradecer a Diego Serra e Ignacio Acuña, que realizaron su proyecto del curso [Computación de Alta Performance](https://www.fing.edu.uy/inco/cursos/hpc) basado en este trabajo, supervisado por Sergio Nesmachnow, con el fin de mejorar el rendimiento del clasificador a la hora de calcular los valores de las características. Se puede ver en [la etiqueta hpc-entrega](https://github.com/pln-fing-udelar/pghumor/tree/hpc-entrega). La continuación de su línea de trabajo está [en la rama hpc](https://github.com/pln-fing-udelar/pghumor/tree/hpc).
+
 # Resumen
 
 > — Ayer, al salir del trabajo atropellé a un unicornio.
