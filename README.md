@@ -86,6 +86,18 @@ Para bajar los servidores de Freeling:
 clasificador/main.py --help
 ```
 
+## Modo servidor
+
+```bash
+clasificador/main.py --servidor
+```
+
+Para probarlo:
+
+```bash
+curl --data-urlencode texto="Este es un texto de una prueba" localhost:5000/evaluar
+```
+
 # Tests
 
 ```bash
