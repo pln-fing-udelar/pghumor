@@ -30,7 +30,7 @@ Las dependencias principales de este proyecto son:
 
 # Configuración
 
-Se deben cargar los dumps corpus.sql y chistesdotcom.sql
+Se deben cargar los dumps `corpus.sql` y `chistesdotcom.sql`.
 
 En el archivo `clasificador/config/environment.py` poner las credenciales de la API de Twitter y los datos para las bases de datos. Un ejemplo de este archivo es el siguiente:
 
