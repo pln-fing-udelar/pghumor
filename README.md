@@ -1,38 +1,48 @@
-# pgHumor: Detección de humor en tweets en idioma español
+# pgHumor: Humor detection in Spanish tweets
 
-Este proyecto de grado busca saber si un tweet escrito en idioma español se trata de humor o no, aplicando técnicas supervisadas de aprendizaje automático. Fue realizado por [Matías Cubero](https://github.com/matu1104) y [Santiago Castro](https://github.com/bryant1410), y supervisado por [Guillermo Moncecchi](https://github.com/gmonce) y Diego Garat. Por información más completa, ver [el informe final](InformeV3.4.pdf).
+This thesis is about deciding if a tweet written in Spanish is humorous or not, applying Supervised Machine Learning. It was carried out by [Matías Cubero](https://github.com/matu1104) and [Santiago Castro](https://github.com/bryant1410), and supervised by [Guillermo Moncecchi](https://github.com/gmonce) and Diego Garat. For detailed information, see [the final report](InformeV3.4.pdf).
 
-Queremos agradecer a Diego Serra e Ignacio Acuña, que realizaron su proyecto del curso [Computación de Alta Performance](https://www.fing.edu.uy/inco/cursos/hpc) basado en este trabajo, supervisado por Sergio Nesmachnow, con el fin de mejorar el rendimiento del clasificador a la hora de calcular los valores de las características. Se puede ver en [la etiqueta hpc-entrega](https://github.com/pln-fing-udelar/pghumor/tree/hpc-entrega). La continuación de su línea de trabajo está [en la rama hpc](https://github.com/pln-fing-udelar/pghumor/tree/hpc).
+# Abstract
 
-# Resumen
+Looking at this tweet:
+
+> — Yesterday, when leaving work I ran over a unicorn.
+>
+> — No way, you got job?
+
+which is the translated version of this one:
 
 > — Ayer, al salir del trabajo atropellé a un unicornio.
 >
 > — No jodas, ¿tenés trabajo?
 
-¿Qué hace gracioso a este tweet? ¿Qué es el humor? ¿Qué genera la risa? El proyecto intenta acercarse a eso. Existen teorías, pero ninguna logra ser completamente certera.
+Make us think: what makes it funny? What is Humor? What generates laughter? This project tries to approach this. Theory does exist, however none manages to be completely accurate.
 
-Se extrajeron 16.488 tweets de cuentas humorísticas y 22.875 de cuentas no humorísticas (noticias, frases filosóficas y curiosidades). Se realizó una [aplicación web](https://github.com/pln-fing-udelar/pghumor-clasificahumor) y una [aplicación Android](https://github.com/pln-fing-udelar/pghumor-clasificahumor-android) para que la gente nos dé su opinión de cuáles son humorísticos realmente. Se obtuvieron 33.531 votacinoes desde inicios del mes de setiembre de 2014 hasta finales de octubre del mismo año (¡gracias!). Resultó haber poco humor en las cuentas humorísticas:
+16,488 tweets where fetches from humorous accounts and 22,875 from non-humorous (news, philosophical phrases and interesting facts). A [web app](https://github.com/pln-fing-udelar/pghumor-clasificahumor) and an [Android app](https://github.com/pln-fing-udelar/pghumor-clasificahumor-android) were made so people could give their opinion about which ones are really humorous. 33,531 votes were received from early September to the end of October 2014 (thanks!). It turned out to be little humor in humorous accounts:
 
-![Proporciones de humor según la gente](grupos.png)
+![Humor ratio according to the people](grupos.png)
 
-Se contstruyó este clasificador en base a características que buscan informalidad, determinado formato, temas que generan tensión, entre otras cosas. Utiliza técnicas como SVM, kNN, árboles de decisión y Naïve Bayes. Se logra una precisión de 83,6% y recall de 68,9% sobre el corpus construido.
+This classifier was built based on features that search for informality, certain kind of format, topics that cause psychological tension, among others. It uses techniques such as SVM, kNN, Decision Trees and Naïve Bayes. It achieves a precision of 83.6% and a recall of 68.9% over the created corpus.
 
-Se construyó también [una demo](https://github.com/pln-fing-udelar/pghumor-demo) para ilustrar los resultados obtenidos.
+[A demo](https://github.com/pln-fing-udelar/pghumor-demo) was also developed to show the obtained results.
 
-# Instalación
+# Additional work
 
-Las dependencias principales de este proyecto son:
+We want to thank Diego Serra and Ignacio Acuña, who carried out their [High Performance Computing](https://www.fing.edu.uy/inco/cursos/hpc) course project about this job, supervised by Sergio Nesmachnow, with the aim of improving the performance of the algorithms when computing the features values. It can be seen in the [hpc-entrega tag](https://github.com/pln-fing-udelar/pghumor/tree/hpc-entrega). The continuation of their line of work is in the [hpc branch](https://github.com/pln-fing-udelar/pghumor/tree/hpc).
 
-* Python 2.7 (junto con varias bibliotecas; ver el código)
+# Installation
+
+The main dependencies are:
+
+* Python 2.7 (and some libraries; please see the code)
 * MySQL
-* Freeling (revisión 2588 del SVN)
+* Freeling (SVN revision number 2588)
 
-# Configuración
+# Set up
 
-Se deben cargar los dumps `corpus.sql` y `chistesdotcom.sql`.
+`corpus.sql` and `chistesdotcom.sql` dumps must be loaded.
 
-En el archivo `clasificador/config/environment.py` poner las credenciales de la API de Twitter y los datos para las bases de datos. Un ejemplo de este archivo es el siguiente:
+In the file `clasificador/config/environment.py` write the Twitter API credentials and the database related information. An example of this files is the following:
 
 ```python
 # coding=utf-8
@@ -53,52 +63,52 @@ os.environ['DB_NAME'] = 'corpus'
 os.environ['DB_NAME_CHISTES_DOT_COM'] = 'chistesdotcom'
 ```
 
-Poner la variable de entorno a donde se encuentre el entorno de Freeling y dejarla puesta siempre:
+Export and save the env variable of Freeling too:
 
 ```bash
 FREELINGSHARE=/usr/local/share/freeling
 echo "export FREELINGSHARE=$FREELINGSHARE" >> ~/.bashrc
 ```
 
-# Ejecución
+# Run
 
-Levantar antes los servidores de Freeling (para poder calcular las características):
+Start Freeling servers (to compute the features):
 
 ```bash
 ./freeling.sh start
 ```
 
-Luego para correr:
+And then execute:
 
 ```bash
 clasificador/main.py
 ```
 
-Para bajar los servidores de Freeling:
+To stop the Freeling servers:
 
 ```bash
 ./freeling.sh stop
 ```
 
-## Ayuda
+## Help
 
 ```bash
 clasificador/main.py --help
 ```
 
-## Modo servidor
+## Server mode
 
 ```bash
 clasificador/main.py --servidor
 ```
 
-Para probarlo:
+To test it:
 
 ```bash
-curl --data-urlencode texto="Este es un texto de una prueba" localhost:5000/evaluar
+curl --data-urlencode texto="This is a test" localhost:5000/evaluar
 ```
 
-# Tests
+# Run tests
 
 ```bash
 ./tests.sh
