@@ -15,7 +15,10 @@ def open_db():
 
 def cargar_chistes_pagina():
     conexion = open_db()
-    cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
+    if DB_ENGINE == 'sqlite3':
+        cursor = conexion.cursor()
+    else:
+        cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     consulta = """
     SELECT id_chiste,
@@ -45,7 +48,10 @@ def cargar_chistes_pagina():
 
 def obtener_chistes_categoria(categoria):
     conexion = open_db()
-    cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
+    if DB_ENGINE == 'sqlite3':
+        cursor = conexion.cursor()
+    else:
+        cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     consulta = """
     SELECT id_chiste,
@@ -82,7 +88,7 @@ def obtener_categorias():
 
     consulta = """
         SELECT id_clasificacion, nombre_clasificacion
-        FROM chistesdotcom.chistes
+        FROM chistes
         GROUP BY id_clasificacion, nombre_clasificacion
         HAVING count(*) > 350;
     """
