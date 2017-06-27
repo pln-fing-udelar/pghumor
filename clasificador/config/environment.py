@@ -9,6 +9,8 @@ os.environ['CONSUMER_SECRET'] = ''
 os.environ['ACCESS_KEY'] = ''
 os.environ['ACCESS_SECRET'] = ''
 
+os.environ['DB_ENGINE'] = 'sqlite3'
+
 os.environ['DB_HOST'] = 'localhost'
 os.environ['DB_USER'] = 'pghumor'
 os.environ['DB_PASS'] = ''

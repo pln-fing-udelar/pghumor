@@ -3,16 +3,22 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from contextlib import closing
 
 import mysql.connector
+import sqlite3
 from progress.bar import IncrementalBar
 
-from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME, SUFIJO_PROGRESS_BAR
+from clasificador.herramientas.define import DB_HOST, DB_USER, DB_PASS, DB_NAME, SUFIJO_PROGRESS_BAR, DB_ENGINE
 from clasificador.realidad.tweet import Tweet
 
-
+def open_db():
+    if DB_ENGINE == 'sqlite3':
+        return sqlite3.connect(DB_NAME)
+    else:
+        return mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+               
 def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
     """Carga todos los tweets, inclusive aquellos para evaluación, aunque no se quiera evaluar,
     y aquellos mal votados, así se calculan las features para todos. Que el filtro se haga luego."""
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+    conexion = open_db()
     cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     if agregar_sexuales:
@@ -153,7 +159,7 @@ def cargar_tweets(limite=None, agregar_sexuales=False, cargar_features=True):
 
 def guardar_features(tweets, **opciones):
     nombre_feature = opciones.pop('nombre_feature', None)
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+    conexion = open_db()
     cursor = conexion.cursor()
 
     consulta = "INSERT INTO features VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE valor_feature = %s"
@@ -190,7 +196,7 @@ def guardar_features(tweets, **opciones):
 
 
 def cargar_parecidos_con_distinto_humor():
-    with closing(mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)) as conexion:
+    with closing(open_db()) as conexion:
         # buffered=True así sé la cantidad que son antes de iterarlos.
         with closing(conexion.cursor(buffered=True)) as cursor:
             consulta = """
@@ -216,7 +222,7 @@ def cargar_parecidos_con_distinto_humor():
 
 
 def guardar_parecidos_con_distinto_humor(pares_parecidos_distinto_humor):
-    with closing(mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)) as conexion:
+    with closing(open_db()) as conexion:
         with closing(conexion.cursor()) as cursor:
             consulta = "INSERT INTO tweets_parecidos_distinto_humor VALUES (%s, %s)" \
                        + " ON DUPLICATE KEY UPDATE id_tweet_no_humor = %s"
