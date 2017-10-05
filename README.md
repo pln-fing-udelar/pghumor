@@ -2,7 +2,7 @@
 
 This thesis is about deciding if a tweet written in Spanish is humorous or not, applying Supervised Machine Learning. It was carried out by [Matías Cubero](https://github.com/matu1104) and [Santiago Castro](https://github.com/bryant1410), and supervised by [Guillermo Moncecchi](https://github.com/gmonce) and Diego Garat. For detailed information, see [the final report](InformeV3.4.pdf).
 
-# Abstract
+## Abstract
 
 Looking at this tweet:
 
@@ -26,11 +26,11 @@ This classifier was built based on features that search for informality, certain
 
 [A demo](https://github.com/pln-fing-udelar/pghumor-demo) was also developed to show the obtained results.
 
-# Additional work
+## Additional work
 
 We want to thank Diego Serra and Ignacio Acuña, who carried out their [High Performance Computing](https://www.fing.edu.uy/inco/cursos/hpc) course project about this job, supervised by Sergio Nesmachnow, with the aim of improving the performance of the algorithms when computing the features values. It can be seen in the [hpc-entrega tag](https://github.com/pln-fing-udelar/pghumor/tree/hpc-entrega). The continuation of their line of work is in the [hpc branch](https://github.com/pln-fing-udelar/pghumor/tree/hpc).
 
-# Installation
+## Installation
 
 The main dependencies are:
 
@@ -38,7 +38,7 @@ The main dependencies are:
 * MySQL
 * Freeling (SVN revision number 2588)
 
-# Set up
+## Setup
 
 `corpus.sql` and `chistesdotcom.sql` dumps must be loaded.
 
@@ -70,7 +70,7 @@ FREELINGSHARE=/usr/local/share/freeling
 echo "export FREELINGSHARE=$FREELINGSHARE" >> ~/.bashrc
 ```
 
-# Run
+## Run
 
 Start Freeling servers (to compute the features):
 
@@ -90,13 +90,13 @@ To stop the Freeling servers:
 ./freeling.sh stop
 ```
 
-## Help
+### Help
 
 ```bash
 clasificador/main.py --help
 ```
 
-## Server mode
+### Server mode
 
 ```bash
 clasificador/main.py --servidor
@@ -108,11 +108,13 @@ To test it:
 curl --data-urlencode texto="This is a test" localhost:5000/evaluar
 ```
 
-# Run tests
+## Run tests
 
 ```bash
 ./tests.sh
 ```
+
+## Citation
 
 If you use this work in research, please cite us:
 
