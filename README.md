@@ -113,3 +113,16 @@ curl --data-urlencode texto="This is a test" localhost:5000/evaluar
 ```bash
 ./tests.sh
 ```
+
+If you use this work in research, please cite us:
+
+```
+@inproceedings{castro2016joke,
+  title={Is This a Joke? Detecting Humor in Spanish Tweets},
+  author={Castro, Santiago and Cubero, Mat{\'\i}as and Garat, Diego and Moncecchi, Guillermo},
+  booktitle={Ibero-American Conference on Artificial Intelligence},
+  pages={139--150},
+  year={2016},
+  organization={Springer}
+}
+```
