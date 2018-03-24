@@ -2,14 +2,23 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import mysql.connector
+import sqlite3
 
-from clasificador.herramientas.define import DB_HOST, DB_NAME_CHISTES_DOT_COM, DB_PASS, DB_USER
+from clasificador.herramientas.define import DB_HOST, DB_NAME_CHISTES_DOT_COM, DB_PASS, DB_USER, DB_ENGINE
 from clasificador.realidad.chiste import Chiste
 
+def open_db():
+    if DB_ENGINE == 'sqlite3':
+        return sqlite3.connect(DB_NAME_CHISTES_DOT_COM)
+    else:
+        return mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
 
 def cargar_chistes_pagina():
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
-    cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
+    conexion = open_db()
+    if DB_ENGINE == 'sqlite3':
+        cursor = conexion.cursor()
+    else:
+        cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     consulta = """
     SELECT id_chiste,
@@ -38,8 +47,11 @@ def cargar_chistes_pagina():
 
 
 def obtener_chistes_categoria(categoria):
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
-    cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
+    conexion = open_db()
+    if DB_ENGINE == 'sqlite3':
+        cursor = conexion.cursor()
+    else:
+        cursor = conexion.cursor(buffered=True)  # buffered así sé la cantidad que son antes de iterarlos
 
     consulta = """
     SELECT id_chiste,
@@ -71,12 +83,12 @@ def obtener_chistes_categoria(categoria):
 
 
 def obtener_categorias():
-    conexion = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME_CHISTES_DOT_COM)
+    conexion = open_db()
     cursor = conexion.cursor()
 
     consulta = """
         SELECT id_clasificacion, nombre_clasificacion
-        FROM chistesdotcom.chistes
+        FROM chistes
         GROUP BY id_clasificacion, nombre_clasificacion
         HAVING count(*) > 350;
     """

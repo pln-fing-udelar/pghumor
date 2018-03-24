@@ -17,6 +17,10 @@ CONSUMER_SECRET = os.environ['CONSUMER_SECRET']
 ACCESS_KEY = os.environ['ACCESS_KEY']
 ACCESS_SECRET = os.environ['ACCESS_SECRET']
 
+# Whether to use MySQL or SQLite3
+
+DB_ENGINE = os.environ['DB_ENGINE'] or 'mysql'
+
 DB_HOST = os.environ['DB_HOST']
 DB_USER = os.environ['DB_USER']
 DB_PASS = os.environ['DB_PASS']

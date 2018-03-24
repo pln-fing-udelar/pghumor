@@ -5,13 +5,17 @@ import unittest
 
 import mysql.connector
 
-from clasificador.herramientas.define import DB_HOST, DB_NAME, DB_PASS, DB_USER
+from clasificador.herramientas.define import DB_HOST, DB_NAME, DB_PASS, DB_USER, DB_ENGINE
 
-
+def open_db():
+    if DB_ENGINE == 'sqlite3':
+        return sqlite3.connect(DB_NAME)
+    else:
+        return mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+               
 class TestCorpus(unittest.TestCase):
     def test_tweets_humor_repetidos_con_votos(self):
-        with closing(mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST,
-                                             database=DB_NAME)) as conexion, closing(conexion.cursor()) as cursor:
+        with closing(open_db()) as conexion, closing(conexion.cursor()) as cursor:
             consulta = """
                 SELECT Count(*)
                 FROM (SELECT Count(*) AS cantidad
@@ -34,8 +38,7 @@ class TestCorpus(unittest.TestCase):
         """Chequea si hay tweets repetidos en la base. Los repetidos servirían si el corpus es una distribución real,
         pero como en este caso los tweets no provienen de una muestra sino de distintos lugares seleccionados, entonces
         es al pedo e ineficiente que haya repetidos."""
-        with closing(mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST,
-                                             database=DB_NAME)) as conexion, closing(conexion.cursor()) as cursor:
+        with closing(open_db()) as conexion, closing(conexion.cursor()) as cursor:
             consulta = """
                 SELECT Count(*)
                 FROM (SELECT Count(*) AS cantidad
