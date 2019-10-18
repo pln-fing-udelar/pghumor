@@ -11,7 +11,7 @@ lxml==3.6.4
 MarkupSafe==1.0
 matplotlib==1.5.1
 mysql-connector==2.1.4
-nltk==3.2.1
+nltk==3.4.5
 numpy==1.11.1
 oauthlib==2.0.2
 pkg-resources==0.0.0
