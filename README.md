@@ -118,7 +118,7 @@ curl --data-urlencode texto="This is a test" localhost:5000/evaluar
 
 If you use this work in research, please cite us:
 
-```
+```bibtex
 @inproceedings{castro2016joke,
   title={Is This a Joke? Detecting Humor in Spanish Tweets},
   author={Castro, Santiago and Cubero, Mat{\'\i}as and Garat, Diego and Moncecchi, Guillermo},
